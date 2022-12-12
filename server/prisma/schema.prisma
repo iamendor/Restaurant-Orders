@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Restaurant{
+  id Int @unique @id @default(autoincrement())
+  name String @unique
+  password String
+  address Address?
+  waiters Waiter[]
+  orders Order[]
+  meals Meal[]
+  categories Category[]
+  tables Table[]
+}
+model Address{
+  id Int @unique @id @default(autoincrement())
+  country String
+  zip String
+  city String
+  address1 String
+  address2 String?
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int @unique
+}
+
+model Waiter{
+  id Int @unique @id @default(autoincrement())
+  name String
+  gender String
+  profileIcon String
+  password String
+  orders Order[]
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int
+}
+
+model Order{
+  id Int @unique @id @default(autoincrement())
+  description String
+  createdAt String
+  isReady Boolean
+  waiter Waiter @relation(fields: [waiterId], references: [id])
+  table Table @relation(fields: [tableId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  meal Meal @relation(fields: [mealId], references: [id])
+  mealId Int
+  restaurantId Int
+  tableId Int
+  waiterId Int
+}
+
+model Meal{
+  id Int @unique @id @default(autoincrement())
+  name String
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id])
+  orders Order[]
+  price Float
+  restaurantId Int
+  categoryId Int
+}
+model Category{
+  id Int @unique @id @default(autoincrement())
+  name String
+  meal Meal[]
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int
+}
+model Table{
+  id Int @unique @id @default(autoincrement())
+  name String
+  orders Order[]
+  restaurantId Int
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}

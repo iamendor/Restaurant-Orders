@@ -1,0 +1,180 @@
+type Mutation {
+  signup(data: CreateRestaurantInput!): AuthRestaurantResponse
+  loginRestaurant(credentials: LoginRestaurantInput!): AuthRestaurantResponse
+  updateRestaurant(update: UpdateRestaurantDataInput!): AuthRestaurantResponse
+  deleteRestaurant: RestaurantDeleteResponse
+  updateRestaurantPassword(
+    update: UpdateRestaurantDataPassword!
+  ): RestaurantPasswordUpdatedResponse
+}
+
+type Query {
+  hello: String!
+}
+
+schema {
+  mutation: Mutation
+  query: Query
+}
+
+"""
+Models
+"""
+type Restaurant {
+  id: Int!
+  name: String!
+  password: String!
+  address: Address
+  waiters: [Waiter]
+  orders: [Order]
+  meals: [Meal]
+  categories: [Category]
+  tables: [Table]
+}
+
+type Address {
+  id: Int!
+  country: String!
+  zip: String!
+  city: String!
+  address1: String!
+  address2: String!
+  restaurant: Restaurant
+}
+
+type Waiter {
+  id: Int!
+  name: String!
+  gender: String!
+  profileIcon: String!
+  password: String!
+  orders: [Order]
+  restaurant: Restaurant!
+}
+
+type Order {
+  id: Int!
+  description: String!
+  createdAt: String!
+  isReady: Boolean!
+  waiter: Waiter!
+  table: Table!
+  restaurant: Restaurant!
+  meal: Meal!
+}
+
+type Meal {
+  id: Int!
+  name: String!
+  price: Float!
+  restaurant: Restaurant!
+  category: Category
+  orders: [Order]
+}
+
+type Category {
+  id: Int!
+  name: String!
+  meal: [Meal]
+  restaurant: Restaurant!
+}
+
+type Table {
+  id: Int!
+  name: String!
+  orders: [Order]
+  restaurant: Restaurant!
+}
+
+"""
+Restaurant Dto
+"""
+input CreateRestaurantInput {
+  name: String!
+  password: String!
+  address: CreateAddressInput!
+}
+
+input LoginRestaurantInput {
+  name: String!
+  password: String!
+}
+input WhereRestaurant {
+  id: Int
+  name: String
+}
+input UpdateRestaurantInput {
+  where: WhereRestaurant!
+  data: UpdateRestaurantDataInput!
+}
+input UpdateRestaurantDataInput {
+  name: String
+  password: String
+  address: UpdateAddressInput
+}
+
+input UpdateRestaurantPassword {
+  where: WhereRestaurant!
+  update: UpdateRestaurantDataPassword!
+}
+
+input UpdateRestaurantDataPassword {
+  old: String!
+  password: String!
+}
+
+"""
+Restaurant Response
+"""
+type AuthRestaurantResponse {
+  restaurant: RestaurantResponse!
+  access_token: String!
+}
+
+type RestaurantResponse {
+  id: Int!
+  name: String!
+  address: Address
+  waiters: [Waiter]
+  orders: [Order]
+  meals: [Meal]
+  categories: [Category]
+  tables: [Table]
+}
+
+type RestaurantDeleteResponse {
+  message: String!
+}
+
+type RestaurantPasswordUpdatedResponse {
+  message: String!
+}
+
+"""
+Address Input
+"""
+input CreateAddressInput {
+  country: String!
+  zip: String!
+  city: String!
+  address1: String!
+  address2: String
+}
+
+input UpdateAddressInput {
+  country: String
+  zip: String
+  city: String
+  address1: String
+  address2: String
+}
+
+"""
+Others
+"""
+type JwtPayload {
+  name: String!
+  sub: Int!
+  role: String!
+  id: Int!
+}
