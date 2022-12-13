@@ -1,28 +1,38 @@
-import { UseGuards } from "@nestjs/common";
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import { GetUser } from "src/auth/decorators/user.decorator";
+import {  UseGuards } from "@nestjs/common";
+import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
+import { Restaurant } from "@prisma/client";
+import { User } from "src/auth/decorators/user.decorator";
 import { JwtAuthGuard } from "src/auth/guards/jwt-guard";
 import { RoleGuard } from "src/auth/guards/role-guard";
 import {
-  AuthRestaurantResponse,
+  AuthRestaurant,
+  CreateWaiterData,
+  Deleted,
   JwtPayload,
-  RestaurantDeleteResponse,
-  RestaurantPasswordUpdatedResponse,
-  UpdateRestaurantDataInput,
+  RestaurantPasswordUpdated,
+  UpdateRestaurantData,
   UpdateRestaurantDataPassword,
+  UpdateWaiter,
+  Waiter,
+  WaiterResponse,
+  WhereWaiter,
 } from "src/models/model";
+import { WaiterService } from "src/waiter/waiter.service";
 import { RestaurantService } from "./restaurant.service";
 
 @Resolver("Restaurant")
 export class RestaurantResolver {
-  constructor(private readonly restaurantService: RestaurantService) {}
-
+  constructor(
+    private readonly restaurantService: RestaurantService,
+    private readonly waiterService: WaiterService
+  ) {}
+  //Restaurant
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => AuthRestaurantResponse)
+  @Mutation(() => AuthRestaurant)
   async updateRestaurant(
-    @GetUser() restaurant: JwtPayload,
+    @User() restaurant: JwtPayload,
     @Args("update")
-    update: UpdateRestaurantDataInput
+    update: UpdateRestaurantData
   ) {
     const updatedRestaurant = await this.restaurantService.update({
       where: { id: restaurant.id },
@@ -36,14 +46,60 @@ export class RestaurantResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => RestaurantPasswordUpdatedResponse)
-  async updateRestaurantPassword(@GetUser() restaurant: JwtPayload, @Args('update') update: UpdateRestaurantDataPassword){
-    return this.restaurantService.updatePassword({where: {id: restaurant.id}, update})
+  @Mutation(() => RestaurantPasswordUpdated)
+  updateRestaurantPassword(
+    @User() restaurant: JwtPayload,
+    @Args("update") update: UpdateRestaurantDataPassword
+  ) {
+    return this.restaurantService.updatePassword({
+      where: { id: restaurant.id },
+      update,
+    });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => RestaurantDeleteResponse)
-  async deleteRestaurant(@GetUser() restaurant: JwtPayload) {
+  @Mutation(() => Deleted)
+  deleteRestaurant(@User() restaurant: JwtPayload) {
     return this.restaurantService.delete({ id: restaurant.id });
+  }
+
+  //Waiter
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @Mutation(() => WaiterResponse)
+  createWaiter(
+    @User() restaurant: Restaurant,
+    @Args("data") data: CreateWaiterData
+  ) {
+    return this.waiterService.create({
+      data,
+      restaurantId: restaurant.id,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @Mutation(() => WaiterResponse)
+  updateWaiter(
+    @Args("data") data: UpdateWaiter,
+    @User() restaurant: JwtPayload
+  ) {
+    return this.waiterService.update({
+      ...data,
+      where: { ...data.where, restaurant: restaurant.id },
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @Mutation(() => Deleted)
+  deleteWaiter(
+    @Args("where") where: WhereWaiter,
+    @User() restaurant: JwtPayload
+  ) {
+    return this.waiterService.delete({ ...where, restaurant: restaurant.id });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @Query(() => [WaiterResponse])
+  waiters(@User() restaurant: JwtPayload) {
+    return this.restaurantService.listWaiters({ id: restaurant.id });
   }
 }

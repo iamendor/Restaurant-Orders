@@ -8,13 +8,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export class CreateRestaurantInput {
+export class CreateRestaurant {
     name: string;
     password: string;
-    address: CreateAddressInput;
+    address: CreateAddress;
 }
 
-export class LoginRestaurantInput {
+export class LoginRestaurant {
     name: string;
     password: string;
 }
@@ -24,15 +24,15 @@ export class WhereRestaurant {
     name?: Nullable<string>;
 }
 
-export class UpdateRestaurantInput {
+export class UpdateRestaurant {
     where: WhereRestaurant;
-    data: UpdateRestaurantDataInput;
+    data: UpdateRestaurantData;
 }
 
-export class UpdateRestaurantDataInput {
+export class UpdateRestaurantData {
     name?: Nullable<string>;
     password?: Nullable<string>;
-    address?: Nullable<UpdateAddressInput>;
+    address?: Nullable<UpdateAddress>;
 }
 
 export class UpdateRestaurantPassword {
@@ -45,7 +45,7 @@ export class UpdateRestaurantDataPassword {
     password: string;
 }
 
-export class CreateAddressInput {
+export class CreateAddress {
     country: string;
     zip: string;
     city: string;
@@ -53,7 +53,7 @@ export class CreateAddressInput {
     address2?: Nullable<string>;
 }
 
-export class UpdateAddressInput {
+export class UpdateAddress {
     country?: Nullable<string>;
     zip?: Nullable<string>;
     city?: Nullable<string>;
@@ -61,20 +61,54 @@ export class UpdateAddressInput {
     address2?: Nullable<string>;
 }
 
+export class CreateWaiter {
+    restaurantId: number;
+    data: CreateWaiterData;
+}
+
+export class WhereWaiter {
+    id: number;
+    restaurant?: Nullable<number>;
+}
+
+export class CreateWaiterData {
+    name: string;
+    gender: string;
+    profileIcon?: Nullable<string>;
+    password: string;
+}
+
+export class UpdateWaiterData {
+    name?: Nullable<string>;
+    gender?: Nullable<string>;
+    profileIcon?: Nullable<string>;
+}
+
+export class UpdateWaiter {
+    where: WhereWaiter;
+    update: UpdateWaiterData;
+}
+
 export abstract class IMutation {
-    abstract signup(data: CreateRestaurantInput): Nullable<AuthRestaurantResponse> | Promise<Nullable<AuthRestaurantResponse>>;
+    abstract signup(data: CreateRestaurant): Nullable<AuthRestaurant> | Promise<Nullable<AuthRestaurant>>;
 
-    abstract loginRestaurant(credentials: LoginRestaurantInput): Nullable<AuthRestaurantResponse> | Promise<Nullable<AuthRestaurantResponse>>;
+    abstract loginRestaurant(credentials: LoginRestaurant): Nullable<AuthRestaurant> | Promise<Nullable<AuthRestaurant>>;
 
-    abstract updateRestaurant(update: UpdateRestaurantDataInput): Nullable<AuthRestaurantResponse> | Promise<Nullable<AuthRestaurantResponse>>;
+    abstract updateRestaurant(update: UpdateRestaurantData): Nullable<AuthRestaurant> | Promise<Nullable<AuthRestaurant>>;
 
-    abstract deleteRestaurant(): Nullable<RestaurantDeleteResponse> | Promise<Nullable<RestaurantDeleteResponse>>;
+    abstract deleteRestaurant(): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 
-    abstract updateRestaurantPassword(update: UpdateRestaurantDataPassword): Nullable<RestaurantPasswordUpdatedResponse> | Promise<Nullable<RestaurantPasswordUpdatedResponse>>;
+    abstract updateRestaurantPassword(update: UpdateRestaurantDataPassword): Nullable<RestaurantPasswordUpdated> | Promise<Nullable<RestaurantPasswordUpdated>>;
+
+    abstract createWaiter(data: CreateWaiterData): Nullable<WaiterResponse> | Promise<Nullable<WaiterResponse>>;
+
+    abstract updateWaiter(data: UpdateWaiter): WaiterResponse | Promise<WaiterResponse>;
+
+    abstract deleteWaiter(where: WhereWaiter): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 }
 
 export abstract class IQuery {
-    abstract hello(): string | Promise<string>;
+    abstract waiters(): Nullable<Nullable<WaiterResponse>[]> | Promise<Nullable<Nullable<WaiterResponse>[]>>;
 }
 
 export class Restaurant {
@@ -103,10 +137,10 @@ export class Waiter {
     id: number;
     name: string;
     gender: string;
-    profileIcon: string;
+    profileIcon?: Nullable<string>;
     password: string;
     orders?: Nullable<Nullable<Order>[]>;
-    restaurant: Restaurant;
+    restaurant?: Nullable<Restaurant>;
 }
 
 export class Order {
@@ -143,7 +177,7 @@ export class Table {
     restaurant: Restaurant;
 }
 
-export class AuthRestaurantResponse {
+export class AuthRestaurant {
     restaurant: RestaurantResponse;
     access_token: string;
 }
@@ -159,12 +193,17 @@ export class RestaurantResponse {
     tables?: Nullable<Nullable<Table>[]>;
 }
 
-export class RestaurantDeleteResponse {
+export class RestaurantPasswordUpdated {
     message: string;
 }
 
-export class RestaurantPasswordUpdatedResponse {
-    message: string;
+export class WaiterResponse {
+    id: number;
+    name: string;
+    gender: string;
+    profileIcon?: Nullable<string>;
+    orders?: Nullable<Nullable<Order>[]>;
+    restaurant?: Nullable<Restaurant>;
 }
 
 export class JwtPayload {
@@ -172,6 +211,10 @@ export class JwtPayload {
     sub: number;
     role: string;
     id: number;
+}
+
+export class Deleted {
+    message: string;
 }
 
 type Nullable<T> = T | null;

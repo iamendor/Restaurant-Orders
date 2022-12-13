@@ -4,7 +4,8 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { RestaurantModule } from "./restaurant/restaurant.module";
 import { ConfigModule } from "@nestjs/config";
 import { Config } from "./config";
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from "./auth/auth.module";
+import { WaiterModule } from "./waiter/waiter.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     RestaurantModule,
     AuthModule,
+    WaiterModule,
   ],
 })
 export class AppModule {}

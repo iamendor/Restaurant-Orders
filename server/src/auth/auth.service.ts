@@ -1,9 +1,5 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import {
-  AuthRestaurantResponse,
-  LoginRestaurantInput,
-  Restaurant,
-} from "src/models/model";
+import { AuthRestaurant, LoginRestaurant, Restaurant } from "src/models/model";
 import { RestaurantService } from "src/restaurant/restaurant.service";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
@@ -15,7 +11,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async validateRestaurant(credentials: LoginRestaurantInput) {
+  async validateRestaurant(credentials: LoginRestaurant) {
     const restaurant = await this.restaurantService.find({
       name: credentials.name,
     });
@@ -34,9 +30,7 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async loginRestaurant(
-    credentials: LoginRestaurantInput
-  ): Promise<AuthRestaurantResponse> {
+  async loginRestaurant(credentials: LoginRestaurant): Promise<AuthRestaurant> {
     const restaurantValid = await this.validateRestaurant(credentials);
     if (!restaurantValid) {
       throw new UnauthorizedException();

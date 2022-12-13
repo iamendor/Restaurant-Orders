@@ -1,15 +1,24 @@
 type Mutation {
-  signup(data: CreateRestaurantInput!): AuthRestaurantResponse
-  loginRestaurant(credentials: LoginRestaurantInput!): AuthRestaurantResponse
-  updateRestaurant(update: UpdateRestaurantDataInput!): AuthRestaurantResponse
-  deleteRestaurant: RestaurantDeleteResponse
+  """
+  Restaurant operations
+  """
+  signup(data: CreateRestaurant!): AuthRestaurant
+  loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant
+  updateRestaurant(update: UpdateRestaurantData!): AuthRestaurant
+  deleteRestaurant: Deleted
   updateRestaurantPassword(
     update: UpdateRestaurantDataPassword!
-  ): RestaurantPasswordUpdatedResponse
+  ): RestaurantPasswordUpdated
+  """
+  Waiter opearations
+  """
+  createWaiter(data: CreateWaiterData!): WaiterResponse
+  updateWaiter(data: UpdateWaiter!): WaiterResponse!
+  deleteWaiter(where: WhereWaiter!): Deleted
 }
 
 type Query {
-  hello: String!
+  waiters: [WaiterResponse]
 }
 
 schema {
@@ -46,10 +55,10 @@ type Waiter {
   id: Int!
   name: String!
   gender: String!
-  profileIcon: String!
+  profileIcon: String
   password: String!
   orders: [Order]
-  restaurant: Restaurant!
+  restaurant: Restaurant
 }
 
 type Order {
@@ -89,13 +98,13 @@ type Table {
 """
 Restaurant Dto
 """
-input CreateRestaurantInput {
+input CreateRestaurant {
   name: String!
   password: String!
-  address: CreateAddressInput!
+  address: CreateAddress!
 }
 
-input LoginRestaurantInput {
+input LoginRestaurant {
   name: String!
   password: String!
 }
@@ -103,14 +112,14 @@ input WhereRestaurant {
   id: Int
   name: String
 }
-input UpdateRestaurantInput {
+input UpdateRestaurant {
   where: WhereRestaurant!
-  data: UpdateRestaurantDataInput!
+  data: UpdateRestaurantData!
 }
-input UpdateRestaurantDataInput {
+input UpdateRestaurantData {
   name: String
   password: String
-  address: UpdateAddressInput
+  address: UpdateAddress
 }
 
 input UpdateRestaurantPassword {
@@ -126,7 +135,7 @@ input UpdateRestaurantDataPassword {
 """
 Restaurant Response
 """
-type AuthRestaurantResponse {
+type AuthRestaurant {
   restaurant: RestaurantResponse!
   access_token: String!
 }
@@ -142,18 +151,14 @@ type RestaurantResponse {
   tables: [Table]
 }
 
-type RestaurantDeleteResponse {
-  message: String!
-}
-
-type RestaurantPasswordUpdatedResponse {
+type RestaurantPasswordUpdated {
   message: String!
 }
 
 """
 Address Input
 """
-input CreateAddressInput {
+input CreateAddress {
   country: String!
   zip: String!
   city: String!
@@ -161,12 +166,55 @@ input CreateAddressInput {
   address2: String
 }
 
-input UpdateAddressInput {
+input UpdateAddress {
   country: String
   zip: String
   city: String
   address1: String
   address2: String
+}
+
+"""
+Waiter Dto
+"""
+input CreateWaiter {
+  restaurantId: Int!
+  data: CreateWaiterData!
+}
+
+input WhereWaiter {
+  id: Int!
+  restaurant: Int
+}
+
+input CreateWaiterData {
+  name: String!
+  gender: String!
+  profileIcon: String
+  password: String!
+}
+
+input UpdateWaiterData {
+  name: String
+  gender: String
+  profileIcon: String
+}
+
+input UpdateWaiter {
+  where: WhereWaiter!
+  update: UpdateWaiterData!
+}
+
+"""
+Waiter Response
+"""
+type WaiterResponse {
+  id: Int!
+  name: String!
+  gender: String!
+  profileIcon: String
+  orders: [Order]
+  restaurant: Restaurant
 }
 
 """
@@ -177,4 +225,8 @@ type JwtPayload {
   sub: Int!
   role: String!
   id: Int!
+}
+
+type Deleted {
+  message: String!
 }

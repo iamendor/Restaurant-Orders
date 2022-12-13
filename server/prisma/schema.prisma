@@ -41,7 +41,7 @@ model Waiter{
   id Int @unique @id @default(autoincrement())
   name String
   gender String
-  profileIcon String
+  profileIcon String?
   password String
   orders Order[]
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)

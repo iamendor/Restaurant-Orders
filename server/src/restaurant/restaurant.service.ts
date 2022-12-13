@@ -5,14 +5,16 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import {
-  CreateRestaurantInput,
+  CreateRestaurant,
   RestaurantResponse,
-  UpdateRestaurantInput,
+  UpdateRestaurant,
   WhereRestaurant,
   Restaurant,
-  RestaurantDeleteResponse,
+  Deleted,
   UpdateRestaurantPassword,
-  RestaurantPasswordUpdatedResponse,
+  RestaurantPasswordUpdated,
+  Waiter,
+  WaiterResponse,
 } from "src/models/model";
 import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrypt from "bcrypt";
@@ -20,10 +22,11 @@ import * as bcrypt from "bcrypt";
 @Injectable()
 export class RestaurantService {
   constructor(private readonly prismaService: PrismaService) {}
+  private ERROR = "something went wrong";
   private hashPassword(pw: string) {
     return bcrypt.hashSync(pw, 10);
   }
-  async create(data: CreateRestaurantInput): Promise<RestaurantResponse> {
+  async create(data: CreateRestaurant): Promise<RestaurantResponse> {
     try {
       const restaurant = await this.prismaService.restaurant.create({
         data: {
@@ -39,7 +42,7 @@ export class RestaurantService {
       });
       return restaurant;
     } catch (e) {
-      throw new HttpException({ message: "error", error: e.message }, 400);
+      throw new HttpException(this.ERROR, 400);
     }
   }
 
@@ -48,7 +51,7 @@ export class RestaurantService {
   async updatePassword({
     where,
     update,
-  }: UpdateRestaurantPassword): Promise<RestaurantPasswordUpdatedResponse> {
+  }: UpdateRestaurantPassword): Promise<RestaurantPasswordUpdated> {
     const MESSAGE_WRONG_PASSWORD = "wrong password";
     try {
       const restaurant = await this.find(where);
@@ -69,11 +72,11 @@ export class RestaurantService {
       if (e.message === MESSAGE_WRONG_PASSWORD) {
         throw new UnauthorizedException("invalid password");
       }
-      throw new HttpException("something went wrong", 400);
+      throw new HttpException(this.ERROR, 400);
     }
   }
 
-  async update(update: UpdateRestaurantInput): Promise<RestaurantResponse> {
+  async update(update: UpdateRestaurant): Promise<RestaurantResponse> {
     try {
       const restaurant = await this.prismaService.restaurant.update({
         where: update.where,
@@ -89,11 +92,11 @@ export class RestaurantService {
       });
       return restaurant;
     } catch (e) {
-      throw new HttpException({ message: "error", error: e.message }, 400);
+      throw new HttpException(this.ERROR, 400);
     }
   }
 
-  async delete(where: WhereRestaurant): Promise<RestaurantDeleteResponse> {
+  async delete(where: WhereRestaurant): Promise<Deleted> {
     try {
       await this.prismaService.restaurant.delete({
         where,
@@ -102,7 +105,7 @@ export class RestaurantService {
         message: "success",
       };
     } catch (e) {
-      throw new HttpException("something went wrong", 400);
+      throw new HttpException(this.ERROR, 400);
     }
   }
 
@@ -116,6 +119,20 @@ export class RestaurantService {
       return restaurant;
     } catch (e) {
       throw new NotFoundException("restaurant not found");
+    }
+  }
+
+  async listWaiters(where: WhereRestaurant): Promise<WaiterResponse[]> {
+    try {
+      const restaurant = await this.prismaService.restaurant.findUnique({
+        where,
+        include: {
+          waiters: true,
+        },
+      });
+      return restaurant.waiters;
+    } catch (e) {
+      throw new HttpException(this.ERROR, 400);
     }
   }
 }
