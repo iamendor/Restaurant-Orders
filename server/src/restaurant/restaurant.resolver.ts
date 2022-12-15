@@ -1,4 +1,4 @@
-import {  UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { Restaurant } from "@prisma/client";
 import { User } from "src/auth/decorators/user.decorator";
@@ -9,11 +9,10 @@ import {
   CreateWaiterData,
   Deleted,
   JwtPayload,
-  RestaurantPasswordUpdated,
+  PasswordUpdated,
   UpdateRestaurantData,
   UpdateRestaurantDataPassword,
   UpdateWaiter,
-  Waiter,
   WaiterResponse,
   WhereWaiter,
 } from "src/models/model";
@@ -46,7 +45,7 @@ export class RestaurantResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => RestaurantPasswordUpdated)
+  @Mutation(() => PasswordUpdated)
   updateRestaurantPassword(
     @User() restaurant: JwtPayload,
     @Args("update") update: UpdateRestaurantDataPassword

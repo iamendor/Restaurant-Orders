@@ -17,7 +17,8 @@ datasource db {
 
 model Restaurant{
   id Int @unique @id @default(autoincrement())
-  name String @unique
+  name String
+  email String @unique
   password String
   address Address?
   waiters Waiter[]
@@ -39,6 +40,7 @@ model Address{
 
 model Waiter{
   id Int @unique @id @default(autoincrement())
+  email String @unique
   name String
   gender String
   profileIcon String?

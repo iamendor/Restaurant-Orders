@@ -12,9 +12,8 @@ import {
   Restaurant,
   Deleted,
   UpdateRestaurantPassword,
-  RestaurantPasswordUpdated,
-  Waiter,
   WaiterResponse,
+  PasswordUpdated,
 } from "src/models/model";
 import { PrismaService } from "src/prisma/prisma.service";
 import * as bcrypt from "bcrypt";
@@ -46,12 +45,10 @@ export class RestaurantService {
     }
   }
 
-  //TODO: update password
-
   async updatePassword({
     where,
     update,
-  }: UpdateRestaurantPassword): Promise<RestaurantPasswordUpdated> {
+  }: UpdateRestaurantPassword): Promise<PasswordUpdated> {
     const MESSAGE_WRONG_PASSWORD = "wrong password";
     try {
       const restaurant = await this.find(where);

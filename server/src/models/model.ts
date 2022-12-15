@@ -10,18 +10,19 @@
 
 export class CreateRestaurant {
     name: string;
+    email: string;
     password: string;
     address: CreateAddress;
 }
 
 export class LoginRestaurant {
-    name: string;
+    email: string;
     password: string;
 }
 
 export class WhereRestaurant {
     id?: Nullable<number>;
-    name?: Nullable<string>;
+    email?: Nullable<string>;
 }
 
 export class UpdateRestaurant {
@@ -67,12 +68,14 @@ export class CreateWaiter {
 }
 
 export class WhereWaiter {
-    id: number;
+    id?: Nullable<number>;
+    email?: Nullable<string>;
     restaurant?: Nullable<number>;
 }
 
 export class CreateWaiterData {
     name: string;
+    email: string;
     gender: string;
     profileIcon?: Nullable<string>;
     password: string;
@@ -81,12 +84,27 @@ export class CreateWaiterData {
 export class UpdateWaiterData {
     name?: Nullable<string>;
     gender?: Nullable<string>;
+    email?: Nullable<string>;
     profileIcon?: Nullable<string>;
 }
 
 export class UpdateWaiter {
     where: WhereWaiter;
     update: UpdateWaiterData;
+}
+
+export class UpdateWaiterPassword {
+    where: WhereWaiter;
+    update: UpdateWaiterDataPassword;
+}
+
+export class UpdateWaiterDataPassword {
+    password: string;
+}
+
+export class LoginWaiter {
+    email: string;
+    password: string;
 }
 
 export abstract class IMutation {
@@ -98,22 +116,31 @@ export abstract class IMutation {
 
     abstract deleteRestaurant(): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 
-    abstract updateRestaurantPassword(update: UpdateRestaurantDataPassword): Nullable<RestaurantPasswordUpdated> | Promise<Nullable<RestaurantPasswordUpdated>>;
+    abstract updateRestaurantPassword(update: UpdateRestaurantDataPassword): Nullable<PasswordUpdated> | Promise<Nullable<PasswordUpdated>>;
 
     abstract createWaiter(data: CreateWaiterData): Nullable<WaiterResponse> | Promise<Nullable<WaiterResponse>>;
 
     abstract updateWaiter(data: UpdateWaiter): WaiterResponse | Promise<WaiterResponse>;
 
     abstract deleteWaiter(where: WhereWaiter): Nullable<Deleted> | Promise<Nullable<Deleted>>;
+
+    abstract updateWaiterPassword(data?: Nullable<UpdateWaiterPassword>): Nullable<PasswordUpdated> | Promise<Nullable<PasswordUpdated>>;
+
+    abstract loginWaiter(credentials: LoginWaiter): Nullable<AuthWaiter> | Promise<Nullable<AuthWaiter>>;
 }
 
 export abstract class IQuery {
     abstract waiters(): Nullable<Nullable<WaiterResponse>[]> | Promise<Nullable<Nullable<WaiterResponse>[]>>;
+
+    abstract restaurantInfo(): Nullable<RestaurantResponse> | Promise<Nullable<RestaurantResponse>>;
+
+    abstract waiterInfo(): Nullable<WaiterResponse> | Promise<Nullable<WaiterResponse>>;
 }
 
 export class Restaurant {
     id: number;
     name: string;
+    email: string;
     password: string;
     address?: Nullable<Address>;
     waiters?: Nullable<Nullable<Waiter>[]>;
@@ -136,6 +163,7 @@ export class Address {
 export class Waiter {
     id: number;
     name: string;
+    email: string;
     gender: string;
     profileIcon?: Nullable<string>;
     password: string;
@@ -193,17 +221,19 @@ export class RestaurantResponse {
     tables?: Nullable<Nullable<Table>[]>;
 }
 
-export class RestaurantPasswordUpdated {
-    message: string;
-}
-
 export class WaiterResponse {
     id: number;
     name: string;
+    email: string;
     gender: string;
     profileIcon?: Nullable<string>;
     orders?: Nullable<Nullable<Order>[]>;
     restaurant?: Nullable<Restaurant>;
+}
+
+export class AuthWaiter {
+    access_token: string;
+    waiter: WaiterResponse;
 }
 
 export class JwtPayload {
@@ -214,6 +244,10 @@ export class JwtPayload {
 }
 
 export class Deleted {
+    message: string;
+}
+
+export class PasswordUpdated {
     message: string;
 }
 

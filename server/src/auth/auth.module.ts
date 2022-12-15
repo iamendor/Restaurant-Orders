@@ -6,10 +6,12 @@ import { Config } from "src/config";
 import { ConfigService } from "@nestjs/config";
 import { RestaurantModule } from "src/restaurant/restaurant.module";
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import { WaiterModule } from "src/waiter/waiter.module";
 
 @Module({
   imports: [
     RestaurantModule,
+    WaiterModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: Config.getJwtConfig,

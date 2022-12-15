@@ -1,8 +1,10 @@
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
 import {
   AuthRestaurant,
+  AuthWaiter,
   CreateRestaurant,
   LoginRestaurant,
+  LoginWaiter,
   Restaurant,
 } from "src/models/model";
 import { RestaurantService } from "src/restaurant/restaurant.service";
@@ -32,7 +34,12 @@ export class AuthResolver {
   }
 
   @Mutation(() => AuthRestaurant)
-  async loginRestaurant(@Args("credentials") credentials: LoginRestaurant) {
+  loginRestaurant(@Args("credentials") credentials: LoginRestaurant) {
     return this.authService.loginRestaurant(credentials);
+  }
+
+  @Mutation(() => AuthWaiter)
+  loginWaiter(@Args("credentials") credentials: LoginWaiter) {
+    return this.authService.loginWaiter(credentials);
   }
 }
