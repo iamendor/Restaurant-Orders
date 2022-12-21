@@ -14,8 +14,8 @@ import {
   UpdateRestaurantPassword,
   Waiter,
   PasswordUpdated,
-} from "src/models/model";
-import { PrismaService } from "src/prisma/prisma.service";
+} from "../models/model";
+import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
 
 @Injectable()

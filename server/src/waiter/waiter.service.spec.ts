@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaModule } from "src/prisma/prisma.module";
-import { PrismaService } from "src/prisma/prisma.service";
-import { mockRestaurant } from "src/restaurant/restaurant.service.spec";
+import { PrismaModule } from "../prisma/prisma.module";
+import { PrismaService } from "../prisma/prisma.service";
+import { mockRestaurant } from "../restaurant/restaurant.service.spec";
 import { WaiterService } from "./waiter.service";
 
 export const mockWaiter = {

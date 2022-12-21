@@ -1,8 +1,8 @@
 import { HttpException, UseGuards } from "@nestjs/common";
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
-import { User } from "src/auth/decorators/user.decorator";
-import { JwtAuthGuard } from "src/auth/guards/jwt-guard";
-import { RoleGuard } from "src/auth/guards/role-guard";
+import { User } from "../auth/decorators/user.decorator";
+import { JwtAuthGuard } from "../auth/guards/jwt-guard";
+import { RoleGuard } from "../auth/guards/role-guard";
 import {
   CreateWaiterData,
   Deleted,
@@ -13,8 +13,8 @@ import {
   UpdateWaiterPassword,
   Waiter,
   WhereWaiter,
-} from "src/models/model";
-import { RestaurantService } from "src/restaurant/restaurant.service";
+} from "../models/model";
+import { RestaurantService } from "../restaurant/restaurant.service";
 import { WaiterService } from "./waiter.service";
 
 @Resolver()

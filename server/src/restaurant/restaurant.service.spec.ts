@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { RestaurantService } from "./restaurant.service";
 import * as bcrypt from "bcrypt";
-import { PrismaModule } from "src/prisma/prisma.module";
-import { mockWaiter } from "src/waiter/waiter.service.spec";
+import { PrismaModule } from "../prisma/prisma.module";
+import { mockWaiter } from "../waiter/waiter.service.spec";
 
 export const mockRestaurant = {
   id: 1,

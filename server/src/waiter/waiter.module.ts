@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { PrismaModule } from "src/prisma/prisma.module";
+import { PrismaModule } from "../prisma/prisma.module";
 import { WaiterService } from "./waiter.service";
 import { WaiterResolver } from "./waiter.resolver";
-import { RestaurantModule } from "src/restaurant/restaurant.module";
+import { RestaurantModule } from "../restaurant/restaurant.module";
 
 @Module({
   imports: [PrismaModule, RestaurantModule],

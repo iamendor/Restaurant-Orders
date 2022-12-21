@@ -7,10 +7,10 @@ import {
   ResolveField,
   Parent,
 } from "@nestjs/graphql";
-import { AddressService } from "src/address/address.service";
-import { User } from "src/auth/decorators/user.decorator";
-import { JwtAuthGuard } from "src/auth/guards/jwt-guard";
-import { RoleGuard } from "src/auth/guards/role-guard";
+import { AddressService } from "../address/address.service";
+import { User } from "../auth/decorators/user.decorator";
+import { JwtAuthGuard } from "../auth/guards/jwt-guard";
+import { RoleGuard } from "../auth/guards/role-guard";
 import {
   Address,
   AuthRestaurant,
@@ -20,7 +20,7 @@ import {
   Restaurant,
   UpdateRestaurantData,
   UpdateRestaurantDataPassword,
-} from "src/models/model";
+} from "../models/model";
 import { RestaurantService } from "./restaurant.service";
 
 @Resolver("Restaurant")

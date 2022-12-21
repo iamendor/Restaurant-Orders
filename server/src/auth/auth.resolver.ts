@@ -6,8 +6,8 @@ import {
   LoginRestaurant,
   LoginWaiter,
   RestaurantModel,
-} from "src/models/model";
-import { RestaurantService } from "src/restaurant/restaurant.service";
+} from "../models/model";
+import { RestaurantService } from "../restaurant/restaurant.service";
 import { AuthService } from "./auth.service";
 
 @Resolver("Auth")

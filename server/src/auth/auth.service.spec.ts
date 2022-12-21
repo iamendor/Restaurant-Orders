@@ -1,14 +1,14 @@
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { RestaurantModule } from "src/restaurant/restaurant.module";
-import { WaiterModule } from "src/waiter/waiter.module";
+import { RestaurantModule } from "../restaurant/restaurant.module";
+import { WaiterModule } from "../waiter/waiter.module";
 import { AuthService } from "./auth.service";
 import * as bcrypt from "bcrypt";
-import { RestaurantService } from "src/restaurant/restaurant.service";
-import { WaiterService } from "src/waiter/waiter.service";
-import { mockRestaurant } from "src/restaurant/restaurant.service.spec";
-import { JwtPayload, Restaurant, Waiter } from "src/models/model";
-import { mockWaiter } from "src/waiter/waiter.service.spec";
+import { RestaurantService } from "../restaurant/restaurant.service";
+import { WaiterService } from "../waiter/waiter.service";
+import { mockRestaurant } from "../restaurant/restaurant.service.spec";
+import { JwtPayload, Restaurant, Waiter } from "../models/model";
+import { mockWaiter } from "../waiter/waiter.service.spec";
 
 const returnPassword = {
   password: bcrypt.hashSync("test", 10),

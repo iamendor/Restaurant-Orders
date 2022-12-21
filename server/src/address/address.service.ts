@@ -1,6 +1,6 @@
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { Address, WhereAddress } from "src/models/model";
+import { Address, WhereAddress } from "../models/model";
 
 @Injectable()
 export class AddressService {

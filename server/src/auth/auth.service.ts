@@ -6,11 +6,11 @@ import {
   LoginWaiter,
   Restaurant,
   Waiter,
-} from "src/models/model";
-import { RestaurantService } from "src/restaurant/restaurant.service";
+} from "../models/model";
+import { RestaurantService } from "../restaurant/restaurant.service";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { WaiterService } from "src/waiter/waiter.service";
+import { WaiterService } from "../waiter/waiter.service";
 
 @Injectable()
 export class AuthService {
