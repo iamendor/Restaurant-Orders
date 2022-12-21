@@ -6,11 +6,11 @@ import { ConfigModule } from "@nestjs/config";
 import { Config } from "./config";
 import { AuthModule } from "./auth/auth.module";
 import { WaiterModule } from "./waiter/waiter.module";
+import { AddressModule } from "./address/address.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       typePaths: Config.getGqlConfig().typePaths,
@@ -22,6 +22,7 @@ import { WaiterModule } from "./waiter/waiter.module";
     RestaurantModule,
     AuthModule,
     WaiterModule,
+    AddressModule,
   ],
 })
 export class AppModule {}

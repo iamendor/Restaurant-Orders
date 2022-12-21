@@ -12,17 +12,18 @@ type Mutation {
   """
   Waiter opearations
   """
-  createWaiter(data: CreateWaiterData!): WaiterResponse
-  updateWaiter(data: UpdateWaiter!): WaiterResponse!
+  createWaiter(data: CreateWaiterData!): Waiter
+  updateWaiter(data: UpdateWaiter!): Waiter
   deleteWaiter(where: WhereWaiter!): Deleted
   updateWaiterPassword(data: UpdateWaiterPassword): PasswordUpdated
   loginWaiter(credentials: LoginWaiter!): AuthWaiter
 }
 
 type Query {
-  waiters: [WaiterResponse]
-  restaurantInfo: RestaurantResponse
-  waiterInfo: WaiterResponse
+  waiters: [Waiter]
+  restaurantInfo: Restaurant
+  waiterInfo: Waiter
+  address: Address
 }
 
 schema {
@@ -33,7 +34,7 @@ schema {
 """
 Models
 """
-type Restaurant {
+type RestaurantModel {
   id: Int!
   name: String!
   email: String!
@@ -56,7 +57,7 @@ type Address {
   restaurant: Restaurant
 }
 
-type Waiter {
+type WaiterModel {
   id: Int!
   name: String!
   email: String!
@@ -143,13 +144,14 @@ input UpdateRestaurantDataPassword {
 Restaurant Response
 """
 type AuthRestaurant {
-  restaurant: RestaurantResponse!
+  restaurant: Restaurant!
   access_token: String!
 }
 
-type RestaurantResponse {
+type Restaurant {
   id: Int!
   name: String!
+  email: String!
   address: Address
   waiters: [Waiter]
   orders: [Order]
@@ -177,6 +179,11 @@ input UpdateAddress {
   address2: String
 }
 
+input WhereAddress {
+  id: Int
+  restaurantId: Int
+}
+
 """
 Waiter Dto
 """
@@ -188,7 +195,7 @@ input CreateWaiter {
 input WhereWaiter {
   id: Int
   email: String
-  restaurant: Int
+  restaurantId: Int
 }
 
 input CreateWaiterData {
@@ -207,17 +214,20 @@ input UpdateWaiterData {
 }
 
 input UpdateWaiter {
-  where: WhereWaiter!
+  where: WhereWaiter
   update: UpdateWaiterData!
+  role: String
 }
 
 input UpdateWaiterPassword {
-  where: WhereWaiter!
+  where: WhereWaiter
   update: UpdateWaiterDataPassword!
+  role: String
 }
 
 input UpdateWaiterDataPassword {
   password: String!
+  old: String
 }
 
 input LoginWaiter {
@@ -228,7 +238,7 @@ input LoginWaiter {
 """
 Waiter Response
 """
-type WaiterResponse {
+type Waiter {
   id: Int!
   name: String!
   email: String!
@@ -240,7 +250,7 @@ type WaiterResponse {
 
 type AuthWaiter {
   access_token: String!
-  waiter: WaiterResponse!
+  waiter: Waiter!
 }
 
 """

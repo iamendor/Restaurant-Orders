@@ -5,7 +5,7 @@ import {
   CreateRestaurant,
   LoginRestaurant,
   LoginWaiter,
-  Restaurant,
+  RestaurantModel,
 } from "src/models/model";
 import { RestaurantService } from "src/restaurant/restaurant.service";
 import { AuthService } from "./auth.service";
@@ -27,7 +27,7 @@ export class AuthResolver {
     });
     return {
       access_token: this.authService.generateRestaurantJwt(
-        restaurant as Restaurant
+        restaurant as RestaurantModel
       ),
       restaurant,
     };
