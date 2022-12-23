@@ -57,6 +57,7 @@ describe("AuthService", () => {
   });
   it("should validate a waiter", async () => {
     const waiterValidated = await service.validateWaiter(credentials);
+    expect(waiterValidated).not.toBeNull();
   });
 
   it("should return null 'cause credentials invalid", async () => {

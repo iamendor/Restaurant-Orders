@@ -14,7 +14,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix -c ../.eslintrc.js",
-    "test": "jest",
+    "test": "jest --runInBand",
     "model:generate": "ts-node ./src/generate-typings.ts",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

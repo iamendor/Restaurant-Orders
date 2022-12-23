@@ -7,13 +7,13 @@ import {
 import {
   CreateRestaurant,
   Restaurant,
-  UpdateRestaurant,
   WhereRestaurant,
   RestaurantModel,
   Deleted,
-  UpdateRestaurantPassword,
   Waiter,
   PasswordUpdated,
+  UpdateRestaurantData,
+  UpdateRestaurantDataPassword,
 } from "../models/model";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
@@ -45,7 +45,7 @@ export class RestaurantService {
   async updatePassword({
     where,
     update,
-  }: UpdateRestaurantPassword): Promise<PasswordUpdated> {
+  }: UpdateRestaurantDataPassword): Promise<PasswordUpdated> {
     const restaurant = await this.find(where);
     if (!bcrypt.compareSync(update.old, restaurant.password)) {
       throw new UnauthorizedException("invalid password");
@@ -66,7 +66,7 @@ export class RestaurantService {
     }
   }
 
-  async update(update: UpdateRestaurant): Promise<Restaurant> {
+  async update(update: UpdateRestaurantData): Promise<Restaurant> {
     try {
       const restaurant = await this.prismaService.restaurant.update({
         where: update.where,

@@ -2,17 +2,15 @@ type Mutation {
   """
   Restaurant operations
   """
-  signup(data: CreateRestaurant!): AuthRestaurant
+  signup(data: CreateRestaurant!): Restaurant
   loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant
-  updateRestaurant(update: UpdateRestaurantData!): AuthRestaurant
+  updateRestaurant(update: UpdateRestaurant!): Restaurant
   deleteRestaurant: Deleted
-  updateRestaurantPassword(
-    update: UpdateRestaurantDataPassword!
-  ): PasswordUpdated
+  updateRestaurantPassword(update: UpdateRestaurantPassword!): PasswordUpdated
   """
   Waiter opearations
   """
-  createWaiter(data: CreateWaiterData!): Waiter
+  createWaiter(data: CreateWaiter!): Waiter
   updateWaiter(data: UpdateWaiter!): Waiter
   deleteWaiter(where: WhereWaiter!): Deleted
   updateWaiterPassword(data: UpdateWaiterPassword): PasswordUpdated
@@ -22,7 +20,7 @@ type Mutation {
 type Query {
   waiters: [Waiter]
   restaurantInfo: Restaurant
-  waiterInfo: Waiter
+  waiterInfo(where: WhereWaiter): Waiter
   address: Address
 }
 
@@ -120,22 +118,22 @@ input WhereRestaurant {
   id: Int
   email: String
 }
-input UpdateRestaurant {
-  where: WhereRestaurant!
-  data: UpdateRestaurantData!
-}
 input UpdateRestaurantData {
+  where: WhereRestaurant!
+  data: UpdateRestaurant!
+}
+input UpdateRestaurant {
   name: String
   password: String
   address: UpdateAddress
 }
 
-input UpdateRestaurantPassword {
+input UpdateRestaurantDataPassword {
   where: WhereRestaurant!
-  update: UpdateRestaurantDataPassword!
+  update: UpdateRestaurantPassword!
 }
 
-input UpdateRestaurantDataPassword {
+input UpdateRestaurantPassword {
   old: String!
   password: String!
 }
@@ -187,9 +185,9 @@ input WhereAddress {
 """
 Waiter Dto
 """
-input CreateWaiter {
+input CreateWaiterData {
   restaurantId: Int!
-  data: CreateWaiterData!
+  data: CreateWaiter!
 }
 
 input WhereWaiter {
@@ -198,7 +196,7 @@ input WhereWaiter {
   restaurantId: Int
 }
 
-input CreateWaiterData {
+input CreateWaiter {
   name: String!
   email: String!
   gender: String!

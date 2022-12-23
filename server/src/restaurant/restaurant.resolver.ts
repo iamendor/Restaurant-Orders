@@ -13,13 +13,12 @@ import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
 import {
   Address,
-  AuthRestaurant,
   Deleted,
   JwtPayload,
   PasswordUpdated,
   Restaurant,
-  UpdateRestaurantData,
-  UpdateRestaurantDataPassword,
+  UpdateRestaurant,
+  UpdateRestaurantPassword,
 } from "../models/model";
 import { RestaurantService } from "./restaurant.service";
 
@@ -31,28 +30,23 @@ export class RestaurantResolver {
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => AuthRestaurant)
-  async updateRestaurant(
+  @Mutation(() => Restaurant, { name: "updateRestaurant" })
+  update(
     @User() restaurant: JwtPayload,
     @Args("update")
-    update: UpdateRestaurantData
+    update: UpdateRestaurant
   ) {
-    const updatedRestaurant = await this.restaurantService.update({
+    return this.restaurantService.update({
       where: { id: restaurant.id },
       data: update,
     });
-    return {
-      message: "success",
-      access_token: "123",
-      restaurant: updatedRestaurant,
-    };
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => PasswordUpdated)
-  updateRestaurantPassword(
+  @Mutation(() => PasswordUpdated, { name: "updateRestaurantPassword" })
+  updatePassword(
     @User() restaurant: JwtPayload,
-    @Args("update") update: UpdateRestaurantDataPassword
+    @Args("update") update: UpdateRestaurantPassword
   ) {
     return this.restaurantService.updatePassword({
       where: { id: restaurant.id },
@@ -61,20 +55,20 @@ export class RestaurantResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => Deleted)
-  deleteRestaurant(@User() restaurant: JwtPayload) {
+  @Mutation(() => Deleted, { name: "deleteRestaurant" })
+  delete(@User() restaurant: JwtPayload) {
     return this.restaurantService.delete({ id: restaurant.id });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Query(() => Restaurant)
-  restaurantInfo(@User() restaurant: JwtPayload) {
+  @Query(() => Restaurant, { name: "restaurantInfo" })
+  info(@User() restaurant: JwtPayload) {
     return this.restaurantService.find({ id: restaurant.id });
   }
 
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => Address, { name: "address" })
   getAddress(@Parent() restaurant: Restaurant) {
-    console.log(restaurant);
     return this.addressService.find({ restaurantId: restaurant.id });
   }
 }

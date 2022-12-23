@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import {
-  CreateWaiter,
+  CreateWaiterData,
   Deleted,
   PasswordUpdated,
   UpdateWaiter,
@@ -27,7 +27,7 @@ export class WaiterService {
     return bcrypt.hashSync(pw, 10);
   }
 
-  async create(data: CreateWaiter): Promise<Waiter> {
+  async create(data: CreateWaiterData): Promise<Waiter> {
     try {
       const waiter = await this.prismaService.waiter.create({
         data: {
@@ -82,6 +82,7 @@ export class WaiterService {
       });
       return updatedWaiter;
     } catch (e) {
+      console.log(e);
       throw new HttpException(this.ERROR, 400);
     }
   }
@@ -107,14 +108,14 @@ export class WaiterService {
     ignoreRestaurant = false
   ): Promise<WaiterModel> {
     try {
-      const { restaurantId: _, ...query } = where;
+      const { restaurantId, ...query } = where;
       const waiter = await this.prismaService.waiter.findUniqueOrThrow({
         where: {
           ...query,
         },
       });
       if (!ignoreRestaurant) {
-        if (waiter.restaurantId !== where.restaurantId)
+        if (waiter.restaurantId !== restaurantId)
           throw new Error(this.PERMISSION_DENIED);
       }
       return waiter;

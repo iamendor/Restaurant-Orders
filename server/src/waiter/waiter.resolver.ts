@@ -4,11 +4,10 @@ import { User } from "../auth/decorators/user.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
 import {
-  CreateWaiterData,
+  CreateWaiter,
   Deleted,
   JwtPayload,
   PasswordUpdated,
-  Restaurant,
   UpdateWaiter,
   UpdateWaiterPassword,
   Waiter,
@@ -25,18 +24,17 @@ export class WaiterResolver {
   ) {}
   private WAITER_NOT_PROVIDED = "no waiter specified";
 
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter"))
-  @Query(() => Waiter)
-  waiterInfo(@User() user: JwtPayload) {
-    return this.waiterService.find({ id: user.id }, true);
+  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
+  @Query(() => Waiter, { name: "waiterInfo" })
+  info(@User() user: JwtPayload, @Args("where") where?: WhereWaiter) {
+    if (user.role === "waiter")
+      return this.waiterService.find({ id: user.id }, true);
+    return this.waiterService.find({ ...where, restaurantId: user.id });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => Waiter)
-  createWaiter(
-    @User() restaurant: Restaurant,
-    @Args("data") data: CreateWaiterData
-  ) {
+  @Mutation(() => Waiter, { name: "createWaiter" })
+  create(@User() restaurant: JwtPayload, @Args("data") data: CreateWaiter) {
     return this.waiterService.create({
       data,
       restaurantId: restaurant.id,
@@ -44,8 +42,8 @@ export class WaiterResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @Mutation(() => Waiter)
-  updateWaiter(@Args("data") data: UpdateWaiter, @User() user: JwtPayload) {
+  @Mutation(() => Waiter, { name: "updateWaiter" })
+  update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
     if (role === "restaurant" && !data.where)
       throw new HttpException(this.WAITER_NOT_PROVIDED, 400);
@@ -61,16 +59,18 @@ export class WaiterResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @Mutation(() => PasswordUpdated)
-  updateWaiterPassword(
-    @Args("data") data: UpdateWaiterPassword,
-    @User() user: JwtPayload
+  @Mutation(() => PasswordUpdated, { name: "updateWaiterPassword" })
+  updatePassword(
+    @User() user: JwtPayload,
+    @Args("data") data: UpdateWaiterPassword
   ) {
     const { role } = user;
     if (role === "restaurant") {
       if (!data.where) throw new HttpException(this.WAITER_NOT_PROVIDED, 400);
       return this.waiterService.updatePassword({ ...data, role });
     }
+    if (!data.update.old)
+      throw new HttpException("old password is not provided", 400);
     return this.waiterService.updatePassword({
       ...data,
       where: { id: user.id },
@@ -79,11 +79,8 @@ export class WaiterResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  @Mutation(() => Deleted)
-  deleteWaiter(
-    @Args("where") where: WhereWaiter,
-    @User() restaurant: JwtPayload
-  ) {
+  @Mutation(() => Deleted, { name: "deleteWaiter" })
+  delete(@User() restaurant: JwtPayload, @Args("where") where: WhereWaiter) {
     return this.waiterService.delete({ ...where, restaurantId: restaurant.id });
   }
 

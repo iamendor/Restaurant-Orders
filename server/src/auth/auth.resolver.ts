@@ -5,7 +5,7 @@ import {
   CreateRestaurant,
   LoginRestaurant,
   LoginWaiter,
-  RestaurantModel,
+  Restaurant,
 } from "../models/model";
 import { RestaurantService } from "../restaurant/restaurant.service";
 import { AuthService } from "./auth.service";
@@ -17,20 +17,14 @@ export class AuthResolver {
     private readonly restaurantService: RestaurantService
   ) {}
 
-  @Mutation(() => AuthRestaurant)
-  async signup(
+  @Mutation(() => Restaurant)
+  signup(
     @Args("data", { type: () => CreateRestaurant })
     data: CreateRestaurant
   ) {
-    const restaurant = await this.restaurantService.create({
+    return this.restaurantService.create({
       ...data,
     });
-    return {
-      access_token: this.authService.generateRestaurantJwt(
-        restaurant as RestaurantModel
-      ),
-      restaurant,
-    };
   }
 
   @Mutation(() => AuthRestaurant)
