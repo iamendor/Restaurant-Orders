@@ -7,6 +7,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
 import { JwtPayload } from "../models/model";
 import * as bcrypt from "bcrypt";
+import { TableModule } from "../table/table.module";
+import { WaiterModule } from "../waiter/waiter.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -14,7 +16,7 @@ describe("Restaurant Resolver", () => {
   const mocks = getMocks();
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule, AddressModule],
+      imports: [PrismaModule, AddressModule, TableModule, WaiterModule],
       providers: [RestaurantResolver, RestaurantService],
     }).compile();
     resolver = module.get<RestaurantResolver>(RestaurantResolver);
@@ -25,6 +27,7 @@ describe("Restaurant Resolver", () => {
       id: restaurant.id,
       sub: restaurant.id,
       role: "restaurant",
+      email: restaurant.email,
     };
   });
 

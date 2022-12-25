@@ -33,6 +33,9 @@ describe("WaiterService", () => {
     prisma.waiter.findUniqueOrThrow = jest
       .fn()
       .mockImplementation(({ where }) => ({ ...mockRestaurant, ...where }));
+    prisma.restaurant.findUniqueOrThrow = jest
+      .fn()
+      .mockReturnValue({ waiters: [mockWaiter] });
     service = module.get<WaiterService>(WaiterService);
   });
 
@@ -53,6 +56,11 @@ describe("WaiterService", () => {
     expect(await service.find({ id: 1 }, true)).toBeDefined();
   });
 
+  it("should list all waiter of restaurant", async () => {
+    const waiters = await service.list({ id: 1 });
+    expect(waiters.length).toEqual(1);
+  });
+
   it("should update the waiter's name", async () => {
     const UPDATE = "mockWaiterUpdate";
     expect(
@@ -64,6 +72,4 @@ describe("WaiterService", () => {
       ).name
     ).toBe(UPDATE);
   });
-
-  afterAll(async () => await prisma.$disconnect());
 });

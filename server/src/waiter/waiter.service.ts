@@ -8,10 +8,12 @@ import {
   CreateWaiterData,
   Deleted,
   PasswordUpdated,
+  Restaurant,
   UpdateWaiter,
   UpdateWaiterPassword,
   Waiter,
   WaiterModel,
+  WhereRestaurant,
   WhereWaiter,
 } from "../models/model";
 import { PrismaService } from "../prisma/prisma.service";
@@ -114,6 +116,7 @@ export class WaiterService {
           ...query,
         },
       });
+
       if (!ignoreRestaurant) {
         if (waiter.restaurantId !== restaurantId)
           throw new Error(this.PERMISSION_DENIED);
@@ -124,5 +127,29 @@ export class WaiterService {
         throw new HttpException(this.PERMISSION_DENIED, 403);
       throw new NotFoundException("waiter not found");
     }
+  }
+
+  async list(where: WhereRestaurant): Promise<Waiter[]> {
+    try {
+      const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
+        where,
+        include: {
+          waiters: true,
+        },
+      });
+      return restaurant.waiters;
+    } catch (e) {
+      throw new HttpException(this.ERROR, 400);
+    }
+  }
+
+  async getRestaurant(email: string) {
+    const waiter = await this.prismaService.waiter.findFirstOrThrow({
+      where: { email: email },
+      include: {
+        restaurant: true,
+      },
+    });
+    return waiter.restaurant;
   }
 }

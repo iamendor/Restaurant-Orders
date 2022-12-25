@@ -110,17 +110,6 @@ export class RestaurantService {
     }
   }
 
-  async listWaiters(where: WhereRestaurant): Promise<Waiter[]> {
-    try {
-      const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
-        where,
-        include: {
-          waiters: true,
-        },
-      });
-      return restaurant.waiters;
-    } catch (e) {
-      throw new HttpException(this.ERROR, 400);
-    }
-  }
+
+  
 }

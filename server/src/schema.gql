@@ -15,13 +15,23 @@ type Mutation {
   deleteWaiter(where: WhereWaiter!): Deleted
   updateWaiterPassword(data: UpdateWaiterPassword): PasswordUpdated
   loginWaiter(credentials: LoginWaiter!): AuthWaiter
+  """
+  Table operations
+  """
+  createTable(data: CreateTable!): Table
+  createTables(data: [CreateTable]): TablesCreated
+  updateTable(data: UpdateTable!): Table
+  deleteTable(where: WhereTable!): Deleted
 }
 
 type Query {
   waiters: [Waiter]
   restaurantInfo: Restaurant
+  restaurant: Restaurant
   waiterInfo(where: WhereWaiter): Waiter
   address: Address
+  tables: [Table]
+  table(where: WhereTable!): Table
 }
 
 schema {
@@ -97,7 +107,7 @@ type Table {
   id: Int!
   name: String!
   orders: [Order]
-  restaurant: Restaurant!
+  restaurant: Restaurant
 }
 
 """
@@ -252,6 +262,38 @@ type AuthWaiter {
 }
 
 """
+Table Dto
+"""
+input CreateTable {
+  name: String!
+}
+
+input CreateTableData {
+  name: String!
+  restaurantId: Int!
+}
+
+input UpdateTable {
+  where: WhereTable!
+  update: UpdateTableData!
+}
+
+input UpdateTableData {
+  name: String
+}
+
+input WhereTable {
+  id: Int!
+  restaurantId: Int
+}
+
+"""
+Table Response
+"""
+type TablesCreated {
+  message: String!
+}
+"""
 Others
 """
 type JwtPayload {
@@ -259,6 +301,7 @@ type JwtPayload {
   sub: Int!
   role: String!
   id: Int!
+  email: String!
 }
 
 type Deleted {

@@ -5,7 +5,7 @@ import { RestaurantModule } from "../restaurant/restaurant.module";
 import { WaiterService } from "./waiter.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
-import { JwtPayload } from "../models/model";
+import { JwtPayload, Waiter } from "../models/model";
 import * as bcrypt from "bcrypt";
 
 describe("Waiter Resolver", () => {
@@ -28,6 +28,7 @@ describe("Waiter Resolver", () => {
       id: restaurant.id,
       sub: restaurant.id,
       role: "restaurant",
+      email: restaurant.email,
     };
   });
 
@@ -40,6 +41,7 @@ describe("Waiter Resolver", () => {
       id: create.id,
       sub: create.id,
       role: "waiter",
+      email: create.email,
     };
   });
 
@@ -108,6 +110,14 @@ describe("Waiter Resolver", () => {
     const info = await resolver.info(waiterPayload);
     expect(info.name).toBe("updatedWaiter");
   });
+
+  it("returns the restaurant of waiter", async () => {
+    const restaurant = await resolver.getRestaurant(
+      waiterPayload as unknown as Waiter
+    );
+    expect(restaurant.id).toBe(payload.id);
+  });
+
   it("deletes the waiter", async () => {
     const deleted = await resolver.delete(payload, { id: waiterPayload.id });
     expect(deleted.message).toBe("success");

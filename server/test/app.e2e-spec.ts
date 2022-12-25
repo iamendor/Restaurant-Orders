@@ -418,7 +418,6 @@ describe("Orders API", () => {
           },
         },
       }).set("Authorization", restaurantToken);
-
       const {
         data: { waiterInfo },
       } = body;
@@ -444,4 +443,129 @@ describe("Orders API", () => {
       expect(message).toBe("success");
     });
   });
+
+  describe("Table", () => {
+    let tableId: number;
+    const mockOne = mocks.table();
+
+    beforeAll(async () => {
+      const {
+        restaurantToken: Rtoken,
+        waiterToken: Wtoken,
+        waiterId: wId,
+      } = await createRestaurantWithWaiter({ prisma, jwt });
+      restaurantToken = Rtoken;
+      waiterToken = Wtoken;
+      waiterId = wId;
+    });
+
+    describe("Create", () => {
+      let createTable;
+      let createTables;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: mutations.table.create(),
+          variables: {
+            data: mockOne,
+            dataMultiple: [1, 2].map(() => mocks.table()),
+          },
+        }).set("Authorization", restaurantToken);
+        createTable = body.data.createTable;
+        createTables = body.data.createTables;
+      });
+      it("creates a table", () => {
+        expect(createTable.name).toBe(mockOne.name);
+        tableId = createTable.id;
+      });
+      it("creates multiple table", () => {
+        expect(createTables.message).toBe("success");
+      });
+    });
+    describe("List and find as restaurant", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.table.listAndFind(),
+          variables: {
+            where: {
+              id: tableId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        list = body.data.tables;
+        find = body.data.table;
+      });
+      it("lists all table", () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find a table", () => {
+        expect(find).toBeDefined();
+        expect(find.name).toBe(mockOne.name);
+      });
+    });
+    describe("List and find as waiter", () => {
+      let tables;
+      let table;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.table.listAndFind(),
+          variables: {
+            where: {
+              id: tableId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        table = body.data.table;
+        tables = body.data.tables;
+      });
+
+      it("lists all table", async () => {
+        expect(tables.length).toEqual(3);
+      });
+      it("find a table", async () => {
+        expect(table).toBeDefined();
+        expect(table.name).toBe(mockOne.name);
+      });
+    });
+
+    it("updates the table", async () => {
+      const update = "updatedName";
+      const { body } = await req(server, {
+        query: mutations.table.update(),
+        variables: {
+          data: {
+            update: {
+              name: update,
+            },
+            where: {
+              id: tableId,
+            },
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { updateTable },
+      } = body;
+
+      expect(updateTable.name).toBe(update);
+    });
+    it("deletes the table", async () => {
+      const { body } = await req(server, {
+        query: mutations.table.delete(),
+        variables: {
+          where: {
+            id: tableId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const message = body.data.deleteTable.message;
+      expect(message).toBe("success");
+      expect(
+        await prisma.table.findUnique({ where: { id: tableId } })
+      ).toBeNull();
+    });
+  });
+
+  afterAll(async () => await clearMocks({ prisma }));
 });

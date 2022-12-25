@@ -17,16 +17,22 @@ import {
   JwtPayload,
   PasswordUpdated,
   Restaurant,
+  Table,
   UpdateRestaurant,
   UpdateRestaurantPassword,
+  Waiter,
 } from "../models/model";
 import { RestaurantService } from "./restaurant.service";
+import { TableService } from "../table/table.service";
+import { WaiterService } from "../waiter/waiter.service";
 
 @Resolver("Restaurant")
 export class RestaurantResolver {
   constructor(
     private readonly restaurantService: RestaurantService,
-    private readonly addressService: AddressService
+    private readonly addressService: AddressService,
+    private readonly tableService: TableService,
+    private readonly waiterService: WaiterService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -70,5 +76,17 @@ export class RestaurantResolver {
   @ResolveField(() => Address, { name: "address" })
   getAddress(@Parent() restaurant: Restaurant) {
     return this.addressService.find({ restaurantId: restaurant.id });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @ResolveField(() => [Table], { name: "tables" })
+  getTables(@Parent() restaurant: Restaurant) {
+    return this.tableService.listAll(restaurant.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @ResolveField(() => [Waiter], { name: "waiters" })
+  getWaiters(@Parent() restaurant: Restaurant) {
+    return this.waiterService.list({ id: restaurant.id });
   }
 }

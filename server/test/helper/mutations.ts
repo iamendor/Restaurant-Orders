@@ -124,4 +124,33 @@ export const getMutations = () => ({
       }
     `,
   },
+  table: {
+    create: () => `
+      mutation createTables($data: CreateTable!, $dataMultiple: [CreateTable!]){
+        createTable(data: $data){
+          id
+          name
+        }
+        createTables(data: $dataMultiple){
+          message
+        }
+      }
+    `,
+
+    update: () => `
+      mutation update($data: UpdateTable!){
+        updateTable(data: $data){
+          id
+          name
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereTable!){
+        deleteTable(where: $where){
+          message
+        }
+      }
+    `,
+  },
 });

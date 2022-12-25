@@ -1,5 +1,12 @@
 import { HttpException, UseGuards } from "@nestjs/common";
-import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
+import {
+  Resolver,
+  Query,
+  Args,
+  Mutation,
+  ResolveField,
+  Parent,
+} from "@nestjs/graphql";
 import { User } from "../auth/decorators/user.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
@@ -8,29 +15,18 @@ import {
   Deleted,
   JwtPayload,
   PasswordUpdated,
+  Restaurant,
   UpdateWaiter,
   UpdateWaiterPassword,
   Waiter,
   WhereWaiter,
 } from "../models/model";
-import { RestaurantService } from "../restaurant/restaurant.service";
 import { WaiterService } from "./waiter.service";
 
-@Resolver()
+@Resolver("Waiter")
 export class WaiterResolver {
-  constructor(
-    private readonly waiterService: WaiterService,
-    private readonly restaurantService: RestaurantService
-  ) {}
+  constructor(private readonly waiterService: WaiterService) {}
   private WAITER_NOT_PROVIDED = "no waiter specified";
-
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  @Query(() => Waiter, { name: "waiterInfo" })
-  info(@User() user: JwtPayload, @Args("where") where?: WhereWaiter) {
-    if (user.role === "waiter")
-      return this.waiterService.find({ id: user.id }, true);
-    return this.waiterService.find({ ...where, restaurantId: user.id });
-  }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @Mutation(() => Waiter, { name: "createWaiter" })
@@ -84,9 +80,27 @@ export class WaiterResolver {
     return this.waiterService.delete({ ...where, restaurantId: restaurant.id });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   @Query(() => [Waiter])
-  waiters(@User() restaurant: JwtPayload) {
-    return this.restaurantService.listWaiters({ id: restaurant.id });
+  async waiters(@User() user: JwtPayload) {
+    if (user.role === "restaurant")
+      return this.waiterService.list({ id: user.id });
+    return this.waiterService.list({
+      id: (await this.waiterService.getRestaurant(user.email)).id,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
+  @Query(() => Waiter, { name: "waiterInfo" })
+  info(@User() user: JwtPayload, @Args("where") where?: WhereWaiter) {
+    if (user.role === "waiter")
+      return this.waiterService.find({ id: user.id }, true);
+    return this.waiterService.find({ ...where, restaurantId: user.id });
+  }
+
+  @ResolveField(() => Restaurant, { name: "restaurant" })
+  @UseGuards(JwtAuthGuard, RoleGuard("waiter"))
+  getRestaurant(@Parent() waiter: Waiter) {
+    return this.waiterService.getRestaurant(waiter.email);
   }
 }

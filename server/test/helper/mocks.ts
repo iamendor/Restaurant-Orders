@@ -21,6 +21,9 @@ export const getMocks = () => ({
     email: "waiter@gmail.com",
     password: "mockWaiter123",
   },
+  table: () => ({
+    name: `TableMock${Math.random()}`,
+  }),
 });
 
 export const createRestaurantWithWaiter = async ({
@@ -55,26 +58,31 @@ export const createRestaurantWithWaiter = async ({
   const {
     waiters: [waiter],
   } = restaurant;
-
-  const restaurantToken = jwt.sign({
+  const Rpayload = {
     sub: restaurant.id,
     id: restaurant.id,
     name: restaurant.name,
     email: restaurant.email,
     role: "restaurant",
-  });
-  const waiterToken = jwt.sign({
+  };
+  const Wpayload = {
     sub: waiter.id,
     id: waiter.id,
     name: waiter.name,
     email: waiter.email,
     role: "waiter",
-  });
+    restaurantId: restaurant.id,
+  };
+  const restaurantToken = jwt.sign(Rpayload);
+  const waiterToken = jwt.sign(Wpayload);
 
   return {
     restaurantToken: `Bearer ${restaurantToken}`,
     waiterToken: `Bearer ${waiterToken}`,
     waiterId: waiter.id,
+    restaurantId: restaurant.id,
+    restaurantPayload: Rpayload,
+    waiterPayload: Wpayload,
   };
 };
 

@@ -92,11 +92,5 @@ describe("RestaurantService", () => {
     ).toBeDefined();
   });
 
-  it("should list all waiter of restaurant", async () => {
-    expect(
-      (await service.listWaiters({ id: mockRestaurant.id })).length
-    ).toEqual(1);
-  });
-
   afterAll(async () => await prisma.$disconnect());
 });

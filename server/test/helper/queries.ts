@@ -47,4 +47,32 @@ export const getQueries = () => ({
       }
     `,
   },
+  table: {
+    listAndFind: () => `
+      query listAndFind($where: WhereTable!){
+        tables{
+          id
+          name
+        }
+        table(where: $where){
+          id
+          name
+        }
+      }
+    `,
+    list: () => `
+      query{
+        tables{
+          name
+        }
+      }
+    `,
+    find: () => `
+      query find($where: WhereTable!){
+        table(where:$where){
+          name
+        }
+      }
+    `,
+  },
 });
