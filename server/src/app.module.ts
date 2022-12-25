@@ -7,7 +7,7 @@ import { Config } from "./config";
 import { AuthModule } from "./auth/auth.module";
 import { WaiterModule } from "./waiter/waiter.module";
 import { AddressModule } from "./address/address.module";
-import { TableModule } from './table/table.module';
+import { TableModule } from "./table/table.module";
 
 @Module({
   imports: [

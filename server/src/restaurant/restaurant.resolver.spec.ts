@@ -71,6 +71,9 @@ describe("Restaurant Resolver", () => {
     expect(address).toMatchObject(addressInfo);
   });
 
+  it.todo("return waiters");
+  it.todo("return tables");
+
   it("deletes restaurant", async () => {
     const { message } = await resolver.delete(payload);
     expect(message).toBe("success");

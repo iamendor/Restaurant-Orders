@@ -32,7 +32,6 @@ export class UpdateRestaurantData {
 
 export class UpdateRestaurant {
     name?: Nullable<string>;
-    password?: Nullable<string>;
     address?: Nullable<UpdateAddress>;
 }
 

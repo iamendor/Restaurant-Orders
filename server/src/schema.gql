@@ -134,7 +134,6 @@ input UpdateRestaurantData {
 }
 input UpdateRestaurant {
   name: String
-  password: String
   address: UpdateAddress
 }
 

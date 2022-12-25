@@ -1,14 +1,12 @@
 import {
   HttpException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import {
   CreateWaiterData,
   Deleted,
   PasswordUpdated,
-  Restaurant,
   UpdateWaiter,
   UpdateWaiterPassword,
   Waiter,
@@ -18,12 +16,15 @@ import {
 } from "../models/model";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
+import {
+  NotFoundResourceException,
+  SomethingWentWrongException,
+} from "../error/errors";
 
 @Injectable()
 export class WaiterService {
   constructor(private readonly prismaService: PrismaService) {}
-  private PERMISSION_DENIED = "permission denied";
-  private ERROR = "something went wrong";
+  private PERMISSION_DENIED = "permission denied for waiter";
 
   private hashPassword(pw: string) {
     return bcrypt.hashSync(pw, 10);
@@ -42,7 +43,10 @@ export class WaiterService {
       });
       return waiter;
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      if (e.code)
+        throw new SomethingWentWrongException("email is already registered");
+
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -69,7 +73,7 @@ export class WaiterService {
         message: "success",
       };
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -84,8 +88,10 @@ export class WaiterService {
       });
       return updatedWaiter;
     } catch (e) {
-      console.log(e);
-      throw new HttpException(this.ERROR, 400);
+      if (e.code === "P2002") {
+        throw new SomethingWentWrongException("email is already registered");
+      }
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -101,7 +107,7 @@ export class WaiterService {
         message: "success",
       };
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -125,7 +131,7 @@ export class WaiterService {
     } catch (e) {
       if (e.message === this.PERMISSION_DENIED)
         throw new HttpException(this.PERMISSION_DENIED, 403);
-      throw new NotFoundException("waiter not found");
+      throw new NotFoundResourceException("waiter");
     }
   }
 
@@ -139,12 +145,12 @@ export class WaiterService {
       });
       return restaurant.waiters;
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
   async getRestaurant(email: string) {
-    const waiter = await this.prismaService.waiter.findFirstOrThrow({
+    const waiter = await this.prismaService.waiter.findFirst({
       where: { email: email },
       include: {
         restaurant: true,

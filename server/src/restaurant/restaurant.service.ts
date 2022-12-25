@@ -1,27 +1,24 @@
-import {
-  HttpException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import {
   CreateRestaurant,
   Restaurant,
   WhereRestaurant,
   RestaurantModel,
   Deleted,
-  Waiter,
   PasswordUpdated,
   UpdateRestaurantData,
   UpdateRestaurantDataPassword,
 } from "../models/model";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
+import {
+  NotFoundResourceException,
+  SomethingWentWrongException,
+} from "../error/errors";
 
 @Injectable()
 export class RestaurantService {
   constructor(private readonly prismaService: PrismaService) {}
-  private ERROR = "something went wrong";
   private hashPassword(pw: string) {
     return bcrypt.hashSync(pw, 10);
   }
@@ -38,7 +35,10 @@ export class RestaurantService {
       });
       return restaurant;
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      if (e.code === "P2002") {
+        throw new SomethingWentWrongException("email is already registered");
+      }
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -62,7 +62,7 @@ export class RestaurantService {
         message: "success",
       };
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -79,7 +79,10 @@ export class RestaurantService {
       });
       return restaurant;
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      if (e.code === "P2002") {
+        throw new SomethingWentWrongException("email is already registered");
+      }
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -92,7 +95,7 @@ export class RestaurantService {
         message: "success",
       };
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new NotFoundResourceException("restaurant");
     }
   }
 
@@ -105,11 +108,7 @@ export class RestaurantService {
       });
       return restaurant;
     } catch (e) {
-      console.log(e);
-      throw new NotFoundException("restaurant not found");
+      throw new NotFoundResourceException("restaurant");
     }
   }
-
-
-  
 }

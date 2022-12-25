@@ -8,11 +8,14 @@ import {
   UpdateTable,
   WhereTable,
 } from "../models/model";
+import {
+  NotFoundResourceException,
+  SomethingWentWrongException,
+} from "../error/errors";
 
 @Injectable()
 export class TableService {
   constructor(private readonly prismaService: PrismaService) {}
-  private ERROR = "something went wrong";
   private PERMISSION_DENIED = "permission denied for table";
   async create(data: CreateTableData): Promise<Table> {
     try {
@@ -22,14 +25,14 @@ export class TableService {
           ...rest,
           restaurant: {
             connect: {
-              id: data.restaurantId,
+              id: restaurantId,
             },
           },
         },
       });
       return table;
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -41,7 +44,7 @@ export class TableService {
       });
       return { message: "success" };
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -56,7 +59,7 @@ export class TableService {
       });
       return updatedTable;
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -72,7 +75,7 @@ export class TableService {
       });
       return { message: "success" };
     } catch (e) {
-      throw new HttpException(this.ERROR, 400);
+      throw new SomethingWentWrongException(e.message);
     }
   }
 
@@ -100,7 +103,7 @@ export class TableService {
       if (e.message === this.PERMISSION_DENIED) {
         throw new HttpException(this.PERMISSION_DENIED, 403);
       }
-      throw new HttpException("table not found", 400);
+      throw new NotFoundResourceException("table");
     }
   }
 
