@@ -79,7 +79,7 @@ export class TableService {
     }
   }
 
-  async listAll(restaurantId: number): Promise<Table[]> {
+  async list(restaurantId: number): Promise<Table[]> {
     return (
       await this.prismaService.restaurant.findUnique({
         where: { id: restaurantId },

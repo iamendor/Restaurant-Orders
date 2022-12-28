@@ -5,10 +5,12 @@ import { AddressModule } from "../address/address.module";
 import { RestaurantService } from "./restaurant.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
-import { JwtPayload } from "../models/model";
+import { JwtPayload, Restaurant } from "../models/model";
 import * as bcrypt from "bcrypt";
 import { TableModule } from "../table/table.module";
 import { WaiterModule } from "../waiter/waiter.module";
+import { CategoryModule } from "../category/category.module";
+import { MealModule } from "../meal/meal.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -16,7 +18,14 @@ describe("Restaurant Resolver", () => {
   const mocks = getMocks();
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule, AddressModule, TableModule, WaiterModule],
+      imports: [
+        PrismaModule,
+        AddressModule,
+        TableModule,
+        WaiterModule,
+        CategoryModule,
+        MealModule,
+      ],
       providers: [RestaurantResolver, RestaurantService],
     }).compile();
     resolver = module.get<RestaurantResolver>(RestaurantResolver);
@@ -71,8 +80,24 @@ describe("Restaurant Resolver", () => {
     expect(address).toMatchObject(addressInfo);
   });
 
-  it.todo("return waiters");
-  it.todo("return tables");
+  it("return tables of restaurant", async () => {
+    const tables = await resolver.getTables({ id: payload.id } as Restaurant);
+    expect(tables.length).toEqual(0);
+  });
+  it("return waiters of restaurant", async () => {
+    const waiters = await resolver.getWaiters({ id: payload.id } as Restaurant);
+    expect(waiters.length).toEqual(0);
+  });
+  it("list categories of restaurant", async () => {
+    const categories = await resolver.getCategories({
+      id: payload.id,
+    } as Restaurant);
+    expect(categories.length).toEqual(0);
+  });
+  it("return meals of restaurant", async () => {
+    const meals = await resolver.getMeals({ id: payload.id } as Restaurant);
+    expect(meals.length).toEqual(0);
+  });
 
   it("deletes restaurant", async () => {
     const { message } = await resolver.delete(payload);

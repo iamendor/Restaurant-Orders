@@ -13,8 +13,10 @@ import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
 import {
   Address,
+  Category,
   Deleted,
   JwtPayload,
+  Meal,
   PasswordUpdated,
   Restaurant,
   Table,
@@ -25,6 +27,8 @@ import {
 import { RestaurantService } from "./restaurant.service";
 import { TableService } from "../table/table.service";
 import { WaiterService } from "../waiter/waiter.service";
+import { CategoryService } from "../category/category.service";
+import { MealService } from "../meal/meal.service";
 
 @Resolver("Restaurant")
 export class RestaurantResolver {
@@ -32,7 +36,9 @@ export class RestaurantResolver {
     private readonly restaurantService: RestaurantService,
     private readonly addressService: AddressService,
     private readonly tableService: TableService,
-    private readonly waiterService: WaiterService
+    private readonly waiterService: WaiterService,
+    private readonly categoryService: CategoryService,
+    private readonly mealService: MealService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -81,12 +87,24 @@ export class RestaurantResolver {
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => [Table], { name: "tables" })
   getTables(@Parent() restaurant: Restaurant) {
-    return this.tableService.listAll(restaurant.id);
+    return this.tableService.list(restaurant.id);
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => [Waiter], { name: "waiters" })
   getWaiters(@Parent() restaurant: Restaurant) {
     return this.waiterService.list({ id: restaurant.id });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @ResolveField(() => [Category], { name: "categories" })
+  getCategories(@Parent() restaurant: Restaurant) {
+    return this.categoryService.list(restaurant.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @ResolveField(() => [Meal], { name: "meals" })
+  getMeals(@Parent() restaurant: Restaurant) {
+    return this.mealService.list(restaurant.id);
   }
 }

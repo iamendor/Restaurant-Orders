@@ -137,6 +137,67 @@ export class WhereTable {
     restaurantId?: Nullable<number>;
 }
 
+export class CreateCategory {
+    name: string;
+}
+
+export class CreateCategoryData {
+    name: string;
+    restaurantId: number;
+}
+
+export class UpdateCategory {
+    where: WhereCategory;
+    update: UpdateCategoryData;
+}
+
+export class UpdateCategoryData {
+    name?: Nullable<string>;
+}
+
+export class WhereCategory {
+    id: number;
+    restaurantId?: Nullable<number>;
+}
+
+export class CreateMeal {
+    name: string;
+    price: number;
+    categoryId?: Nullable<number>;
+    category?: Nullable<CreateCategory>;
+}
+
+export class CreateMealData {
+    name: string;
+    price: number;
+    restaurantId: number;
+    categoryId?: Nullable<number>;
+    category?: Nullable<CreateCategory>;
+}
+
+export class CreateMeals {
+    name: string;
+    price: number;
+    restaurantId?: Nullable<number>;
+    categoryId: number;
+}
+
+export class UpdateMeal {
+    where: WhereMeal;
+    update: UpdateMealData;
+}
+
+export class UpdateMealData {
+    name?: Nullable<string>;
+    price?: Nullable<number>;
+    categoryId?: Nullable<number>;
+}
+
+export class WhereMeal {
+    id: number;
+    restaurantId?: Nullable<number>;
+}
+
 export abstract class IMutation {
     abstract signup(data: CreateRestaurant): Nullable<Restaurant> | Promise<Nullable<Restaurant>>;
 
@@ -165,6 +226,22 @@ export abstract class IMutation {
     abstract updateTable(data: UpdateTable): Nullable<Table> | Promise<Nullable<Table>>;
 
     abstract deleteTable(where: WhereTable): Nullable<Deleted> | Promise<Nullable<Deleted>>;
+
+    abstract createCategory(data: CreateCategory): Nullable<Category> | Promise<Nullable<Category>>;
+
+    abstract createCategories(data?: Nullable<CreateCategory[]>): Nullable<CategoriesCreated> | Promise<Nullable<CategoriesCreated>>;
+
+    abstract updateCategory(data: UpdateCategory): Nullable<Category> | Promise<Nullable<Category>>;
+
+    abstract deleteCategory(where: WhereCategory): Nullable<Deleted> | Promise<Nullable<Deleted>>;
+
+    abstract createMeal(data: CreateMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+
+    abstract createMeals(data?: Nullable<CreateMeals[]>): Nullable<MealsCreated> | Promise<Nullable<MealsCreated>>;
+
+    abstract updateMeal(data: UpdateMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+
+    abstract deleteMeal(where: WhereMeal): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 }
 
 export abstract class IQuery {
@@ -181,6 +258,14 @@ export abstract class IQuery {
     abstract tables(): Nullable<Nullable<Table>[]> | Promise<Nullable<Nullable<Table>[]>>;
 
     abstract table(where: WhereTable): Nullable<Table> | Promise<Nullable<Table>>;
+
+    abstract categories(): Nullable<Nullable<Category>[]> | Promise<Nullable<Nullable<Category>[]>>;
+
+    abstract category(where: WhereCategory): Nullable<Category> | Promise<Nullable<Category>>;
+
+    abstract meals(): Nullable<Nullable<Meal>[]> | Promise<Nullable<Nullable<Meal>[]>>;
+
+    abstract meal(where: WhereMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
 }
 
 export class RestaurantModel {
@@ -232,7 +317,7 @@ export class Meal {
     id: number;
     name: string;
     price: number;
-    restaurant: Restaurant;
+    restaurant?: Nullable<Restaurant>;
     category?: Nullable<Category>;
     orders?: Nullable<Nullable<Order>[]>;
 }
@@ -240,8 +325,8 @@ export class Meal {
 export class Category {
     id: number;
     name: string;
-    meal?: Nullable<Nullable<Meal>[]>;
-    restaurant: Restaurant;
+    meals?: Nullable<Nullable<Meal>[]>;
+    restaurant?: Nullable<Restaurant>;
 }
 
 export class Table {
@@ -284,6 +369,14 @@ export class AuthWaiter {
 }
 
 export class TablesCreated {
+    message: string;
+}
+
+export class CategoriesCreated {
+    message: string;
+}
+
+export class MealsCreated {
     message: string;
 }
 

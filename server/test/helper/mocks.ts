@@ -24,6 +24,24 @@ export const getMocks = () => ({
   table: () => ({
     name: `TableMock${Math.random()}`,
   }),
+  category: {
+    name: "Category",
+    restaurantId: 1,
+  },
+  meal: {
+    withCategory: () => ({
+      name: "TestMeal",
+      price: 1.0,
+      category: {
+        name: "TestCategory",
+      },
+    }),
+    withCategoryId: (id: number) => ({
+      name: "TestMeal",
+      price: 1.1,
+      categoryId: id,
+    }),
+  },
 });
 
 export const createRestaurantWithWaiter = async ({

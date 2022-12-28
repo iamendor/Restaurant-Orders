@@ -153,4 +153,67 @@ export const getMutations = () => ({
       }
     `,
   },
+  category: {
+    create: () => `
+      mutation create($data: CreateCategory!, $dataMultiple: [CreateCategory!]){
+        createCategory(data: $data){
+          id
+          name
+        }
+        createCategories(data: $dataMultiple){
+          message
+        }
+      }
+    `,
+    update: () => `
+      mutation update($data: UpdateCategory!){
+        updateCategory(data: $data){
+          id
+          name
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereCategory!){
+        deleteCategory(where: $where){
+          message
+        }
+      }
+    `,
+  },
+  meal: {
+    create: () => `
+      mutation create($data: CreateMeal!, $dataMeals: [CreateMeals!]){
+        createMeal(data: $data){
+          id
+          name
+          price
+          category{
+            id
+          }
+        }
+        createMeals(data: $dataMeals){
+          message
+        }
+      }
+    `,
+    update: () => `
+      mutation update($data: UpdateMeal!){
+        updateMeal(data: $data){
+          category{
+            id
+          }
+          name
+          
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereMeal!){
+        deleteMeal(where: $where){
+          message
+        }
+      }
+    `,
+  },
 });

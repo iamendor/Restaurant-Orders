@@ -26,6 +26,10 @@ describe("Orders API", () => {
   let restaurantToken: string;
   let waiterToken: string;
   let waiterId: number;
+  let restaurantId: number;
+  let catId: number;
+  let catIds: number[];
+  let mealId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -453,10 +457,12 @@ describe("Orders API", () => {
         restaurantToken: Rtoken,
         waiterToken: Wtoken,
         waiterId: wId,
+        restaurantId: rId,
       } = await createRestaurantWithWaiter({ prisma, jwt });
       restaurantToken = Rtoken;
       waiterToken = Wtoken;
       waiterId = wId;
+      restaurantId = rId;
     });
 
     describe("Create", () => {
@@ -564,6 +570,263 @@ describe("Orders API", () => {
       expect(
         await prisma.table.findUnique({ where: { id: tableId } })
       ).toBeNull();
+    });
+  });
+
+  describe("Category", () => {
+    describe("Create", () => {
+      let create;
+      let createMultiple;
+      beforeAll(async () => {
+        const { restaurantId: _, ...rest } = mocks.category;
+        const { body } = await req(server, {
+          query: mutations.category.create(),
+          variables: {
+            data: {
+              ...rest,
+            },
+            dataMultiple: [2, 3].map((i) => ({ name: rest.name + i })),
+          },
+        }).set("Authorization", restaurantToken);
+        create = body.data.createCategory;
+        createMultiple = body.data.createCategories;
+      });
+      it("creates a category", () => {
+        expect(create.name).toBe(mocks.category.name);
+        catId = create.id;
+      });
+      it("creates multiple categories", async () => {
+        expect(createMultiple.message).toBe("success");
+        expect(
+          (
+            await prisma.restaurant.findFirst({
+              where: {
+                id: restaurantId,
+              },
+              select: {
+                categories: true,
+              },
+            })
+          ).categories.length
+        ).toEqual(3);
+      });
+    });
+
+    it("updates the category", async () => {
+      const update = "updatedCategory";
+      const { body } = await req(server, {
+        query: mutations.category.update(),
+        variables: {
+          data: {
+            where: {
+              id: catId,
+            },
+            update: {
+              name: update,
+            },
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { updateCategory },
+      } = body;
+      expect(updateCategory).toBeDefined();
+      expect(updateCategory.name).toBe(update);
+    });
+
+    describe("List and find as restaurant", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.category.listAndFind(),
+          variables: {
+            where: {
+              id: catId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        list = body.data.categories;
+        find = body.data.category;
+      });
+      it("list", () => {
+        expect(list).toBeDefined();
+        expect(list.length).toEqual(3);
+      });
+      it("find", () => {
+        expect(find.name).toBe("updatedCategory");
+      });
+    });
+    describe("List and find as waiter", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.category.listAndFind(),
+          variables: {
+            where: {
+              id: catId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        list = body.data.categories;
+        find = body.data.category;
+      });
+      it("list", () => {
+        expect(list).toBeDefined();
+        expect(list.length).toEqual(3);
+      });
+      it("find", () => {
+        expect(find.name).toBe("updatedCategory");
+      });
+    });
+    it("deletes category", async () => {
+      const { body } = await req(server, {
+        query: mutations.category.delete(),
+        variables: {
+          where: {
+            id: catId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { deleteCategory },
+      } = body;
+      expect(deleteCategory.message).toBe("success");
+    });
+  });
+
+  describe("Meal", () => {
+    let mockMeal;
+
+    beforeAll(async () => {
+      catIds = (
+        await prisma.restaurant.findUnique({
+          where: {
+            id: restaurantId,
+          },
+          select: {
+            categories: true,
+          },
+        })
+      ).categories.map((cat) => {
+        return cat.id;
+      });
+      mockMeal = mocks.meal.withCategoryId(catIds[0]);
+    });
+    describe("Create", () => {
+      let create;
+      let createMultiple;
+
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: mutations.meal.create(),
+          variables: {
+            data: {
+              ...mockMeal,
+            },
+            dataMeals: [
+              ...[1, 2].map(() => ({
+                ...mocks.meal.withCategoryId(catIds[0]),
+              })),
+            ],
+          },
+        }).set("Authorization", restaurantToken);
+        create = body.data.createMeal;
+        createMultiple = body.data.createMeals;
+      });
+
+      it("creates a meal", () => {
+        expect(create.name).toBe(mockMeal.name);
+        mealId = create.id;
+      });
+      it("creates multiple meals", () => {
+        expect(createMultiple.message).toBe("success");
+      });
+    });
+
+    it("updates meal", async () => {
+      const update = "updated";
+      const { body } = await req(server, {
+        query: mutations.meal.update(),
+        variables: {
+          data: {
+            where: {
+              id: mealId,
+            },
+            update: {
+              name: update,
+              categoryId: catIds[1],
+            },
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: {
+          updateMeal: { name, category },
+        },
+      } = body;
+      expect(name).toBe(update);
+      expect(category.id).toBe(catIds[1]);
+    });
+    describe("List and find as restaurant", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.meal.listAndFind(),
+          variables: {
+            where: {
+              id: mealId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        list = body.data.meals;
+        find = body.data.meal;
+      });
+      it("list", async () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find", async () => {
+        expect(find.name).toBe("updated");
+      });
+    });
+    describe("List and find as waiter", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.meal.listAndFind(),
+          variables: {
+            where: {
+              id: mealId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        list = body.data.meals;
+        find = body.data.meal;
+      });
+      it("list", async () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find", async () => {
+        expect(find.name).toBe("updated");
+      });
+    });
+    it("deletes meal", async () => {
+      const { body } = await req(server, {
+        query: mutations.meal.delete(),
+        variables: {
+          where: {
+            id: mealId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { deleteMeal },
+      } = body;
+      expect(deleteMeal).toBeDefined();
+      expect(deleteMeal.message).toBe("success");
     });
   });
 

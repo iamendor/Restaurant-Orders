@@ -22,6 +22,20 @@ type Mutation {
   createTables(data: [CreateTable]): TablesCreated
   updateTable(data: UpdateTable!): Table
   deleteTable(where: WhereTable!): Deleted
+  """
+  Category operations
+  """
+  createCategory(data: CreateCategory!): Category
+  createCategories(data: [CreateCategory!]): CategoriesCreated
+  updateCategory(data: UpdateCategory!): Category
+  deleteCategory(where: WhereCategory!): Deleted
+  """
+  Meal operations
+  """
+  createMeal(data: CreateMeal!): Meal
+  createMeals(data: [CreateMeals!]): MealsCreated
+  updateMeal(data: UpdateMeal!): Meal
+  deleteMeal(where: WhereMeal!): Deleted
 }
 
 type Query {
@@ -32,6 +46,10 @@ type Query {
   address: Address
   tables: [Table]
   table(where: WhereTable!): Table
+  categories: [Category]
+  category(where: WhereCategory!): Category
+  meals: [Meal]
+  meal(where: WhereMeal!): Meal
 }
 
 schema {
@@ -91,7 +109,7 @@ type Meal {
   id: Int!
   name: String!
   price: Float!
-  restaurant: Restaurant!
+  restaurant: Restaurant
   category: Category
   orders: [Order]
 }
@@ -99,8 +117,8 @@ type Meal {
 type Category {
   id: Int!
   name: String!
-  meal: [Meal]
-  restaurant: Restaurant!
+  meals: [Meal]
+  restaurant: Restaurant
 }
 
 type Table {
@@ -292,6 +310,87 @@ Table Response
 type TablesCreated {
   message: String!
 }
+
+"""
+Category Dto
+"""
+input CreateCategory {
+  name: String!
+}
+
+input CreateCategoryData {
+  name: String!
+  restaurantId: Int!
+}
+
+input UpdateCategory {
+  where: WhereCategory!
+  update: UpdateCategoryData!
+}
+
+input UpdateCategoryData {
+  name: String
+}
+
+input WhereCategory {
+  id: Int!
+  restaurantId: Int
+}
+
+"""
+Category Response
+"""
+type CategoriesCreated {
+  message: String!
+}
+
+"""
+Meal Dto
+"""
+input CreateMeal {
+  name: String!
+  price: Float!
+  categoryId: Int
+  category: CreateCategory
+}
+
+input CreateMealData {
+  name: String!
+  price: Float!
+  restaurantId: Int!
+  categoryId: Int
+  category: CreateCategory
+}
+
+input CreateMeals {
+  name: String!
+  price: Float!
+  restaurantId: Int
+  categoryId: Int!
+}
+
+input UpdateMeal {
+  where: WhereMeal!
+  update: UpdateMealData!
+}
+input UpdateMealData {
+  name: String
+  price: Float
+  categoryId: Int
+}
+
+input WhereMeal {
+  id: Int!
+  restaurantId: Int
+}
+
+"""
+Meal Response
+"""
+type MealsCreated {
+  message: String!
+}
+
 """
 Others
 """

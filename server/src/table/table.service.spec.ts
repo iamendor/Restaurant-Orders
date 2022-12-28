@@ -111,7 +111,7 @@ describe("TableService", () => {
   });
 
   it("should list all table", async () => {
-    const tables = await service.listAll(restaurant.id);
+    const tables = await service.list(restaurant.id);
     expect(tables.length).toEqual(3);
   });
 

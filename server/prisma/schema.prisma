@@ -69,16 +69,16 @@ model Meal{
   id Int @unique @id @default(autoincrement())
   name String
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  category Category? @relation(fields: [categoryId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   orders Order[]
   price Float
   restaurantId Int
-  categoryId Int
+  categoryId Int?
 }
 model Category{
   id Int @unique @id @default(autoincrement())
   name String
-  meal Meal[]
+  meals Meal[]
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
 }

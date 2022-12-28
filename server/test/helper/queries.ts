@@ -60,16 +60,30 @@ export const getQueries = () => ({
         }
       }
     `,
-    list: () => `
-      query{
-        tables{
+  },
+  category: {
+    listAndFind: () => `
+      query listAndFind($where: WhereCategory!){
+        categories{
+          id
+          name
+        }
+        category(where: $where){
+          id
           name
         }
       }
     `,
-    find: () => `
-      query find($where: WhereTable!){
-        table(where:$where){
+  },
+  meal: {
+    listAndFind: () => `
+      query listAndFind($where: WhereMeal!){
+        meals{
+          id
+          name
+        }
+        meal(where: $where){
+          id
           name
         }
       }

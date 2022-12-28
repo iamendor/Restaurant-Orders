@@ -8,6 +8,8 @@ import { AuthModule } from "./auth/auth.module";
 import { WaiterModule } from "./waiter/waiter.module";
 import { AddressModule } from "./address/address.module";
 import { TableModule } from "./table/table.module";
+import { CategoryModule } from './category/category.module';
+import { MealModule } from './meal/meal.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { TableModule } from "./table/table.module";
     WaiterModule,
     AddressModule,
     TableModule,
+    CategoryModule,
+    MealModule,
   ],
 })
 export class AppModule {}

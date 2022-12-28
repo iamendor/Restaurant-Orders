@@ -70,9 +70,9 @@ export class TableResolver {
   @Query(() => [Table], { name: "tables" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async list(@User() user: JwtPayload) {
-    if (user.role === "restaurant") return this.tableService.listAll(user.id);
+    if (user.role === "restaurant") return this.tableService.list(user.id);
     const restaurant = await this.waiterService.getRestaurant(user.email);
-    return this.tableService.listAll(restaurant.id);
+    return this.tableService.list(restaurant.id);
   }
 
   @Query(() => Table, { name: "table" })
