@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
+import { ConsoleLogger, INestApplication } from "@nestjs/common";
 import { AppModule } from "../src/app.module";
 import * as request from "supertest";
 import { getMutations } from "./helper/mutations";
@@ -30,6 +30,8 @@ describe("Orders API", () => {
   let catId: number;
   let catIds: number[];
   let mealId: number;
+  let tableId: number;
+  let orderId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -449,7 +451,6 @@ describe("Orders API", () => {
   });
 
   describe("Table", () => {
-    let tableId: number;
     const mockOne = mocks.table();
 
     beforeAll(async () => {
@@ -570,6 +571,15 @@ describe("Orders API", () => {
       expect(
         await prisma.table.findUnique({ where: { id: tableId } })
       ).toBeNull();
+    });
+
+    afterAll(async () => {
+      tableId = (
+        await prisma.restaurant.findUnique({
+          where: { id: restaurantId },
+          select: { tables: true },
+        })
+      ).tables[0].id;
     });
   });
 
@@ -827,6 +837,135 @@ describe("Orders API", () => {
       } = body;
       expect(deleteMeal).toBeDefined();
       expect(deleteMeal.message).toBe("success");
+    });
+
+    afterAll(async () => {
+      mealId = (
+        await prisma.restaurant.findUnique({
+          where: { id: restaurantId },
+          select: { meals: true },
+        })
+      ).meals[0].id;
+    });
+  });
+
+  describe("Order", () => {
+    let mockOrder;
+    let createMultiple;
+    beforeAll(() => {
+      catId = catId[0];
+      const { createdAt: _, ...rest } = mocks.order({
+        restaurantId,
+        mealId,
+        tableId,
+        waiterId,
+      });
+      mockOrder = rest;
+
+      createMultiple = [
+        { ...mockOrder, description: "mock order 2" },
+        { ...mockOrder, description: "mock order 3" },
+      ];
+    });
+    describe("Create", () => {
+      let create;
+      let multiple;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: mutations.order.create(),
+          variables: {
+            data: mockOrder,
+            dataMultiple: createMultiple,
+          },
+        }).set("Authorization", waiterToken);
+        create = body.data.createOrder;
+        multiple = body.data.createOrders;
+      });
+      it("create an order", () => {
+        expect(create.description).toBe("this is a mock order");
+        orderId = create.id;
+      });
+      it("create 2 order", () => {
+        expect(multiple.message).toBe("success");
+      });
+    });
+    it("updates the order", async () => {
+      const { body } = await req(server, {
+        query: mutations.order.update(),
+        variables: {
+          data: {
+            where: {
+              id: orderId,
+            },
+            update: {
+              isReady: true,
+            },
+          },
+        },
+      }).set("Authorization", waiterToken);
+      const {
+        data: { updateOrder },
+      } = body;
+      expect(updateOrder.isReady).toBeTruthy();
+    });
+    describe("List and find as restaurant", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.order.listAndFind(),
+          variables: {
+            where: {
+              id: orderId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        console.log(body);
+        list = body.data.orders;
+        find = body.data.order;
+      });
+      it("list", () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find", () => {
+        expect(find.description).toBe("this is a mock order");
+      });
+    });
+    describe("List and find as waiter", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.order.listAndFind(),
+          variables: {
+            where: {
+              id: orderId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        list = body.data.orders;
+        find = body.data.order;
+      });
+      it("list", () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find", () => {
+        expect(find.description).toBe("this is a mock order");
+      });
+    });
+    it("deletes the order", async () => {
+      const { body } = await req(server, {
+        query: mutations.order.delete(),
+        variables: {
+          where: {
+            id: orderId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { deleteOrder },
+      } = body;
+      expect(deleteOrder.message).toBe("success");
     });
   });
 

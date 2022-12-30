@@ -11,6 +11,7 @@ import { TableModule } from "../table/table.module";
 import { WaiterModule } from "../waiter/waiter.module";
 import { CategoryModule } from "../category/category.module";
 import { MealModule } from "../meal/meal.module";
+import { OrderModule } from "../order/order.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -25,6 +26,7 @@ describe("Restaurant Resolver", () => {
         WaiterModule,
         CategoryModule,
         MealModule,
+        OrderModule,
       ],
       providers: [RestaurantResolver, RestaurantService],
     }).compile();
@@ -97,6 +99,11 @@ describe("Restaurant Resolver", () => {
   it("return meals of restaurant", async () => {
     const meals = await resolver.getMeals({ id: payload.id } as Restaurant);
     expect(meals.length).toEqual(0);
+  });
+
+  it("list orders of restaurant", async () => {
+    const orders = await resolver.getOrders({ id: payload.id } as Restaurant);
+    expect(orders.length).toEqual(0);
   });
 
   it("deletes restaurant", async () => {

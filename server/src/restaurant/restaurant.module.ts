@@ -7,9 +7,18 @@ import { TableModule } from "../table/table.module";
 import { WaiterModule } from "../waiter/waiter.module";
 import { CategoryModule } from "../category/category.module";
 import { MealModule } from "../meal/meal.module";
+import { OrderModule } from "../order/order.module";
 
 @Module({
-  imports: [PrismaModule, AddressModule, TableModule, WaiterModule, CategoryModule, MealModule],
+  imports: [
+    PrismaModule,
+    AddressModule,
+    TableModule,
+    WaiterModule,
+    CategoryModule,
+    MealModule,
+    OrderModule,
+  ],
   providers: [RestaurantResolver, RestaurantService],
   exports: [RestaurantService],
 })

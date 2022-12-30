@@ -167,4 +167,16 @@ export class MealService {
     });
     return meal.restaurant;
   }
+
+  async getOrders(id: number) {
+    const meal = await this.prismaService.meal.findFirstOrThrow({
+      where: {
+        id,
+      },
+      select: {
+        orders: true,
+      },
+    });
+    return meal.orders;
+  }
 }

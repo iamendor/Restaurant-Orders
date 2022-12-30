@@ -29,6 +29,10 @@ export const getMocks = () => ({
     restaurantId: 1,
   },
   meal: {
+    default: {
+      price: 1.0,
+      name: "TestMeal",
+    },
     withCategory: () => ({
       name: "TestMeal",
       price: 1.0,
@@ -42,6 +46,12 @@ export const getMocks = () => ({
       categoryId: id,
     }),
   },
+  order: (data: { restaurantId; mealId; tableId; waiterId }) => ({
+    ...data,
+    description: "this is a mock order",
+    isReady: false,
+    createdAt: new Date().toLocaleString(),
+  }),
 });
 
 export const createRestaurantWithWaiter = async ({

@@ -36,6 +36,13 @@ type Mutation {
   createMeals(data: [CreateMeals!]): MealsCreated
   updateMeal(data: UpdateMeal!): Meal
   deleteMeal(where: WhereMeal!): Deleted
+  """
+  Order operations
+  """
+  createOrder(data: CreateOrder!): Order
+  createOrders(data: [CreateOrder!]): OrdersCreated
+  updateOrder(data: UpdateOrder!): Order
+  deleteOrder(where: WhereOrder!): Deleted
 }
 
 type Query {
@@ -50,6 +57,8 @@ type Query {
   category(where: WhereCategory!): Category
   meals: [Meal]
   meal(where: WhereMeal!): Meal
+  orders: [Order]
+  order(where: WhereOrder!): Order
 }
 
 schema {
@@ -99,10 +108,10 @@ type Order {
   description: String!
   createdAt: String!
   isReady: Boolean!
-  waiter: Waiter!
-  table: Table!
-  restaurant: Restaurant!
-  meal: Meal!
+  waiter: Waiter
+  table: Table
+  restaurant: Restaurant
+  meal: Meal
 }
 
 type Meal {
@@ -388,6 +397,42 @@ input WhereMeal {
 Meal Response
 """
 type MealsCreated {
+  message: String!
+}
+
+"""
+Order Dto
+"""
+input CreateOrder {
+  description: String
+  isReady: Boolean = false
+  waiterId: Int
+  tableId: Int!
+  mealId: Int!
+  restaurantId: Int
+}
+
+input WhereOrder {
+  id: Int!
+  restaurantId: Int
+}
+
+input UpdateOrder {
+  where: WhereOrder!
+  update: UpdateOrderData!
+}
+
+input UpdateOrderData {
+  description: String
+  isReady: Boolean
+  tableId: Int
+  mealId: Int
+}
+
+"""
+Order Response
+"""
+type OrdersCreated {
   message: String!
 }
 

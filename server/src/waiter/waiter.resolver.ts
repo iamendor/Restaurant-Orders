@@ -14,6 +14,7 @@ import {
   CreateWaiter,
   Deleted,
   JwtPayload,
+  Order,
   PasswordUpdated,
   Restaurant,
   UpdateWaiter,
@@ -99,8 +100,12 @@ export class WaiterResolver {
   }
 
   @ResolveField(() => Restaurant, { name: "restaurant" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter"))
   getRestaurant(@Parent() waiter: Waiter) {
     return this.waiterService.getRestaurant(waiter.email);
+  }
+
+  @ResolveField(() => [Order], { name: "orders" })
+  getOrders(@Parent() waiter: Waiter) {
+    return this.waiterService.getOrders(waiter.id);
   }
 }

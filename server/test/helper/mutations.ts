@@ -216,4 +216,31 @@ export const getMutations = () => ({
       }
     `,
   },
+  order: {
+    create: () => `
+      mutation create($data: CreateOrder!, $dataMultiple: [CreateOrder!]){
+        createOrder(data: $data){
+          id
+          description
+        }
+        createOrders(data: $dataMultiple){
+          message
+        }
+      }
+    `,
+    update: () => `
+      mutation update($data: UpdateOrder!){
+        updateOrder(data: $data){
+          isReady
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereOrder!){
+        deleteOrder(where:$where){
+          message
+        }
+      }
+    `,
+  },
 });

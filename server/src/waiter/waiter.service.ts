@@ -156,6 +156,18 @@ export class WaiterService {
         restaurant: true,
       },
     });
+    if (!waiter) throw new NotFoundResourceException("waiter");
     return waiter.restaurant;
+  }
+
+  async getOrders(id: number) {
+    const waiter = await this.prismaService.waiter.findFirst({
+      where: { id },
+      select: {
+        orders: true,
+      },
+    });
+    if (!waiter) throw new NotFoundResourceException("waiter");
+    return waiter.orders;
   }
 }

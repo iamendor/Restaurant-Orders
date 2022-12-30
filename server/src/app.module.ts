@@ -10,6 +10,7 @@ import { AddressModule } from "./address/address.module";
 import { TableModule } from "./table/table.module";
 import { CategoryModule } from './category/category.module';
 import { MealModule } from './meal/meal.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MealModule } from './meal/meal.module';
     TableModule,
     CategoryModule,
     MealModule,
+    OrderModule,
   ],
 })
 export class AppModule {}

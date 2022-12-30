@@ -58,7 +58,7 @@ model Order{
   waiter Waiter @relation(fields: [waiterId], references: [id])
   table Table @relation(fields: [tableId], references: [id])
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  meal Meal @relation(fields: [mealId], references: [id])
+  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
   mealId Int
   restaurantId Int
   tableId Int

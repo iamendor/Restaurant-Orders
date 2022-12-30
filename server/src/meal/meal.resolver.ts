@@ -15,6 +15,7 @@ import {
   JwtPayload,
   Meal,
   MealsCreated,
+  Order,
   UpdateMeal,
   WhereMeal,
 } from "../models/model";
@@ -87,14 +88,17 @@ export class MealResolver {
   }
 
   @ResolveField(() => Category, { name: "category" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   getCategory(@Parent() meal: Meal) {
     return this.mealService.getCategory(meal.id);
   }
 
   @ResolveField(() => Category, { name: "restaurant" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   getRestaurant(@Parent() meal: Meal) {
     return this.mealService.getRestaurant(meal.id);
+  }
+
+  @ResolveField(() => [Order], { name: "orders" })
+  getOrders(@Parent() meal: Meal) {
+    return this.mealService.getOrders(meal.id);
   }
 }

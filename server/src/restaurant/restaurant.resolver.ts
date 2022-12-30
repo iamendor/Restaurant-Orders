@@ -17,6 +17,7 @@ import {
   Deleted,
   JwtPayload,
   Meal,
+  Order,
   PasswordUpdated,
   Restaurant,
   Table,
@@ -29,6 +30,7 @@ import { TableService } from "../table/table.service";
 import { WaiterService } from "../waiter/waiter.service";
 import { CategoryService } from "../category/category.service";
 import { MealService } from "../meal/meal.service";
+import { OrderService } from "../order/order.service";
 
 @Resolver("Restaurant")
 export class RestaurantResolver {
@@ -38,7 +40,8 @@ export class RestaurantResolver {
     private readonly tableService: TableService,
     private readonly waiterService: WaiterService,
     private readonly categoryService: CategoryService,
-    private readonly mealService: MealService
+    private readonly mealService: MealService,
+    private readonly orderService: OrderService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -78,33 +81,33 @@ export class RestaurantResolver {
     return this.restaurantService.find({ id: restaurant.id });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => Address, { name: "address" })
   getAddress(@Parent() restaurant: Restaurant) {
     return this.addressService.find({ restaurantId: restaurant.id });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => [Table], { name: "tables" })
   getTables(@Parent() restaurant: Restaurant) {
     return this.tableService.list(restaurant.id);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => [Waiter], { name: "waiters" })
   getWaiters(@Parent() restaurant: Restaurant) {
     return this.waiterService.list({ id: restaurant.id });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => [Category], { name: "categories" })
   getCategories(@Parent() restaurant: Restaurant) {
     return this.categoryService.list(restaurant.id);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @ResolveField(() => [Meal], { name: "meals" })
   getMeals(@Parent() restaurant: Restaurant) {
     return this.mealService.list(restaurant.id);
+  }
+
+  @ResolveField(() => [Order], { name: "orders" })
+  getOrders(@Parent() restaurant: Restaurant) {
+    return this.orderService.list(restaurant.id);
   }
 }

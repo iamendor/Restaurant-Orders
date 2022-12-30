@@ -89,4 +89,17 @@ export const getQueries = () => ({
       }
     `,
   },
+  order: {
+    listAndFind: () => `
+      query listAndFind($where: WhereOrder!){
+        orders{
+          description
+        }
+        order(where: $where){
+          isReady
+          description
+        }
+      }
+    `,
+  },
 });

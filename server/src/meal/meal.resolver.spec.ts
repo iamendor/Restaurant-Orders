@@ -51,7 +51,12 @@ describe("MealResolver", () => {
   it("creates a meal with the category", async () => {
     const meal = await resolver.create(Rpayload, mockMeal);
     expect(meal.name).toBe(mockMeal.name);
-    categoryId = meal.categoryId;
+    categoryId = (
+      await prisma.meal.findFirst({
+        where: { id: meal.id },
+        select: { categoryId: true },
+      })
+    ).categoryId;
     mealId = meal.id;
   });
   it("creates two meals", async () => {
@@ -87,7 +92,7 @@ describe("MealResolver", () => {
     it("returns specific", async () => {
       const meal = await resolver.find(Rpayload, { id: mealId });
       expect(meal).toBeDefined();
-      expect(meal.price).toEqual(1.0);
+      expect(meal.price).toEqual(1.1);
     });
   });
   describe("List and find as waiter", () => {
@@ -98,7 +103,7 @@ describe("MealResolver", () => {
     it("returns specific", async () => {
       const meal = await resolver.find(Wpayload, { id: mealId });
       expect(meal).toBeDefined();
-      expect(meal.price).toEqual(1.0);
+      expect(meal.price).toEqual(1.1);
     });
   });
 
@@ -109,5 +114,10 @@ describe("MealResolver", () => {
   it("returns restaurant of meal", async () => {
     const restaurant = await resolver.getRestaurant({ id: mealId } as Meal);
     expect(restaurant.id).toBe(Rpayload.id);
+  });
+
+  it("list orders included meal", async () => {
+    const orders = await resolver.getOrders({ id: mealId } as Meal);
+    expect(orders.length).toEqual(0);
   });
 });
