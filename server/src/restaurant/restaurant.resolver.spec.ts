@@ -13,6 +13,7 @@ import { CategoryModule } from "../category/category.module";
 import { OrderModule } from "../order/order.module";
 import { VictualModule } from "../victual/victual.module";
 import { MealModule } from "../meal/meal.module";
+import { CurrencyModule } from "../currency/currency.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -29,6 +30,7 @@ describe("Restaurant Resolver", () => {
         VictualModule,
         OrderModule,
         MealModule,
+        CurrencyModule,
       ],
       providers: [RestaurantResolver, RestaurantService],
     }).compile();
@@ -79,7 +81,7 @@ describe("Restaurant Resolver", () => {
     const address = await resolver.getAddress({
       ...rest,
       id: payload.id,
-    });
+    } as unknown as Restaurant);
     expect(address).toBeDefined();
     expect(address).toMatchObject(addressInfo);
   });
@@ -110,6 +112,14 @@ describe("Restaurant Resolver", () => {
   it("list meals of restaurant", async () => {
     const meals = await resolver.getMeals({ id: payload.id } as Restaurant);
     expect(meals.length).toEqual(0);
+  });
+
+  it("return currency of meal", async () => {
+    const currency = await resolver.getCurrency({
+      id: payload.id,
+    } as Restaurant);
+    expect(currency).toBeDefined();
+    expect(currency.currency).toBe("HUF");
   });
 
   it("deletes restaurant", async () => {

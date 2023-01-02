@@ -66,6 +66,7 @@ type Query {
   order(where: WhereOrder!): Order
   meals: [Meal]
   meal(where: WhereMeal!): Meal
+  currency(where: WhereCurrency!): Currency
 }
 type Subscription {
   listenOrders: ListenOrders
@@ -87,11 +88,19 @@ type RestaurantModel {
   email: String!
   password: String!
   address: Address
+  currency: Currency
   waiters: [Waiter]
   orders: [Order]
   victuals: [Victual]
   categories: [Category]
   tables: [Table]
+  meals: [Meal]
+}
+
+type Currency {
+  id: Int!
+  currency: String!
+  restaurant: Restaurant
   meals: [Meal]
 }
 
@@ -160,6 +169,7 @@ type Meal {
   waiter: Waiter
   table: Table
   orders: [Order]
+  currency: Currency
   restaurant: Restaurant
 }
 
@@ -171,6 +181,7 @@ input CreateRestaurant {
   email: String!
   password: String!
   address: CreateAddress!
+  currency: CreateCurrency!
 }
 
 input LoginRestaurant {
@@ -188,6 +199,7 @@ input UpdateRestaurantData {
 input UpdateRestaurant {
   name: String
   address: UpdateAddress
+  currency: UpdateCurrency
 }
 
 input UpdateRestaurantDataPassword {
@@ -213,6 +225,7 @@ type Restaurant {
   name: String!
   email: String!
   address: Address
+  currency: Currency
   waiters: [Waiter]
   orders: [Order]
   victuals: [Victual]
@@ -241,6 +254,22 @@ input UpdateAddress {
 }
 
 input WhereAddress {
+  id: Int
+  restaurantId: Int
+}
+
+"""
+Currency Input
+"""
+input CreateCurrency {
+  currency: String!
+}
+
+input UpdateCurrency {
+  currency: String
+}
+
+input WhereCurrency {
   id: Int
   restaurantId: Int
 }

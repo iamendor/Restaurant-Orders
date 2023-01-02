@@ -14,6 +14,7 @@ import { RoleGuard } from "../auth/guards/role-guard";
 import {
   Address,
   Category,
+  Currency,
   Deleted,
   JwtPayload,
   Meal,
@@ -33,6 +34,7 @@ import { CategoryService } from "../category/category.service";
 import { OrderService } from "../order/order.service";
 import { VictualService } from "../victual/victual.service";
 import { MealService } from "../meal/meal.service";
+import { CurrencyService } from "../currency/currency.service";
 
 @Resolver("Restaurant")
 export class RestaurantResolver {
@@ -44,7 +46,8 @@ export class RestaurantResolver {
     private readonly categoryService: CategoryService,
     private readonly victualService: VictualService,
     private readonly orderService: OrderService,
-    private readonly mealService: MealService
+    private readonly mealService: MealService,
+    private readonly currencyService: CurrencyService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -117,5 +120,10 @@ export class RestaurantResolver {
   @ResolveField(() => [Meal], { name: "meals" })
   getMeals(@Parent() restaurant: Restaurant) {
     return this.mealService.list(restaurant.id);
+  }
+
+  @ResolveField(() => Currency, { name: "currency" })
+  getCurrency(@Parent() restaurant: Restaurant) {
+    return this.currencyService.find({ restaurantId: restaurant.id });
   }
 }

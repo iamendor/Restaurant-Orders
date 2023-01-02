@@ -6,9 +6,7 @@ import { WaiterModule } from "../waiter/waiter.module";
 import { PrismaService } from "../prisma/prisma.service";
 import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { JwtPayload } from "../models/model";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { Config } from "../config";
+import { JwtService } from "@nestjs/jwt";
 import { CoreModule } from "../core/core.module";
 
 describe("TableResolver", () => {
@@ -22,7 +20,7 @@ describe("TableResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule],
+      imports: [CoreModule, PrismaModule],
       providers: [TableResolver, TableService],
     }).compile();
 

@@ -11,6 +11,7 @@ import { CoreModule } from "./core/core.module";
 import { SubscriptionModule } from "./subscription/subscription.module";
 import { MealModule } from "./meal/meal.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { CurrencyModule } from './currency/currency.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PrismaModule } from "./prisma/prisma.module";
     OrderModule,
     SubscriptionModule,
     MealModule,
+    CurrencyModule,
   ],
 })
 export class AppModule {}

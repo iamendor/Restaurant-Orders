@@ -12,6 +12,9 @@ export const getMocks = () => ({
       city: "gyoma",
       country: "HU",
     },
+    currency: {
+      currency: "HUF",
+    },
     password: "mockRestaurant123",
   },
   waiter: {
@@ -80,6 +83,11 @@ export const createRestaurantWithWaiter = async ({
           password: bcrypt.hashSync(mocks.waiter.password, 10),
         },
       },
+      currency: {
+        create: {
+          ...mocks.restaurant.currency,
+        },
+      },
     },
     include: {
       waiters: true,
@@ -143,6 +151,9 @@ export const clearMocks = async ({
           create: {
             ...mocks.restaurant.address,
           },
+        },
+        currency: {
+          create: { ...mocks.restaurant.currency },
         },
       },
     });

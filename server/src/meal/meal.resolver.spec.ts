@@ -20,7 +20,7 @@ describe("MealResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule],
+      imports: [CoreModule, PrismaModule],
       providers: [MealResolver, MealService],
     }).compile();
     const config = module.get<ConfigService>(ConfigService);
@@ -105,6 +105,12 @@ describe("MealResolver", () => {
   it("return restaurant of meal", async () => {
     const restaurant = await resolver.getRestaurant({ id: mealId } as Meal);
     expect(restaurant).toBeDefined();
+  });
+
+  it("return currency of meal", async () => {
+    const currency = await resolver.getCurrency({ id: mealId } as Meal);
+    expect(currency).toBeDefined();
+    expect(currency.currency).toBe("HUF");
   });
 
   it("delete the meal", async () => {

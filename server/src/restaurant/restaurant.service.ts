@@ -31,6 +31,9 @@ export class RestaurantService {
           address: {
             create: data.address,
           },
+          currency: {
+            create: data.currency,
+          },
         },
       });
       return restaurant;
@@ -74,6 +77,9 @@ export class RestaurantService {
           ...update.data,
           address: {
             update: update.data.address && update.data.address,
+          },
+          currency: {
+            update: update.data.currency && update.data.currency,
           },
         },
       });
