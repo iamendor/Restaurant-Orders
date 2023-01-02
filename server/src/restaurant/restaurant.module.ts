@@ -19,7 +19,7 @@ import { MealModule } from "../meal/meal.module";
     CategoryModule,
     VictualModule,
     OrderModule,
-    MealModule
+    MealModule,
   ],
   providers: [RestaurantResolver, RestaurantService],
   exports: [RestaurantService],

@@ -585,6 +585,7 @@ describe("Orders API", () => {
       let create;
       let createMultiple;
       beforeAll(async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { restaurantId: _, ...rest } = mocks.category;
         const { body } = await req(server, {
           query: mutations.category.create(),
@@ -851,6 +852,7 @@ describe("Orders API", () => {
     let createMultiple;
     beforeAll(() => {
       catId = catId[0];
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { createdAt: _, ...rest } = mocks.order({
         restaurantId,
         victualId,

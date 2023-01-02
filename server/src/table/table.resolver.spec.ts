@@ -16,6 +16,7 @@ describe("TableResolver", () => {
   let Rpayload: JwtPayload;
   let Wpayload: JwtPayload;
   const mocks = getMocks();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockTable: any = mocks.table();
 
   beforeAll(async () => {

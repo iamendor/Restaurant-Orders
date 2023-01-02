@@ -5,7 +5,7 @@ import {
   LoginRestaurant,
   LoginWaiter,
   Restaurant,
-  Waiter,
+  WaiterModel,
 } from "../models/model";
 import { RestaurantService } from "../restaurant/restaurant.service";
 import * as bcrypt from "bcrypt";
@@ -53,12 +53,13 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  generateWaiterJwt(waiter: Waiter): string {
+  generateWaiterJwt(waiter: WaiterModel): string {
     const payload = {
       sub: waiter.id,
       name: waiter.name,
       email: waiter.email,
       role: "waiter",
+      restaurantId: waiter.restaurantId,
     };
     return this.jwtService.sign(payload);
   }

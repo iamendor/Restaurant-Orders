@@ -95,6 +95,19 @@ describe("MealResolver", () => {
     const orders = await resolver.getOrders({ id: mealId } as Meal);
     expect(orders.length).toEqual(1);
   });
+  it("return table of meal", async () => {
+    const table = await resolver.getTable({ id: mealId } as Meal);
+    expect(table).toBeDefined();
+  });
+  it("return waiter of meal", async () => {
+    const waiter = await resolver.getWaiter({ id: mealId } as Meal);
+    expect(waiter).toBeDefined();
+  });
+  it("return restaurant of meal", async () => {
+    const restaurant = await resolver.getRestaurant({ id: mealId } as Meal);
+    expect(restaurant).toBeDefined();
+  });
+
   it("delete the meal", async () => {
     const deleted = await resolver.delete(restaurantPayload, { id: mealId });
     expect(deleted.message).toBe("success");

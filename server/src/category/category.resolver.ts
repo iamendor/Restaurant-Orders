@@ -62,18 +62,18 @@ export class CategoryResolver {
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   @Query(() => Category, { name: "category" })
   async find(@User() user: JwtPayload, @Args("where") where: WhereCategory) {
-    if (user.role === "restaurant")
-      return this.categoryService.find({ ...where, restaurantId: user.id });
-    const restaurant = await this.waiterService.getRestaurant(user.email);
-    return this.categoryService.find({ ...where, restaurantId: restaurant.id });
+    return this.categoryService.find({
+      ...where,
+      restaurantId: user.role === "restaurant" ? user.id : user.restaurantId,
+    });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   @Query(() => [Category], { name: "categories" })
   async list(@User() user: JwtPayload) {
-    if (user.role === "restaurant") return this.categoryService.list(user.id);
-    const restaurant = await this.waiterService.getRestaurant(user.email);
-    return this.categoryService.list(restaurant.id);
+    return this.categoryService.list(
+      user.role === "restaurant" ? user.id : user.restaurantId
+    );
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))

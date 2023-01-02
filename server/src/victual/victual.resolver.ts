@@ -23,14 +23,13 @@ import { User } from "../auth/decorators/user.decorator";
 import { HttpException, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
-import { WaiterService } from "../waiter/waiter.service";
 
 @Resolver("Victual")
 export class VictualResolver {
-  constructor(
-    private readonly victualService: VictualService,
-    private readonly waiterService: WaiterService
-  ) {}
+  constructor(private readonly victualService: VictualService) {}
+  private getRestaurantId(user: JwtPayload) {
+    return user.role === "restaurant" ? user.id : user.restaurantId;
+  }
 
   @Mutation(() => Victual, { name: "createVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -72,21 +71,14 @@ export class VictualResolver {
   @Query(() => [Victual], { name: "victuals" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async list(@User() user: JwtPayload) {
-    const id =
-      user.role === "restaurant"
-        ? user.id
-        : (await this.waiterService.getRestaurant(user.email)).id;
-
+    const id = this.getRestaurantId(user);
     return this.victualService.list(id);
   }
 
   @Query(() => Victual, { name: "victual" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async find(@User() user: JwtPayload, @Args("where") where: WhereVictual) {
-    const id =
-      user.role === "restaurant"
-        ? user.id
-        : (await this.waiterService.getRestaurant(user.email)).id;
+    const id = this.getRestaurantId(user);
     return this.victualService.find({ ...where, restaurantId: id });
   }
 

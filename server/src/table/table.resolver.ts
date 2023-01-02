@@ -22,14 +22,14 @@ import { User } from "../auth/decorators/user.decorator";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
-import { WaiterService } from "../waiter/waiter.service";
 
 @Resolver("Table")
 export class TableResolver {
-  constructor(
-    private readonly tableService: TableService,
-    private readonly waiterService: WaiterService
-  ) {}
+  constructor(private readonly tableService: TableService) {}
+
+  private getRestaurantId(user: JwtPayload) {
+    return user.role === "restaurant" ? user.id : user.restaurantId;
+  }
 
   @Mutation(() => Table, { name: "createTable" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -71,20 +71,15 @@ export class TableResolver {
   @Query(() => [Table], { name: "tables" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async list(@User() user: JwtPayload) {
-    if (user.role === "restaurant") return this.tableService.list(user.id);
-    const restaurant = await this.waiterService.getRestaurant(user.email);
-    return this.tableService.list(restaurant.id);
+    return this.tableService.list(this.getRestaurantId(user));
   }
 
   @Query(() => Table, { name: "table" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async find(@User() user: JwtPayload, @Args("where") where: WhereTable) {
-    if (user.role === "restaurant")
-      return this.tableService.find({ ...where, restaurantId: user.id });
-    const restaurant = await this.waiterService.getRestaurant(user.email);
     return this.tableService.find({
       ...where,
-      restaurantId: restaurant.id,
+      restaurantId: this.getRestaurantId(user),
     });
   }
 

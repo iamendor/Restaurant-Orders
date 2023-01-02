@@ -25,6 +25,7 @@ describe("TableService", () => {
       .fn()
       .mockImplementation(({ data }) => ({ count: data.length }));
     prisma.table.create = jest.fn().mockImplementation(({ data }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { restaurant: _, ...rest } = data;
       return rest;
     });

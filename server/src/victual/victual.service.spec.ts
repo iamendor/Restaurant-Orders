@@ -21,7 +21,7 @@ describe("MealService", () => {
     const prisma = module.get<PrismaService>(PrismaService);
     const categoryService = module.get<CategoryService>(CategoryService);
     categoryService.find = jest.fn().mockReturnValue(mocks.category);
-    prisma.victual.create = jest.fn().mockImplementation(({ data }) => ({
+    prisma.victual.create = jest.fn().mockImplementation(() => ({
       ...mocks.victual.withCategoryId(2),
     }));
     prisma.victual.createMany = jest.fn().mockReturnValue({ count: 2 });

@@ -1,6 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateMeal, Deleted, Meal, Order, WhereMeal } from "../models/model";
+import {
+  CreateMeal,
+  Deleted,
+  Meal,
+  Order,
+  Restaurant,
+  Table,
+  Waiter,
+  WhereMeal,
+} from "../models/model";
 import {
   NotFoundResourceException,
   SomethingWentWrongException,
@@ -118,6 +127,29 @@ export class MealService {
     }
   }
 
+  async getWaiter(id: number): Promise<Waiter> {
+    const meal = await this.prismaService.meal.findFirst({
+      where: { id },
+      include: { waiter: true },
+    });
+    return meal.waiter;
+  }
+
+  async getTable(id: number): Promise<Table> {
+    const meal = await this.prismaService.meal.findFirst({
+      where: { id },
+      include: { table: true },
+    });
+    return meal.table;
+  }
+
+  async getRestaurant(id: number): Promise<Restaurant> {
+    const meal = await this.prismaService.meal.findFirst({
+      where: { id },
+      include: { restaurant: true },
+    });
+    return meal.restaurant;
+  }
   async getOrders(id: number): Promise<Order[]> {
     const meal = await this.prismaService.meal.findFirst({
       where: { id },

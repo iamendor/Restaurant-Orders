@@ -1,7 +1,7 @@
 import { ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import { GenerateOptions } from "@nestjs/graphql";
-import { JwtModuleOptions, JwtService } from "@nestjs/jwt";
+import { JwtModuleOptions } from "@nestjs/jwt";
 import { PubSub } from "graphql-subscriptions";
 import { join } from "path";
 
@@ -14,10 +14,7 @@ export class Config {
     };
   }
 
-  static getGqlModuleOptions(
-    config: ConfigService,
-    jwt: JwtService
-  ): ApolloDriverConfig {
+  static getGqlModuleOptions(config: ConfigService): ApolloDriverConfig {
     const gql = Config.getGqlConfig();
     return {
       definitions: { ...gql },

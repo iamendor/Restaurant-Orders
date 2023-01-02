@@ -85,10 +85,8 @@ export class WaiterResolver {
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   @Query(() => [Waiter])
   async waiters(@User() user: JwtPayload) {
-    if (user.role === "restaurant")
-      return this.waiterService.list({ id: user.id });
     return this.waiterService.list({
-      id: (await this.waiterService.getRestaurant(user.email)).id,
+      id: user.role === "restaurant" ? user.id : user.restaurantId,
     });
   }
 

@@ -115,6 +115,7 @@ type WaiterModel {
   orders: [Order]
   meals: [Meal]
   restaurant: Restaurant
+  restaurantId: Int
 }
 
 type Order {
@@ -484,6 +485,7 @@ type JwtPayload {
   role: String!
   id: Int!
   email: String!
+  restaurantId: Int
 }
 
 type Deleted {
