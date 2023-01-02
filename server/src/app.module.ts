@@ -10,9 +10,11 @@ import { OrderModule } from "./order/order.module";
 import { CoreModule } from "./core/core.module";
 import { SubscriptionModule } from "./subscription/subscription.module";
 import { MealModule } from "./meal/meal.module";
+import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
+    PrismaModule,
     CoreModule,
     AuthModule,
     RestaurantModule,
@@ -22,7 +24,6 @@ import { MealModule } from "./meal/meal.module";
     CategoryModule,
     VictualModule,
     OrderModule,
-    CoreModule,
     SubscriptionModule,
     MealModule,
   ],

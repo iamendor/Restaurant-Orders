@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CategoryResolver } from "./category.resolver";
 import { CategoryService } from "./category.service";
 import { PrismaModule } from "../prisma/prisma.module";
-import { WaiterModule } from "../waiter/waiter.module";
 import { PrismaService } from "../prisma/prisma.service";
 import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { JwtModule, JwtService } from "@nestjs/jwt";
@@ -24,7 +23,6 @@ describe("CategoryResolver", () => {
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         PrismaModule,
-        WaiterModule,
         JwtModule.registerAsync({
           inject: [ConfigService],
           useFactory: Config.getJwtConfig,

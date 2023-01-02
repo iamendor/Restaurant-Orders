@@ -9,6 +9,7 @@ import { JwtPayload } from "../models/model";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Config } from "../config";
+import { CoreModule } from "../core/core.module";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
@@ -21,15 +22,7 @@ describe("TableResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        PrismaModule,
-        WaiterModule,
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-      ],
+      imports: [CoreModule],
       providers: [TableResolver, TableService],
     }).compile();
 

@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { MealResolver } from "./meal.resolver";
 import { MealService } from "./meal.service";
 import { PrismaModule } from "../prisma/prisma.module";
-import { WaiterModule } from "../waiter/waiter.module";
 import { PrismaService } from "../prisma/prisma.service";
 import { CoreModule } from "../core/core.module";
 import { JwtService } from "@nestjs/jwt";
@@ -21,7 +20,7 @@ describe("MealResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, PrismaModule, WaiterModule],
+      imports: [CoreModule],
       providers: [MealResolver, MealService],
     }).compile();
     const config = module.get<ConfigService>(ConfigService);

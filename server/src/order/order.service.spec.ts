@@ -17,7 +17,7 @@ describe("OrderService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, WaiterModule],
+      imports: [PrismaModule],
       providers: [OrderService],
     }).compile();
 

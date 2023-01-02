@@ -25,7 +25,6 @@ import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
 import { User } from "../auth/decorators/user.decorator";
-import { WaiterService } from "../waiter/waiter.service";
 import { pubSub } from "../config";
 import { SubscriptionService } from "../subscription/subscription.service";
 
@@ -33,7 +32,6 @@ import { SubscriptionService } from "../subscription/subscription.service";
 export class OrderResolver {
   constructor(
     private readonly orderService: OrderService,
-    private waiterService: WaiterService,
     private subscriptionService: SubscriptionService
   ) {}
 

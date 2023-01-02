@@ -13,7 +13,6 @@ describe("SubscriptionService", () => {
 
     service = module.get<SubscriptionService>(SubscriptionService);
   });
-  //TODO: implement
   it("should be defined", () => {
     expect(service).toBeDefined();
   });

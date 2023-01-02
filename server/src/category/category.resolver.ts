@@ -21,14 +21,10 @@ import {
   WhereCategory,
 } from "../models/model";
 import { User } from "../auth/decorators/user.decorator";
-import { WaiterService } from "../waiter/waiter.service";
 
 @Resolver("Category")
 export class CategoryResolver {
-  constructor(
-    private readonly categoryService: CategoryService,
-    private readonly waiterService: WaiterService
-  ) {}
+  constructor(private readonly categoryService: CategoryService) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @Mutation(() => Category, { name: "createCategory" })

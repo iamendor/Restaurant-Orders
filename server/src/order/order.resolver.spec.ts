@@ -10,6 +10,7 @@ import { JwtModule, JwtService } from "@nestjs/jwt";
 import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { CreateOrder, JwtPayload, Order } from "../models/model";
 import { SubscriptionModule } from "../subscription/subscription.module";
+import { CoreModule } from "../core/core.module";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -24,16 +25,7 @@ describe("OrderResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        PrismaModule,
-        WaiterModule,
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-        SubscriptionModule,
-      ],
+      imports: [CoreModule, WaiterModule, SubscriptionModule],
       providers: [OrderResolver, OrderService],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);

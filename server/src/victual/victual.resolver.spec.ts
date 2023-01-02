@@ -10,6 +10,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { JwtPayload, Victual } from "../models/model";
 import { VictualResolver } from "./victual.resolver";
 import { VictualService } from "./victual.service";
+import { CoreModule } from "../core/core.module";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
@@ -23,16 +24,7 @@ describe("MealResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-        PrismaModule,
-        WaiterModule,
-        CategoryModule,
-      ],
+      imports: [CoreModule, CategoryModule],
       providers: [VictualResolver, VictualService],
     }).compile();
     const jwt = module.get<JwtService>(JwtService);

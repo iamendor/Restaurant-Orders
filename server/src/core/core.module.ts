@@ -1,6 +1,6 @@
 import { Global, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule, JwtService } from "@nestjs/jwt";
+import { JwtModule } from "@nestjs/jwt";
 import { Config } from "../config";
 import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -15,10 +15,8 @@ import { GraphQLModule } from "@nestjs/graphql";
     }),
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
-      imports: [JwtModule],
-      inject: [ConfigService, JwtService],
-      useFactory: (config: ConfigService, jwt: JwtService) =>
-        Config.getGqlModuleOptions(config, jwt),
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
   ],
   exports: [JwtModule, GraphQLModule, ConfigModule],

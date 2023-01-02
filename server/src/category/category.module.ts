@@ -2,10 +2,9 @@ import { Module } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { CategoryResolver } from "./category.resolver";
 import { PrismaModule } from "../prisma/prisma.module";
-import { WaiterModule } from "../waiter/waiter.module";
 
 @Module({
-  imports: [PrismaModule, WaiterModule],
+  imports: [PrismaModule],
   providers: [CategoryResolver, CategoryService],
   exports: [CategoryService],
 })
