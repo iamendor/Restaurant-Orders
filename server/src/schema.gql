@@ -32,9 +32,21 @@ type Mutation {
   """
   Meal operations
   """
+  createVictual(data: CreateVictual!): Victual
+  createVictuals(data: [CreateVictuals!]): VictualsCreated
+  updateVictual(data: UpdateVictual!): Victual
+  deleteVictual(where: WhereVictual!): Deleted
+  """
+  Order operations
+  """
+  createOrder(data: CreateOrder!): Order
+  createOrders(data: [CreateOrder!]): OrdersCreated
+  updateOrder(data: UpdateOrder!): Order
+  deleteOrder(where: WhereOrder!): Deleted
+  """
+  Meal operations
+  """
   createMeal(data: CreateMeal!): Meal
-  createMeals(data: [CreateMeals!]): MealsCreated
-  updateMeal(data: UpdateMeal!): Meal
   deleteMeal(where: WhereMeal!): Deleted
 }
 
@@ -48,13 +60,22 @@ type Query {
   table(where: WhereTable!): Table
   categories: [Category]
   category(where: WhereCategory!): Category
+  victuals: [Victual]
+  victual(where: WhereVictual!): Victual
+  orders: [Order]
+  order(where: WhereOrder!): Order
   meals: [Meal]
   meal(where: WhereMeal!): Meal
+}
+type Subscription {
+  listenOrders: ListenOrders
+  listenOrder(where: WhereOrder!): ListenOrder
 }
 
 schema {
   mutation: Mutation
   query: Query
+  subscription: Subscription
 }
 
 """
@@ -68,9 +89,10 @@ type RestaurantModel {
   address: Address
   waiters: [Waiter]
   orders: [Order]
-  meals: [Meal]
+  victuals: [Victual]
   categories: [Category]
   tables: [Table]
+  meals: [Meal]
 }
 
 type Address {
@@ -91,6 +113,7 @@ type WaiterModel {
   profileIcon: String
   password: String!
   orders: [Order]
+  meals: [Meal]
   restaurant: Restaurant
 }
 
@@ -99,13 +122,13 @@ type Order {
   description: String!
   createdAt: String!
   isReady: Boolean!
-  waiter: Waiter!
-  table: Table!
-  restaurant: Restaurant!
-  meal: Meal!
+  waiter: Waiter
+  table: Table
+  restaurant: Restaurant
+  victual: Victual
 }
 
-type Meal {
+type Victual {
   id: Int!
   name: String!
   price: Float!
@@ -117,13 +140,24 @@ type Meal {
 type Category {
   id: Int!
   name: String!
-  meals: [Meal]
+  victuals: [Victual]
   restaurant: Restaurant
 }
 
 type Table {
   id: Int!
   name: String!
+  orders: [Order]
+  restaurant: Restaurant
+}
+
+type Meal {
+  id: Int!
+  start: String!
+  end: String!
+  total: Float!
+  waiter: Waiter
+  table: Table
   orders: [Order]
   restaurant: Restaurant
 }
@@ -180,9 +214,10 @@ type Restaurant {
   address: Address
   waiters: [Waiter]
   orders: [Order]
-  meals: [Meal]
+  victuals: [Victual]
   categories: [Category]
   tables: [Table]
+  meals: [Meal]
 }
 
 """
@@ -270,6 +305,7 @@ type Waiter {
   gender: String!
   profileIcon: String
   orders: [Order]
+  meals: [Meal]
   restaurant: Restaurant
 }
 
@@ -345,16 +381,16 @@ type CategoriesCreated {
 }
 
 """
-Meal Dto
+Victual Dto
 """
-input CreateMeal {
+input CreateVictual {
   name: String!
   price: Float!
   categoryId: Int
   category: CreateCategory
 }
 
-input CreateMealData {
+input CreateVictualData {
   name: String!
   price: Float!
   restaurantId: Int!
@@ -362,33 +398,81 @@ input CreateMealData {
   category: CreateCategory
 }
 
-input CreateMeals {
+input CreateVictuals {
   name: String!
   price: Float!
   restaurantId: Int
   categoryId: Int!
 }
 
-input UpdateMeal {
-  where: WhereMeal!
-  update: UpdateMealData!
+input UpdateVictual {
+  where: WhereVictual!
+  update: UpdateVictualData!
 }
-input UpdateMealData {
+input UpdateVictualData {
   name: String
   price: Float
   categoryId: Int
 }
 
-input WhereMeal {
+input WhereVictual {
   id: Int!
   restaurantId: Int
 }
 
 """
-Meal Response
+Victual Response
 """
-type MealsCreated {
+type VictualsCreated {
   message: String!
+}
+
+"""
+Order Dto
+"""
+input CreateOrder {
+  description: String
+  isReady: Boolean = false
+  waiterId: Int
+  tableId: Int!
+  victualId: Int!
+  restaurantId: Int
+}
+
+input WhereOrder {
+  id: Int!
+  restaurantId: Int
+}
+
+input UpdateOrder {
+  where: WhereOrder!
+  update: UpdateOrderData!
+}
+
+input UpdateOrderData {
+  description: String
+  isReady: Boolean
+  tableId: Int
+  victualId: Int
+}
+
+"""
+Order Response
+"""
+type OrdersCreated {
+  message: String!
+}
+
+"""
+Meal Dto
+"""
+input CreateMeal {
+  tableId: Int!
+}
+
+input WhereMeal {
+  id: Int!
+  restaurantId: Int
 }
 
 """
@@ -408,4 +492,20 @@ type Deleted {
 
 type PasswordUpdated {
   message: String!
+}
+
+"""
+Subscription
+"""
+type ListenOrders {
+  orders: [Order]
+}
+
+type ListenOrder {
+  order: Order
+}
+
+input InvalidateQuery {
+  restaurantId: Int!
+  orderId: Int
 }

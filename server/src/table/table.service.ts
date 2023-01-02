@@ -118,4 +118,16 @@ export class TableService {
     });
     return table.restaurant;
   }
+
+  async getOrders(id: number) {
+    const table = await this.prismaService.table.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        orders: true,
+      },
+    });
+    return table.orders;
+  }
 }

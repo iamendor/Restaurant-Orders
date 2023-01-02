@@ -3,111 +3,100 @@ import { MealResolver } from "./meal.resolver";
 import { MealService } from "./meal.service";
 import { PrismaModule } from "../prisma/prisma.module";
 import { WaiterModule } from "../waiter/waiter.module";
-import { CategoryModule } from "../category/category.module";
-import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { Config } from "../config";
 import { PrismaService } from "../prisma/prisma.service";
+import { CoreModule } from "../core/core.module";
+import { JwtService } from "@nestjs/jwt";
+import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { JwtPayload, Meal } from "../models/model";
+import { ConfigService } from "@nestjs/config";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
   let prisma: PrismaService;
-  let Rpayload: JwtPayload;
-  let Wpayload: JwtPayload;
-  let categoryId: number;
-  let mealId: number;
   const mocks = getMocks();
-  const mockMeal = mocks.meal.withCategory();
+  let restaurantPayload: JwtPayload;
+  let waiterPayload: JwtPayload;
+  let tableId: number;
+  let mealId: number;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-        PrismaModule,
-        WaiterModule,
-        CategoryModule,
-      ],
+      imports: [CoreModule, PrismaModule, WaiterModule],
       providers: [MealResolver, MealService],
     }).compile();
-    const jwt = module.get<JwtService>(JwtService);
+    const config = module.get<ConfigService>(ConfigService);
     prisma = module.get<PrismaService>(PrismaService);
+    const jwt = module.get<JwtService>(JwtService);
     resolver = module.get<MealResolver>(MealResolver);
-    const { restaurantPayload, waiterPayload } =
-      await createRestaurantWithWaiter({ prisma, jwt });
-    Rpayload = restaurantPayload;
-    Wpayload = waiterPayload;
+    const { restaurantPayload: rPayload, waiterPayload: wPayload } =
+      await createRestaurantWithWaiter({
+        prisma,
+        jwt,
+        secret: config.get("JWT_SECRET"),
+      });
+    [restaurantPayload, waiterPayload] = [rPayload, wPayload];
+    const data = await prisma.restaurant.update({
+      where: { id: restaurantPayload.id },
+      data: {
+        tables: {
+          create: {
+            ...mocks.table(),
+          },
+        },
+        categories: {
+          create: {
+            name: mocks.category.name,
+          },
+        },
+        victuals: {
+          create: {
+            ...mocks.victual.default,
+          },
+        },
+      },
+      include: {
+        tables: true,
+        victuals: true,
+      },
+    });
+    tableId = data.tables[0].id;
+
+    await prisma.order.create({
+      data: {
+        ...mocks.order({
+          restaurantId: restaurantPayload.id,
+          victualId: data.victuals[0].id,
+          waiterId: waiterPayload.id,
+          tableId,
+        }),
+      },
+    });
   });
 
   it("should be defined", () => {
     expect(resolver).toBeDefined();
   });
 
-  it("creates a meal with the category", async () => {
-    const meal = await resolver.create(Rpayload, mockMeal);
-    expect(meal.name).toBe(mockMeal.name);
-    categoryId = meal.categoryId;
+  it("create a meal", async () => {
+    const meal = await resolver.create(waiterPayload, { tableId });
+    expect(meal).toBeDefined();
+    expect(meal.total).toEqual(1);
     mealId = meal.id;
   });
-  it("creates two meals", async () => {
-    const meals = await resolver.createMany(
-      Rpayload,
-      [1, 2].map(() => ({
-        ...mocks.meal.withCategoryId(categoryId),
-      }))
-    );
-    expect(meals.message).toBe("success");
+  it("list meal", async () => {
+    const meals = await resolver.list(restaurantPayload);
+    expect(meals.length).toEqual(1);
   });
-  it("updates the meal's price", async () => {
-    const updatedMeal = await resolver.update(Rpayload, {
-      where: {
-        id: mealId,
-      },
-      update: {
-        price: 2.0,
-      },
-    });
-    expect(updatedMeal.price).toEqual(2.0);
+  it("return by id", async () => {
+    const meal = await resolver.find(waiterPayload, { id: mealId });
+    expect(meal).toBeDefined();
   });
-  it("deletes the meal", async () => {
-    const deleted = await resolver.delete(Rpayload, { id: mealId });
+  it("return orders of meal", async () => {
+    const orders = await resolver.getOrders({ id: mealId } as Meal);
+    expect(orders.length).toEqual(1);
+  });
+  it("delete the meal", async () => {
+    const deleted = await resolver.delete(restaurantPayload, { id: mealId });
     expect(deleted.message).toBe("success");
-  });
-  describe("List and find as restaurant", () => {
-    it("lists meal", async () => {
-      const meals = await resolver.list(Rpayload);
-      expect(meals.length).toEqual(2);
-      mealId = meals[0].id;
-    });
-    it("returns specific", async () => {
-      const meal = await resolver.find(Rpayload, { id: mealId });
-      expect(meal).toBeDefined();
-      expect(meal.price).toEqual(1.0);
-    });
-  });
-  describe("List and find as waiter", () => {
-    it("lists meal", async () => {
-      const meals = await resolver.list(Wpayload);
-      expect(meals.length).toEqual(2);
-    });
-    it("returns specific", async () => {
-      const meal = await resolver.find(Wpayload, { id: mealId });
-      expect(meal).toBeDefined();
-      expect(meal.price).toEqual(1.0);
-    });
-  });
-
-  it("returns category of meal", async () => {
-    const category = await resolver.getCategory({ id: mealId } as Meal);
-    expect(category.id).toBe(categoryId);
-  });
-  it("returns restaurant of meal", async () => {
-    const restaurant = await resolver.getRestaurant({ id: mealId } as Meal);
-    expect(restaurant.id).toBe(Rpayload.id);
   });
 });

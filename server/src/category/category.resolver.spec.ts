@@ -112,9 +112,9 @@ describe("CategoryResolver", () => {
     });
   });
 
-  it("returns meals of category", async () => {
-    const meals = await resolver.getMeals({ id: categoryId } as Category);
-    expect(meals.length).toEqual(0);
+  it("returns victuals of category", async () => {
+    const victuals = await resolver.getVictuals({ id: categoryId } as Category);
+    expect(victuals.length).toEqual(0);
   });
 
   it("returns restaurant of category", async () => {

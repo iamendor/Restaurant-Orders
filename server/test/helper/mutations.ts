@@ -181,10 +181,10 @@ export const getMutations = () => ({
       }
     `,
   },
-  meal: {
+  victual: {
     create: () => `
-      mutation create($data: CreateMeal!, $dataMeals: [CreateMeals!]){
-        createMeal(data: $data){
+      mutation create($data: CreateVictual!, $dataVictuals: [CreateVictuals!]){
+        createVictual(data: $data){
           id
           name
           price
@@ -192,19 +192,63 @@ export const getMutations = () => ({
             id
           }
         }
-        createMeals(data: $dataMeals){
+        createVictuals(data: $dataVictuals){
           message
         }
       }
     `,
     update: () => `
-      mutation update($data: UpdateMeal!){
-        updateMeal(data: $data){
+      mutation update($data: UpdateVictual!){
+        updateVictual(data: $data){
           category{
             id
           }
           name
           
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereVictual!){
+        deleteVictual(where: $where){
+          message
+        }
+      }
+    `,
+  },
+  order: {
+    create: () => `
+      mutation create($data: CreateOrder!, $dataMultiple: [CreateOrder!]){
+        createOrder(data: $data){
+          id
+          description
+        }
+        createOrders(data: $dataMultiple){
+          message
+        }
+      }
+    `,
+    update: () => `
+      mutation update($data: UpdateOrder!){
+        updateOrder(data: $data){
+          isReady
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereOrder!){
+        deleteOrder(where:$where){
+          message
+        }
+      }
+    `,
+  },
+  meal: {
+    create: () => `
+      mutation create($data: CreateMeal!){
+        createMeal(data: $data){
+          id
+          total
         }
       }
     `,

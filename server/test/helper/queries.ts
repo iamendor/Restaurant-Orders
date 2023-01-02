@@ -75,16 +75,42 @@ export const getQueries = () => ({
       }
     `,
   },
-  meal: {
+  victual: {
+    listAndFind: () => `
+      query listAndFind($where: WhereVictual!){
+        victuals{
+          id
+          name
+        }
+        victual(where: $where){
+          id
+          name
+        }
+      }
+    `,
+  },
+  order: {
+    listAndFind: () => `
+      query listAndFind($where: WhereOrder!){
+        orders{
+          description
+        }
+        order(where: $where){
+          isReady
+          description
+        }
+      }
+    `,
+  },
+  meals: {
     listAndFind: () => `
       query listAndFind($where: WhereMeal!){
         meals{
           id
-          name
         }
         meal(where: $where){
+          total
           id
-          name
         }
       }
     `,

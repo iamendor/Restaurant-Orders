@@ -15,8 +15,9 @@ import {
   CreateCategory,
   Deleted,
   JwtPayload,
-  Meal,
+  Restaurant,
   UpdateCategory,
+  Victual,
   WhereCategory,
 } from "../models/model";
 import { User } from "../auth/decorators/user.decorator";
@@ -76,12 +77,12 @@ export class CategoryResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @ResolveField(() => [Meal], { name: "meals" })
-  getMeals(@Parent() category: Category) {
-    return this.categoryService.getMeals(category.id);
+  @ResolveField(() => [Victual], { name: "victuals" })
+  getVictuals(@Parent() category: Category) {
+    return this.categoryService.getVictuals(category.id);
   }
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @ResolveField(() => [Meal], { name: "restaurant" })
+  @ResolveField(() => Restaurant, { name: "restaurant" })
   getResturant(@Parent() category: Category) {
     return this.categoryService.getRestaurant(category.id);
   }

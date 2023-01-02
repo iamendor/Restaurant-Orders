@@ -28,7 +28,11 @@ export const getMocks = () => ({
     name: "Category",
     restaurantId: 1,
   },
-  meal: {
+  victual: {
+    default: {
+      price: 1.0,
+      name: "TestMeal",
+    },
     withCategory: () => ({
       name: "TestMeal",
       price: 1.0,
@@ -42,14 +46,22 @@ export const getMocks = () => ({
       categoryId: id,
     }),
   },
+  order: (data: { restaurantId; victualId; tableId; waiterId }) => ({
+    ...data,
+    description: "this is a mock order",
+    isReady: false,
+    createdAt: new Date().toLocaleString(),
+  }),
 });
 
 export const createRestaurantWithWaiter = async ({
   prisma,
   jwt,
+  secret,
 }: {
   prisma: PrismaService;
   jwt: JwtService;
+  secret?: string;
 }) => {
   await clearMocks({ prisma });
   const mocks = getMocks();
@@ -91,8 +103,8 @@ export const createRestaurantWithWaiter = async ({
     role: "waiter",
     restaurantId: restaurant.id,
   };
-  const restaurantToken = jwt.sign(Rpayload);
-  const waiterToken = jwt.sign(Wpayload);
+  const restaurantToken = jwt.sign(Rpayload, secret && { secret });
+  const waiterToken = jwt.sign(Wpayload, secret && { secret });
 
   return {
     restaurantToken: `Bearer ${restaurantToken}`,

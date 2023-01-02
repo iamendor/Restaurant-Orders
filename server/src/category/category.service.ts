@@ -121,13 +121,13 @@ export class CategoryService {
     return category.restaurant;
   }
 
-  async getMeals(id: number) {
+  async getVictuals(id: number) {
     const category = await this.prismaService.category.findFirstOrThrow({
       where: { id },
       select: {
-        meals: true,
+        victuals: true,
       },
     });
-    return category.meals;
+    return category.victuals;
   }
 }

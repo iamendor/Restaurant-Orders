@@ -1,15 +1,6 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CategoryService } from "../category/category.service";
-import {
-  CreateMealData,
-  CreateMeals,
-  Deleted,
-  Meal,
-  MealsCreated,
-  UpdateMeal,
-  WhereMeal,
-} from "../models/model";
+import { CreateMeal, Deleted, Meal, Order, WhereMeal } from "../models/model";
 import {
   NotFoundResourceException,
   SomethingWentWrongException,
@@ -17,106 +8,76 @@ import {
 
 @Injectable()
 export class MealService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly categoryService: CategoryService
-  ) {}
-  private PERMISSION_DENIED = "permission denied for meal";
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateMealData): Promise<Meal> {
-    const { restaurantId, categoryId, ...rest } = data;
-    if (categoryId)
-      await this.categoryService.find({ id: categoryId, restaurantId });
-    try {
-      const meal = await this.prismaService.meal.create({
-        data: {
-          ...rest,
-          restaurant: {
-            connect: {
-              id: restaurantId,
-            },
+  async create(data: CreateMeal, restaurantId: number): Promise<Meal> {
+    const table = await this.prismaService.table.findFirst({
+      where: { id: data.tableId },
+      include: {
+        orders: {
+          include: {
+            victual: true,
           },
-          category: categoryId
-            ? {
-                connect: {
-                  id: categoryId,
-                },
-              }
-            : {
-                create: {
-                  ...rest.category,
-                  restaurant: {
-                    connect: {
-                      id: restaurantId,
-                    },
-                  },
-                },
-              },
         },
-      });
-      return meal;
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
+      },
+    });
+    if (!table) throw new NotFoundResourceException("table");
+    if (table.restaurantId !== restaurantId)
+      throw new HttpException(
+        "permission denied for table",
+        HttpStatus.FORBIDDEN
+      );
+    if (table.orders.length === 0) {
+      throw new HttpException("no orders to close table", 400);
     }
-  }
 
-  async createMany(data: CreateMeals[]): Promise<MealsCreated> {
-    const checked = await Promise.all(
-      data.map(async (d) => {
-        const { restaurantId, categoryId, ...rest } = d;
-        await this.categoryService.find({ id: categoryId, restaurantId });
-        return {
-          ...rest,
-          restaurantId,
-          categoryId,
-        };
-      })
+    const sorted = table.orders.sort(
+      (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt)
     );
-    try {
-      await this.prismaService.meal.createMany({
-        data: checked,
-        skipDuplicates: true,
-      });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
-  }
-
-  async update(data: UpdateMeal): Promise<Meal> {
-    const { where, update } = data;
-    await this.find(where);
-    try {
-      const updated = await this.prismaService.meal.update({
-        where: {
-          id: where.id,
+    const start = sorted[0].createdAt;
+    const end = sorted[sorted.length - 1].createdAt;
+    const waiterId = sorted[0]?.waiterId;
+    const total = sorted.reduce((acc, c) => acc + c.victual.price, 0);
+    const meal = await this.prismaService.meal.create({
+      data: {
+        start,
+        end,
+        total,
+        table: {
+          connect: { id: table.id },
         },
-        data: {
-          ...update,
+        restaurant: {
+          connect: {
+            id: restaurantId,
+          },
         },
-      });
-      return updated;
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
-  }
-
-  async delete(where: WhereMeal): Promise<Deleted> {
-    await this.find(where);
-    try {
-      await this.prismaService.meal.delete({
-        where: {
-          id: where.id,
+        orders: {
+          connect: [
+            ...sorted.map((ord) => ({
+              id: ord.id,
+            })),
+          ],
         },
-      });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+        waiter: {
+          connect: {
+            id: waiterId,
+          },
+        },
+      },
+    });
+    await this.prismaService.order.updateMany({
+      where: {
+        tableId: data.tableId,
+      },
+      data: {
+        tableId: null,
+      },
+    });
+    return meal;
   }
 
   async list(restaurantId: number): Promise<Meal[]> {
-    const restaurant = await this.prismaService.restaurant.findFirstOrThrow({
+    const restaurant = await this.prismaService.restaurant.findFirst({
       where: {
         id: restaurantId,
       },
@@ -129,42 +90,39 @@ export class MealService {
 
   async find(where: WhereMeal): Promise<Meal> {
     try {
-      const meal = await this.prismaService.meal.findFirstOrThrow({
+      const meal = await this.prismaService.meal.findUniqueOrThrow({
         where: {
           id: where.id,
         },
       });
-      if (meal.restaurantId !== where.restaurantId)
-        throw new Error(this.PERMISSION_DENIED);
+      if (meal.restaurantId !== where.restaurantId) {
+        throw new Error("permission denied");
+      }
       return meal;
     } catch (e) {
-      if (e.message === this.PERMISSION_DENIED)
-        throw new HttpException(this.PERMISSION_DENIED, 403);
+      if (e.message === "permission denied")
+        throw new HttpException(
+          "permission denied for meal",
+          HttpStatus.FORBIDDEN
+        );
       throw new NotFoundResourceException("meal");
     }
   }
 
-  async getCategory(id: number) {
-    const meal = await this.prismaService.meal.findFirstOrThrow({
-      where: {
-        id,
-      },
-      select: {
-        category: true,
-      },
-    });
-    return meal.category;
+  async delete(where: WhereMeal): Promise<Deleted> {
+    try {
+      await this.prismaService.meal.delete({ where: { id: where.id } });
+      return { message: "success" };
+    } catch (e) {
+      throw new SomethingWentWrongException(e.message);
+    }
   }
 
-  async getRestaurant(id: number) {
-    const meal = await this.prismaService.meal.findFirstOrThrow({
-      where: {
-        id,
-      },
-      select: {
-        restaurant: true,
-      },
+  async getOrders(id: number): Promise<Order[]> {
+    const meal = await this.prismaService.meal.findFirst({
+      where: { id },
+      include: { orders: true },
     });
-    return meal.restaurant;
+    return meal.orders;
   }
 }

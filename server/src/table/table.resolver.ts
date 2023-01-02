@@ -11,6 +11,7 @@ import {
   CreateTable,
   Deleted,
   JwtPayload,
+  Order,
   Restaurant,
   Table,
   TablesCreated,
@@ -88,8 +89,12 @@ export class TableResolver {
   }
 
   @ResolveField(() => Restaurant, { name: "restaurant" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   getRestaurant(@Parent() table: Table) {
     return this.tableService.getRestaurant(table.id);
+  }
+
+  @ResolveField(() => [Order], { name: "orders" })
+  getOrders(@Parent() table: Table) {
+    return this.tableService.getOrders(table.id);
   }
 }

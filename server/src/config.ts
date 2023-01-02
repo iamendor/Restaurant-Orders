@@ -1,6 +1,8 @@
+import { ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import { GenerateOptions } from "@nestjs/graphql";
-import { JwtModuleOptions } from "@nestjs/jwt";
+import { JwtModuleOptions, JwtService } from "@nestjs/jwt";
+import { PubSub } from "graphql-subscriptions";
 import { join } from "path";
 
 export class Config {
@@ -11,6 +13,34 @@ export class Config {
       outputAs: "class",
     };
   }
+
+  static getGqlModuleOptions(
+    config: ConfigService,
+    jwt: JwtService
+  ): ApolloDriverConfig {
+    const gql = Config.getGqlConfig();
+    return {
+      definitions: { ...gql },
+      typePaths: gql.typePaths,
+      playground: config.get("GRAPHQL_PLAYGROUND") || false,
+      installSubscriptionHandlers: true,
+      subscriptions: {
+        "graphql-ws": true,
+        "subscriptions-transport-ws": {
+          path: "/graphql",
+          onConnect: (connectionParams) => ({
+            req: {
+              headers: {
+                authorization: connectionParams.Authorization,
+              },
+            },
+          }),
+        },
+      },
+      context: ({ req }) => req,
+    };
+  }
+
   static getJwtConfig(configService: ConfigService): JwtModuleOptions {
     return {
       secret: configService.get("JWT_SECRET"),
@@ -20,3 +50,5 @@ export class Config {
     };
   }
 }
+
+export const pubSub = new PubSub();

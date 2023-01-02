@@ -12,9 +12,9 @@ import {
 import { PrismaModule } from "../src/prisma/prisma.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import req from "./helper/graphql-request";
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { Config } from "../src/config";
+import { JwtService } from "@nestjs/jwt";
+import { CoreModule } from "../src/core/core.module";
+import { ConfigService } from "@nestjs/config";
 describe("Orders API", () => {
   let app: INestApplication;
   const mutations = getMutations();
@@ -22,6 +22,7 @@ describe("Orders API", () => {
   const mocks = getMocks();
   let prisma: PrismaService;
   let jwt: JwtService;
+  let privateKey: string;
   let server;
   let restaurantToken: string;
   let waiterToken: string;
@@ -29,22 +30,20 @@ describe("Orders API", () => {
   let restaurantId: number;
   let catId: number;
   let catIds: number[];
+  let victualId: number;
+  let tableId: number;
+  let orderId: number;
   let mealId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-        AppModule,
-        PrismaModule,
-      ],
+      imports: [CoreModule, AppModule, PrismaModule],
     }).compile();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
+    const config = moduleFixture.get<ConfigService>(ConfigService);
     jwt = moduleFixture.get<JwtService>(JwtService);
+    privateKey = config.get("JWT_SECRET");
+
     await clearMocks({ prisma });
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -253,7 +252,7 @@ describe("Orders API", () => {
         waiterId: wId,
         waiterToken: wToken,
         restaurantToken: rToken,
-      } = await createRestaurantWithWaiter({ prisma, jwt });
+      } = await createRestaurantWithWaiter({ prisma, jwt, secret: privateKey });
       waiterId = wId;
       waiterToken = wToken;
       restaurantToken = rToken;
@@ -449,7 +448,6 @@ describe("Orders API", () => {
   });
 
   describe("Table", () => {
-    let tableId: number;
     const mockOne = mocks.table();
 
     beforeAll(async () => {
@@ -458,7 +456,7 @@ describe("Orders API", () => {
         waiterToken: Wtoken,
         waiterId: wId,
         restaurantId: rId,
-      } = await createRestaurantWithWaiter({ prisma, jwt });
+      } = await createRestaurantWithWaiter({ prisma, jwt, secret: privateKey });
       restaurantToken = Rtoken;
       waiterToken = Wtoken;
       waiterId = wId;
@@ -570,6 +568,15 @@ describe("Orders API", () => {
       expect(
         await prisma.table.findUnique({ where: { id: tableId } })
       ).toBeNull();
+    });
+
+    afterAll(async () => {
+      tableId = (
+        await prisma.restaurant.findUnique({
+          where: { id: restaurantId },
+          select: { tables: true },
+        })
+      ).tables[0].id;
     });
   });
 
@@ -696,8 +703,8 @@ describe("Orders API", () => {
     });
   });
 
-  describe("Meal", () => {
-    let mockMeal;
+  describe("Victual", () => {
+    let mockVictual;
 
     beforeAll(async () => {
       catIds = (
@@ -712,7 +719,7 @@ describe("Orders API", () => {
       ).categories.map((cat) => {
         return cat.id;
       });
-      mockMeal = mocks.meal.withCategoryId(catIds[0]);
+      mockVictual = mocks.victual.withCategoryId(catIds[0]);
     });
     describe("Create", () => {
       let create;
@@ -720,39 +727,39 @@ describe("Orders API", () => {
 
       beforeAll(async () => {
         const { body } = await req(server, {
-          query: mutations.meal.create(),
+          query: mutations.victual.create(),
           variables: {
             data: {
-              ...mockMeal,
+              ...mockVictual,
             },
-            dataMeals: [
+            dataVictuals: [
               ...[1, 2].map(() => ({
-                ...mocks.meal.withCategoryId(catIds[0]),
+                ...mocks.victual.withCategoryId(catIds[0]),
               })),
             ],
           },
         }).set("Authorization", restaurantToken);
-        create = body.data.createMeal;
-        createMultiple = body.data.createMeals;
+        create = body.data.createVictual;
+        createMultiple = body.data.createVictuals;
       });
 
-      it("creates a meal", () => {
-        expect(create.name).toBe(mockMeal.name);
-        mealId = create.id;
+      it("creates a victual", () => {
+        expect(create.name).toBe(mockVictual.name);
+        victualId = create.id;
       });
-      it("creates multiple meals", () => {
+      it("creates multiple victual", () => {
         expect(createMultiple.message).toBe("success");
       });
     });
 
-    it("updates meal", async () => {
+    it("updates victual", async () => {
       const update = "updated";
       const { body } = await req(server, {
-        query: mutations.meal.update(),
+        query: mutations.victual.update(),
         variables: {
           data: {
             where: {
-              id: mealId,
+              id: victualId,
             },
             update: {
               name: update,
@@ -763,7 +770,7 @@ describe("Orders API", () => {
       }).set("Authorization", restaurantToken);
       const {
         data: {
-          updateMeal: { name, category },
+          updateVictual: { name, category },
         },
       } = body;
       expect(name).toBe(update);
@@ -774,15 +781,15 @@ describe("Orders API", () => {
       let find;
       beforeAll(async () => {
         const { body } = await req(server, {
-          query: queries.meal.listAndFind(),
+          query: queries.victual.listAndFind(),
           variables: {
             where: {
-              id: mealId,
+              id: victualId,
             },
           },
         }).set("Authorization", restaurantToken);
-        list = body.data.meals;
-        find = body.data.meal;
+        list = body.data.victuals;
+        find = body.data.victual;
       });
       it("list", async () => {
         expect(list.length).toEqual(3);
@@ -796,15 +803,15 @@ describe("Orders API", () => {
       let find;
       beforeAll(async () => {
         const { body } = await req(server, {
-          query: queries.meal.listAndFind(),
+          query: queries.victual.listAndFind(),
           variables: {
             where: {
-              id: mealId,
+              id: victualId,
             },
           },
         }).set("Authorization", waiterToken);
-        list = body.data.meals;
-        find = body.data.meal;
+        list = body.data.victuals;
+        find = body.data.victual;
       });
       it("list", async () => {
         expect(list.length).toEqual(3);
@@ -813,6 +820,211 @@ describe("Orders API", () => {
         expect(find.name).toBe("updated");
       });
     });
+    it("deletes victual", async () => {
+      const { body } = await req(server, {
+        query: mutations.victual.delete(),
+        variables: {
+          where: {
+            id: victualId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { deleteVictual },
+      } = body;
+      expect(deleteVictual).toBeDefined();
+      expect(deleteVictual.message).toBe("success");
+    });
+
+    afterAll(async () => {
+      victualId = (
+        await prisma.restaurant.findUnique({
+          where: { id: restaurantId },
+          select: { victuals: true },
+        })
+      ).victuals[0].id;
+    });
+  });
+
+  describe("Order", () => {
+    let mockOrder;
+    let createMultiple;
+    beforeAll(() => {
+      catId = catId[0];
+      const { createdAt: _, ...rest } = mocks.order({
+        restaurantId,
+        victualId,
+        tableId,
+        waiterId,
+      });
+      mockOrder = rest;
+
+      createMultiple = [
+        { ...mockOrder, description: "mock order 2" },
+        { ...mockOrder, description: "mock order 3" },
+      ];
+    });
+    describe("Create", () => {
+      let create;
+      let multiple;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: mutations.order.create(),
+          variables: {
+            data: mockOrder,
+            dataMultiple: createMultiple,
+          },
+        }).set("Authorization", waiterToken);
+        [create, multiple] = [body.data.createOrder, body.data.createOrders];
+      });
+      it("create an order", () => {
+        expect(create.description).toBe("this is a mock order");
+        orderId = create.id;
+      });
+      it("create 2 order", () => {
+        expect(multiple.message).toBe("success");
+      });
+    });
+    it("updates the order", async () => {
+      const { body } = await req(server, {
+        query: mutations.order.update(),
+        variables: {
+          data: {
+            where: {
+              id: orderId,
+            },
+            update: {
+              isReady: true,
+            },
+          },
+        },
+      }).set("Authorization", waiterToken);
+      const {
+        data: { updateOrder },
+      } = body;
+      expect(updateOrder.isReady).toBeTruthy();
+    });
+    describe("List and find as restaurant", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.order.listAndFind(),
+          variables: {
+            where: {
+              id: orderId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        [list, find] = [body.data.orders, body.data.order];
+      });
+      it("list", () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find", () => {
+        expect(find.description).toBe("this is a mock order");
+      });
+    });
+    describe("List and find as waiter", () => {
+      let list;
+      let find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.order.listAndFind(),
+          variables: {
+            where: {
+              id: orderId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        [list, find] = [body.data.orders, body.data.order];
+      });
+      it("list", () => {
+        expect(list.length).toEqual(3);
+      });
+      it("find", () => {
+        expect(find.description).toBe("this is a mock order");
+      });
+    });
+    it("deletes the order", async () => {
+      const { body } = await req(server, {
+        query: mutations.order.delete(),
+        variables: {
+          where: {
+            id: orderId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { deleteOrder },
+      } = body;
+      expect(deleteOrder.message).toBe("success");
+    });
+  });
+
+  describe("Meal", () => {
+    it("creates a meal", async () => {
+      const { body } = await req(server, {
+        query: mutations.meal.create(),
+        variables: {
+          data: {
+            tableId,
+          },
+        },
+      }).set("Authorization", waiterToken);
+      const {
+        data: { createMeal },
+      } = body;
+      expect(createMeal).toBeDefined();
+      expect(createMeal.total).toEqual(2.2);
+      mealId = createMeal.id;
+    });
+
+    describe("List and find meal as restaurant", () => {
+      let list, find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.meals.listAndFind(),
+          variables: {
+            where: {
+              id: mealId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        console.log(body);
+        [list, find] = [body.data.meals, body.data.meal];
+      });
+
+      it("list", () => {
+        expect(list.length).toEqual(1);
+      });
+      it("find", () => {
+        expect(find.id).toBe(mealId);
+      });
+    });
+
+    describe("List and find meal as waiter", () => {
+      let list, find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.meals.listAndFind(),
+          variables: {
+            where: {
+              id: mealId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        [list, find] = [body.data.meals, body.data.meal];
+      });
+
+      it("list", () => {
+        expect(list.length).toEqual(1);
+      });
+      it("find", () => {
+        expect(find.id).toBe(mealId);
+      });
+    });
+
     it("deletes meal", async () => {
       const { body } = await req(server, {
         query: mutations.meal.delete(),
@@ -825,7 +1037,6 @@ describe("Orders API", () => {
       const {
         data: { deleteMeal },
       } = body;
-      expect(deleteMeal).toBeDefined();
       expect(deleteMeal.message).toBe("success");
     });
   });
