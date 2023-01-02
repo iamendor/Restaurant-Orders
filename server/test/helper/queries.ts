@@ -102,4 +102,17 @@ export const getQueries = () => ({
       }
     `,
   },
+  meals: {
+    listAndFind: () => `
+      query listAndFind($where: WhereMeal!){
+        meals{
+          id
+        }
+        meal(where: $where){
+          total
+          id
+        }
+      }
+    `,
+  },
 });

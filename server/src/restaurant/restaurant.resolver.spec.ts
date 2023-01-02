@@ -12,6 +12,7 @@ import { WaiterModule } from "../waiter/waiter.module";
 import { CategoryModule } from "../category/category.module";
 import { OrderModule } from "../order/order.module";
 import { VictualModule } from "../victual/victual.module";
+import { MealModule } from "../meal/meal.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -27,6 +28,7 @@ describe("Restaurant Resolver", () => {
         CategoryModule,
         VictualModule,
         OrderModule,
+        MealModule,
       ],
       providers: [RestaurantResolver, RestaurantService],
     }).compile();
@@ -104,6 +106,10 @@ describe("Restaurant Resolver", () => {
   it("list orders of restaurant", async () => {
     const orders = await resolver.getOrders({ id: payload.id } as Restaurant);
     expect(orders.length).toEqual(0);
+  });
+  it("list meals of restaurant", async () => {
+    const meals = await resolver.getMeals({ id: payload.id } as Restaurant);
+    expect(meals.length).toEqual(0);
   });
 
   it("deletes restaurant", async () => {

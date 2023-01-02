@@ -123,6 +123,11 @@ describe("Waiter Resolver", () => {
     expect(orders.length).toEqual(0);
   });
 
+  it("list meals of waiter", async () => {
+    const meals = await resolver.getMeals(waiterPayload as unknown as Waiter);
+    expect(meals.length).toEqual(0);
+  });
+
   it("deletes the waiter", async () => {
     const deleted = await resolver.delete(payload, { id: waiterPayload.id });
     expect(deleted.message).toBe("success");

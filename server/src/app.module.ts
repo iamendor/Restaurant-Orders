@@ -13,6 +13,7 @@ import { VictualModule } from "./victual/victual.module";
 import { OrderModule } from "./order/order.module";
 import { CoreModule } from "./core/core.module";
 import { SubscriptionModule } from "./subscription/subscription.module";
+import { MealModule } from './meal/meal.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SubscriptionModule } from "./subscription/subscription.module";
     OrderModule,
     CoreModule,
     SubscriptionModule,
+    MealModule,
   ],
 })
 export class AppModule {}

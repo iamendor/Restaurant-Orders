@@ -111,6 +111,11 @@ describe("TableResolver", () => {
     expect(restaurant.id).toBe(Rpayload.id);
   });
 
+  it("returns orders of table", async () => {
+    const orders = await resolver.getOrders(mockTable);
+    expect(orders.length).toEqual(0);
+  });
+
   it("deletes table", async () => {
     await resolver.delete(Rpayload, { id: mockTable.id });
     expect(

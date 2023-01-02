@@ -101,7 +101,7 @@ export class OrderResolver {
   }
 
   @Mutation(() => Order, { name: "deleteOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async delete(
     @User() restaurant: JwtPayload,
     @Args("where") where: WhereOrder

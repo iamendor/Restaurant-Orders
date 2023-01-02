@@ -14,6 +14,7 @@ import {
   CreateWaiter,
   Deleted,
   JwtPayload,
+  Meal,
   Order,
   PasswordUpdated,
   Restaurant,
@@ -107,5 +108,10 @@ export class WaiterResolver {
   @ResolveField(() => [Order], { name: "orders" })
   getOrders(@Parent() waiter: Waiter) {
     return this.waiterService.getOrders(waiter.id);
+  }
+
+  @ResolveField(() => [Meal], { name: "meals" })
+  getMeals(@Parent() waiter: Waiter) {
+    return this.waiterService.getMeals(waiter.id);
   }
 }

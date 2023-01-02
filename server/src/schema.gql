@@ -43,6 +43,11 @@ type Mutation {
   createOrders(data: [CreateOrder!]): OrdersCreated
   updateOrder(data: UpdateOrder!): Order
   deleteOrder(where: WhereOrder!): Deleted
+  """
+  Meal operations
+  """
+  createMeal(data: CreateMeal!): Meal
+  deleteMeal(where: WhereMeal!): Deleted
 }
 
 type Query {
@@ -59,6 +64,8 @@ type Query {
   victual(where: WhereVictual!): Victual
   orders: [Order]
   order(where: WhereOrder!): Order
+  meals: [Meal]
+  meal(where: WhereMeal!): Meal
 }
 type Subscription {
   listenOrders: ListenOrders
@@ -85,6 +92,7 @@ type RestaurantModel {
   victuals: [Victual]
   categories: [Category]
   tables: [Table]
+  meals: [Meal]
 }
 
 type Address {
@@ -105,6 +113,7 @@ type WaiterModel {
   profileIcon: String
   password: String!
   orders: [Order]
+  meals: [Meal]
   restaurant: Restaurant
 }
 
@@ -138,6 +147,17 @@ type Category {
 type Table {
   id: Int!
   name: String!
+  orders: [Order]
+  restaurant: Restaurant
+}
+
+type Meal {
+  id: Int!
+  start: String!
+  end: String!
+  total: Float!
+  waiter: Waiter
+  table: Table
   orders: [Order]
   restaurant: Restaurant
 }
@@ -197,6 +217,7 @@ type Restaurant {
   victuals: [Victual]
   categories: [Category]
   tables: [Table]
+  meals: [Meal]
 }
 
 """
@@ -284,6 +305,7 @@ type Waiter {
   gender: String!
   profileIcon: String
   orders: [Order]
+  meals: [Meal]
   restaurant: Restaurant
 }
 
@@ -439,6 +461,18 @@ Order Response
 """
 type OrdersCreated {
   message: String!
+}
+
+"""
+Meal Dto
+"""
+input CreateMeal {
+  tableId: Int!
+}
+
+input WhereMeal {
+  id: Int!
+  restaurantId: Int
 }
 
 """

@@ -33,6 +33,7 @@ describe("Orders API", () => {
   let victualId: number;
   let tableId: number;
   let orderId: number;
+  let mealId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -874,9 +875,7 @@ describe("Orders API", () => {
             dataMultiple: createMultiple,
           },
         }).set("Authorization", waiterToken);
-        console.log(body);
-        create = body.data.createOrder;
-        multiple = body.data.createOrders;
+        [create, multiple] = [body.data.createOrder, body.data.createOrders];
       });
       it("create an order", () => {
         expect(create.description).toBe("this is a mock order");
@@ -917,8 +916,7 @@ describe("Orders API", () => {
             },
           },
         }).set("Authorization", restaurantToken);
-        list = body.data.orders;
-        find = body.data.order;
+        [list, find] = [body.data.orders, body.data.order];
       });
       it("list", () => {
         expect(list.length).toEqual(3);
@@ -939,8 +937,7 @@ describe("Orders API", () => {
             },
           },
         }).set("Authorization", waiterToken);
-        list = body.data.orders;
-        find = body.data.order;
+        [list, find] = [body.data.orders, body.data.order];
       });
       it("list", () => {
         expect(list.length).toEqual(3);
@@ -962,6 +959,85 @@ describe("Orders API", () => {
         data: { deleteOrder },
       } = body;
       expect(deleteOrder.message).toBe("success");
+    });
+  });
+
+  describe("Meal", () => {
+    it("creates a meal", async () => {
+      const { body } = await req(server, {
+        query: mutations.meal.create(),
+        variables: {
+          data: {
+            tableId,
+          },
+        },
+      }).set("Authorization", waiterToken);
+      const {
+        data: { createMeal },
+      } = body;
+      expect(createMeal).toBeDefined();
+      expect(createMeal.total).toEqual(2.2);
+      mealId = createMeal.id;
+    });
+
+    describe("List and find meal as restaurant", () => {
+      let list, find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.meals.listAndFind(),
+          variables: {
+            where: {
+              id: mealId,
+            },
+          },
+        }).set("Authorization", restaurantToken);
+        console.log(body);
+        [list, find] = [body.data.meals, body.data.meal];
+      });
+
+      it("list", () => {
+        expect(list.length).toEqual(1);
+      });
+      it("find", () => {
+        expect(find.id).toBe(mealId);
+      });
+    });
+
+    describe("List and find meal as waiter", () => {
+      let list, find;
+      beforeAll(async () => {
+        const { body } = await req(server, {
+          query: queries.meals.listAndFind(),
+          variables: {
+            where: {
+              id: mealId,
+            },
+          },
+        }).set("Authorization", waiterToken);
+        [list, find] = [body.data.meals, body.data.meal];
+      });
+
+      it("list", () => {
+        expect(list.length).toEqual(1);
+      });
+      it("find", () => {
+        expect(find.id).toBe(mealId);
+      });
+    });
+
+    it("deletes meal", async () => {
+      const { body } = await req(server, {
+        query: mutations.meal.delete(),
+        variables: {
+          where: {
+            id: mealId,
+          },
+        },
+      }).set("Authorization", restaurantToken);
+      const {
+        data: { deleteMeal },
+      } = body;
+      expect(deleteMeal.message).toBe("success");
     });
   });
 

@@ -243,4 +243,21 @@ export const getMutations = () => ({
       }
     `,
   },
+  meal: {
+    create: () => `
+      mutation create($data: CreateMeal!){
+        createMeal(data: $data){
+          id
+          total
+        }
+      }
+    `,
+    delete: () => `
+      mutation delete($where: WhereMeal!){
+        deleteMeal(where: $where){
+          message
+        }
+      }
+    `,
+  },
 });

@@ -224,6 +224,15 @@ export class UpdateOrderData {
     victualId?: Nullable<number>;
 }
 
+export class CreateMeal {
+    tableId: number;
+}
+
+export class WhereMeal {
+    id: number;
+    restaurantId?: Nullable<number>;
+}
+
 export class InvalidateQuery {
     restaurantId: number;
     orderId?: Nullable<number>;
@@ -281,6 +290,10 @@ export abstract class IMutation {
     abstract updateOrder(data: UpdateOrder): Nullable<Order> | Promise<Nullable<Order>>;
 
     abstract deleteOrder(where: WhereOrder): Nullable<Deleted> | Promise<Nullable<Deleted>>;
+
+    abstract createMeal(data: CreateMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+
+    abstract deleteMeal(where: WhereMeal): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 }
 
 export abstract class IQuery {
@@ -309,6 +322,10 @@ export abstract class IQuery {
     abstract orders(): Nullable<Nullable<Order>[]> | Promise<Nullable<Nullable<Order>[]>>;
 
     abstract order(where: WhereOrder): Nullable<Order> | Promise<Nullable<Order>>;
+
+    abstract meals(): Nullable<Nullable<Meal>[]> | Promise<Nullable<Nullable<Meal>[]>>;
+
+    abstract meal(where: WhereMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
 }
 
 export abstract class ISubscription {
@@ -328,6 +345,7 @@ export class RestaurantModel {
     victuals?: Nullable<Nullable<Victual>[]>;
     categories?: Nullable<Nullable<Category>[]>;
     tables?: Nullable<Nullable<Table>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
 }
 
 export class Address {
@@ -348,6 +366,7 @@ export class WaiterModel {
     profileIcon?: Nullable<string>;
     password: string;
     orders?: Nullable<Nullable<Order>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
     restaurant?: Nullable<Restaurant>;
 }
 
@@ -385,6 +404,17 @@ export class Table {
     restaurant?: Nullable<Restaurant>;
 }
 
+export class Meal {
+    id: number;
+    start: string;
+    end: string;
+    total: number;
+    waiter?: Nullable<Waiter>;
+    table?: Nullable<Table>;
+    orders?: Nullable<Nullable<Order>[]>;
+    restaurant?: Nullable<Restaurant>;
+}
+
 export class AuthRestaurant {
     restaurant: Restaurant;
     access_token: string;
@@ -400,6 +430,7 @@ export class Restaurant {
     victuals?: Nullable<Nullable<Victual>[]>;
     categories?: Nullable<Nullable<Category>[]>;
     tables?: Nullable<Nullable<Table>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
 }
 
 export class Waiter {
@@ -409,6 +440,7 @@ export class Waiter {
     gender: string;
     profileIcon?: Nullable<string>;
     orders?: Nullable<Nullable<Order>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
     restaurant?: Nullable<Restaurant>;
 }
 
