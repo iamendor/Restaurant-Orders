@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import {
   CreateMeal,
+  Currency,
   Deleted,
   Meal,
   Order,
@@ -23,6 +24,11 @@ export class MealService {
     const table = await this.prismaService.table.findFirst({
       where: { id: data.tableId },
       include: {
+        restaurant: {
+          select: {
+            currency: true,
+          },
+        },
         orders: {
           include: {
             victual: true,
@@ -54,6 +60,11 @@ export class MealService {
         total,
         table: {
           connect: { id: table.id },
+        },
+        currency: {
+          connect: {
+            id: table.restaurant.currency.id,
+          },
         },
         restaurant: {
           connect: {
@@ -156,5 +167,15 @@ export class MealService {
       include: { orders: true },
     });
     return meal.orders;
+  }
+
+  async getCurrency(id: number): Promise<Currency> {
+    const meal = await this.prismaService.meal.findFirst({
+      where: {
+        id,
+      },
+      include: { currency: true },
+    });
+    return meal.currency;
   }
 }

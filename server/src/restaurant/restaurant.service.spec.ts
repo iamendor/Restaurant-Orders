@@ -17,6 +17,9 @@ export const mockRestaurant = {
     city: "gyoma",
     country: "HU",
   },
+  currency: {
+    currency: "HUF",
+  },
 };
 
 describe("RestaurantService", () => {

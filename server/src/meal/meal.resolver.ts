@@ -9,6 +9,7 @@ import {
 import { MealService } from "./meal.service";
 import {
   CreateMeal,
+  Currency,
   Deleted,
   JwtPayload,
   Meal,
@@ -74,5 +75,10 @@ export class MealResolver {
   @ResolveField(() => Restaurant, { name: "restaurant" })
   getRestaurant(@Parent() meal: Meal) {
     return this.mealService.getRestaurant(meal.id);
+  }
+
+  @ResolveField(() => Currency, { name: "currency" })
+  getCurrency(@Parent() meal: Meal) {
+    return this.mealService.getCurrency(meal.id);
   }
 }

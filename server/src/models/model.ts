@@ -13,6 +13,7 @@ export class CreateRestaurant {
     email: string;
     password: string;
     address: CreateAddress;
+    currency: CreateCurrency;
 }
 
 export class LoginRestaurant {
@@ -33,6 +34,7 @@ export class UpdateRestaurantData {
 export class UpdateRestaurant {
     name?: Nullable<string>;
     address?: Nullable<UpdateAddress>;
+    currency?: Nullable<UpdateCurrency>;
 }
 
 export class UpdateRestaurantDataPassword {
@@ -62,6 +64,19 @@ export class UpdateAddress {
 }
 
 export class WhereAddress {
+    id?: Nullable<number>;
+    restaurantId?: Nullable<number>;
+}
+
+export class CreateCurrency {
+    currency: string;
+}
+
+export class UpdateCurrency {
+    currency?: Nullable<string>;
+}
+
+export class WhereCurrency {
     id?: Nullable<number>;
     restaurantId?: Nullable<number>;
 }
@@ -326,6 +341,8 @@ export abstract class IQuery {
     abstract meals(): Nullable<Nullable<Meal>[]> | Promise<Nullable<Nullable<Meal>[]>>;
 
     abstract meal(where: WhereMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+
+    abstract currency(where: WhereCurrency): Nullable<Currency> | Promise<Nullable<Currency>>;
 }
 
 export abstract class ISubscription {
@@ -340,11 +357,19 @@ export class RestaurantModel {
     email: string;
     password: string;
     address?: Nullable<Address>;
+    currency?: Nullable<Currency>;
     waiters?: Nullable<Nullable<Waiter>[]>;
     orders?: Nullable<Nullable<Order>[]>;
     victuals?: Nullable<Nullable<Victual>[]>;
     categories?: Nullable<Nullable<Category>[]>;
     tables?: Nullable<Nullable<Table>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
+}
+
+export class Currency {
+    id: number;
+    currency: string;
+    restaurant?: Nullable<Restaurant>;
     meals?: Nullable<Nullable<Meal>[]>;
 }
 
@@ -413,6 +438,7 @@ export class Meal {
     waiter?: Nullable<Waiter>;
     table?: Nullable<Table>;
     orders?: Nullable<Nullable<Order>[]>;
+    currency?: Nullable<Currency>;
     restaurant?: Nullable<Restaurant>;
 }
 
@@ -426,6 +452,7 @@ export class Restaurant {
     name: string;
     email: string;
     address?: Nullable<Address>;
+    currency?: Nullable<Currency>;
     waiters?: Nullable<Nullable<Waiter>[]>;
     orders?: Nullable<Nullable<Order>[]>;
     victuals?: Nullable<Nullable<Victual>[]>;

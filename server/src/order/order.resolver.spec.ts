@@ -25,7 +25,7 @@ describe("OrderResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, WaiterModule, SubscriptionModule],
+      imports: [CoreModule, PrismaModule, WaiterModule, SubscriptionModule],
       providers: [OrderResolver, OrderService],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);

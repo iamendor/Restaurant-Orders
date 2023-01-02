@@ -8,6 +8,7 @@ import { CategoryModule } from "../category/category.module";
 import { OrderModule } from "../order/order.module";
 import { VictualModule } from "../victual/victual.module";
 import { MealModule } from "../meal/meal.module";
+import { CurrencyModule } from "../currency/currency.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MealModule } from "../meal/meal.module";
     VictualModule,
     OrderModule,
     MealModule,
+    CurrencyModule
   ],
   providers: [RestaurantResolver, RestaurantService],
   exports: [RestaurantService],
