@@ -10,8 +10,8 @@ import * as bcrypt from "bcrypt";
 import { TableModule } from "../table/table.module";
 import { WaiterModule } from "../waiter/waiter.module";
 import { CategoryModule } from "../category/category.module";
-import { MealModule } from "../meal/meal.module";
 import { OrderModule } from "../order/order.module";
+import { VictualModule } from "../victual/victual.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -25,7 +25,7 @@ describe("Restaurant Resolver", () => {
         TableModule,
         WaiterModule,
         CategoryModule,
-        MealModule,
+        VictualModule,
         OrderModule,
       ],
       providers: [RestaurantResolver, RestaurantService],
@@ -97,7 +97,7 @@ describe("Restaurant Resolver", () => {
     expect(categories.length).toEqual(0);
   });
   it("return meals of restaurant", async () => {
-    const meals = await resolver.getMeals({ id: payload.id } as Restaurant);
+    const meals = await resolver.getVictuals({ id: payload.id } as Restaurant);
     expect(meals.length).toEqual(0);
   });
 

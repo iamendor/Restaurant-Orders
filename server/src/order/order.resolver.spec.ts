@@ -65,9 +65,9 @@ describe("OrderResolver", () => {
         restaurantId: restaurantId,
       },
     });
-    const meal = await prisma.meal.create({
+    const victual = await prisma.victual.create({
       data: {
-        ...mocks.meal.default,
+        ...mocks.victual.default,
         category: {
           connect: {
             id: category.id,
@@ -82,7 +82,7 @@ describe("OrderResolver", () => {
     });
     mockOrder = mocks.order({
       restaurantId,
-      mealId: meal.id,
+      victualId: victual.id,
       tableId: table.id,
       waiterId: waiterId,
     });
@@ -136,9 +136,9 @@ describe("OrderResolver", () => {
     const waiter = await resolver.getWaiter({ id: orderId } as Order);
     expect(waiter.id).toBe(waiterId);
   });
-  it("returns meal of order", async () => {
-    const meal = await resolver.getMeal({ id: orderId } as Order);
-    expect(meal.price).toEqual(1.0);
+  it("returns victual of order", async () => {
+    const victual = await resolver.getVictual({ id: orderId } as Order);
+    expect(victual.price).toEqual(1.0);
   });
   it("returns table of order", async () => {
     const table = await resolver.getTable({ id: orderId } as Order);

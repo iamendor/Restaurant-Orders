@@ -160,14 +160,14 @@ export class WhereCategory {
     restaurantId?: Nullable<number>;
 }
 
-export class CreateMeal {
+export class CreateVictual {
     name: string;
     price: number;
     categoryId?: Nullable<number>;
     category?: Nullable<CreateCategory>;
 }
 
-export class CreateMealData {
+export class CreateVictualData {
     name: string;
     price: number;
     restaurantId: number;
@@ -175,25 +175,25 @@ export class CreateMealData {
     category?: Nullable<CreateCategory>;
 }
 
-export class CreateMeals {
+export class CreateVictuals {
     name: string;
     price: number;
     restaurantId?: Nullable<number>;
     categoryId: number;
 }
 
-export class UpdateMeal {
-    where: WhereMeal;
-    update: UpdateMealData;
+export class UpdateVictual {
+    where: WhereVictual;
+    update: UpdateVictualData;
 }
 
-export class UpdateMealData {
+export class UpdateVictualData {
     name?: Nullable<string>;
     price?: Nullable<number>;
     categoryId?: Nullable<number>;
 }
 
-export class WhereMeal {
+export class WhereVictual {
     id: number;
     restaurantId?: Nullable<number>;
 }
@@ -203,7 +203,7 @@ export class CreateOrder {
     isReady?: Nullable<boolean>;
     waiterId?: Nullable<number>;
     tableId: number;
-    mealId: number;
+    victualId: number;
     restaurantId?: Nullable<number>;
 }
 
@@ -221,7 +221,7 @@ export class UpdateOrderData {
     description?: Nullable<string>;
     isReady?: Nullable<boolean>;
     tableId?: Nullable<number>;
-    mealId?: Nullable<number>;
+    victualId?: Nullable<number>;
 }
 
 export class InvalidateQuery {
@@ -266,13 +266,13 @@ export abstract class IMutation {
 
     abstract deleteCategory(where: WhereCategory): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 
-    abstract createMeal(data: CreateMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+    abstract createVictual(data: CreateVictual): Nullable<Victual> | Promise<Nullable<Victual>>;
 
-    abstract createMeals(data?: Nullable<CreateMeals[]>): Nullable<MealsCreated> | Promise<Nullable<MealsCreated>>;
+    abstract createVictuals(data?: Nullable<CreateVictuals[]>): Nullable<VictualsCreated> | Promise<Nullable<VictualsCreated>>;
 
-    abstract updateMeal(data: UpdateMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+    abstract updateVictual(data: UpdateVictual): Nullable<Victual> | Promise<Nullable<Victual>>;
 
-    abstract deleteMeal(where: WhereMeal): Nullable<Deleted> | Promise<Nullable<Deleted>>;
+    abstract deleteVictual(where: WhereVictual): Nullable<Deleted> | Promise<Nullable<Deleted>>;
 
     abstract createOrder(data: CreateOrder): Nullable<Order> | Promise<Nullable<Order>>;
 
@@ -302,9 +302,9 @@ export abstract class IQuery {
 
     abstract category(where: WhereCategory): Nullable<Category> | Promise<Nullable<Category>>;
 
-    abstract meals(): Nullable<Nullable<Meal>[]> | Promise<Nullable<Nullable<Meal>[]>>;
+    abstract victuals(): Nullable<Nullable<Victual>[]> | Promise<Nullable<Nullable<Victual>[]>>;
 
-    abstract meal(where: WhereMeal): Nullable<Meal> | Promise<Nullable<Meal>>;
+    abstract victual(where: WhereVictual): Nullable<Victual> | Promise<Nullable<Victual>>;
 
     abstract orders(): Nullable<Nullable<Order>[]> | Promise<Nullable<Nullable<Order>[]>>;
 
@@ -325,7 +325,7 @@ export class RestaurantModel {
     address?: Nullable<Address>;
     waiters?: Nullable<Nullable<Waiter>[]>;
     orders?: Nullable<Nullable<Order>[]>;
-    meals?: Nullable<Nullable<Meal>[]>;
+    victuals?: Nullable<Nullable<Victual>[]>;
     categories?: Nullable<Nullable<Category>[]>;
     tables?: Nullable<Nullable<Table>[]>;
 }
@@ -359,10 +359,10 @@ export class Order {
     waiter?: Nullable<Waiter>;
     table?: Nullable<Table>;
     restaurant?: Nullable<Restaurant>;
-    meal?: Nullable<Meal>;
+    victual?: Nullable<Victual>;
 }
 
-export class Meal {
+export class Victual {
     id: number;
     name: string;
     price: number;
@@ -374,7 +374,7 @@ export class Meal {
 export class Category {
     id: number;
     name: string;
-    meals?: Nullable<Nullable<Meal>[]>;
+    victuals?: Nullable<Nullable<Victual>[]>;
     restaurant?: Nullable<Restaurant>;
 }
 
@@ -397,7 +397,7 @@ export class Restaurant {
     address?: Nullable<Address>;
     waiters?: Nullable<Nullable<Waiter>[]>;
     orders?: Nullable<Nullable<Order>[]>;
-    meals?: Nullable<Nullable<Meal>[]>;
+    victuals?: Nullable<Nullable<Victual>[]>;
     categories?: Nullable<Nullable<Category>[]>;
     tables?: Nullable<Nullable<Table>[]>;
 }
@@ -425,7 +425,7 @@ export class CategoriesCreated {
     message: string;
 }
 
-export class MealsCreated {
+export class VictualsCreated {
     message: string;
 }
 

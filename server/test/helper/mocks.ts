@@ -28,7 +28,7 @@ export const getMocks = () => ({
     name: "Category",
     restaurantId: 1,
   },
-  meal: {
+  victual: {
     default: {
       price: 1.0,
       name: "TestMeal",
@@ -46,7 +46,7 @@ export const getMocks = () => ({
       categoryId: id,
     }),
   },
-  order: (data: { restaurantId; mealId; tableId; waiterId }) => ({
+  order: (data: { restaurantId; victualId; tableId; waiterId }) => ({
     ...data,
     description: "this is a mock order",
     isReady: false,

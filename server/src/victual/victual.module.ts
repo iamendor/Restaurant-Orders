@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
-import { MealService } from "./meal.service";
-import { MealResolver } from "./meal.resolver";
 import { PrismaModule } from "../prisma/prisma.module";
 import { CategoryModule } from "../category/category.module";
 import { WaiterModule } from "../waiter/waiter.module";
+import { VictualService } from "./victual.service";
+import { VictualResolver } from "./victual.resolver";
 
 @Module({
   imports: [PrismaModule, CategoryModule, WaiterModule],
-  providers: [MealResolver, MealService],
-  exports: [MealService],
+  providers: [VictualService, VictualResolver],
+  exports: [VictualService],
 })
-export class MealModule {}
+export class VictualModule {}

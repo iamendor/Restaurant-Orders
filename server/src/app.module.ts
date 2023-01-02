@@ -9,11 +9,10 @@ import { WaiterModule } from "./waiter/waiter.module";
 import { AddressModule } from "./address/address.module";
 import { TableModule } from "./table/table.module";
 import { CategoryModule } from "./category/category.module";
-import { MealModule } from "./meal/meal.module";
+import { VictualModule } from "./victual/victual.module";
 import { OrderModule } from "./order/order.module";
-import { JwtModule, JwtService } from "@nestjs/jwt";
 import { CoreModule } from "./core/core.module";
-import { SubscriptionModule } from './subscription/subscription.module';
+import { SubscriptionModule } from "./subscription/subscription.module";
 
 @Module({
   imports: [
@@ -24,7 +23,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     AddressModule,
     TableModule,
     CategoryModule,
-    MealModule,
+    VictualModule,
     OrderModule,
     CoreModule,
     SubscriptionModule,

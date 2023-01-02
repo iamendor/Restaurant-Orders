@@ -16,21 +16,21 @@ import {
   Category,
   Deleted,
   JwtPayload,
-  Meal,
   Order,
   PasswordUpdated,
   Restaurant,
   Table,
   UpdateRestaurant,
   UpdateRestaurantPassword,
+  Victual,
   Waiter,
 } from "../models/model";
 import { RestaurantService } from "./restaurant.service";
 import { TableService } from "../table/table.service";
 import { WaiterService } from "../waiter/waiter.service";
 import { CategoryService } from "../category/category.service";
-import { MealService } from "../meal/meal.service";
 import { OrderService } from "../order/order.service";
+import { VictualService } from "../victual/victual.service";
 
 @Resolver("Restaurant")
 export class RestaurantResolver {
@@ -40,7 +40,7 @@ export class RestaurantResolver {
     private readonly tableService: TableService,
     private readonly waiterService: WaiterService,
     private readonly categoryService: CategoryService,
-    private readonly mealService: MealService,
+    private readonly victualService: VictualService,
     private readonly orderService: OrderService
   ) {}
 
@@ -101,9 +101,9 @@ export class RestaurantResolver {
     return this.categoryService.list(restaurant.id);
   }
 
-  @ResolveField(() => [Meal], { name: "meals" })
-  getMeals(@Parent() restaurant: Restaurant) {
-    return this.mealService.list(restaurant.id);
+  @ResolveField(() => [Victual], { name: "victuals" })
+  getVictuals(@Parent() restaurant: Restaurant) {
+    return this.victualService.list(restaurant.id);
   }
 
   @ResolveField(() => [Order], { name: "orders" })

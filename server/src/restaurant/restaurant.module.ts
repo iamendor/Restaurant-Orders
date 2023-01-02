@@ -6,8 +6,8 @@ import { AddressModule } from "../address/address.module";
 import { TableModule } from "../table/table.module";
 import { WaiterModule } from "../waiter/waiter.module";
 import { CategoryModule } from "../category/category.module";
-import { MealModule } from "../meal/meal.module";
 import { OrderModule } from "../order/order.module";
+import { VictualModule } from "../victual/victual.module";
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { OrderModule } from "../order/order.module";
     TableModule,
     WaiterModule,
     CategoryModule,
-    MealModule,
+    VictualModule,
     OrderModule,
   ],
   providers: [RestaurantResolver, RestaurantService],

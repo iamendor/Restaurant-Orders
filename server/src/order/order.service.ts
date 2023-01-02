@@ -23,7 +23,7 @@ export class OrderService {
   }
 
   async create(data: CreateOrder): Promise<Order> {
-    const { restaurantId, tableId, mealId, waiterId, ...rest } = data;
+    const { restaurantId, tableId, victualId, waiterId, ...rest } = data;
     const formatted = {
       ...rest,
       isReady: false,
@@ -44,9 +44,9 @@ export class OrderService {
               id: tableId,
             },
           },
-          meal: {
+          victual: {
             connect: {
-              id: mealId,
+              id: victualId,
             },
           },
           waiter: {
@@ -159,17 +159,17 @@ export class OrderService {
     if (!order) throw new NotFoundResourceException("order");
     return order.table;
   }
-  async getMeal(id: number) {
+  async getVictual(id: number) {
     const order = await this.prismaService.order.findFirst({
       where: {
         id,
       },
       select: {
-        meal: true,
+        victual: true,
       },
     });
     if (!order) throw new NotFoundResourceException("order");
-    return order.meal;
+    return order.victual;
   }
   async getWaiter(id: number) {
     const order = await this.prismaService.order.findFirst({
@@ -183,6 +183,4 @@ export class OrderService {
     if (!order) throw new NotFoundResourceException("order");
     return order.waiter;
   }
-
-  
 }

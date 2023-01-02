@@ -2,13 +2,13 @@ import { HttpException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CategoryService } from "../category/category.service";
 import {
-  CreateMealData,
-  CreateMeals,
+  CreateVictualData,
+  CreateVictuals,
   Deleted,
-  Meal,
-  MealsCreated,
-  UpdateMeal,
-  WhereMeal,
+  UpdateVictual,
+  Victual,
+  VictualsCreated,
+  WhereVictual,
 } from "../models/model";
 import {
   NotFoundResourceException,
@@ -16,19 +16,19 @@ import {
 } from "../error/errors";
 
 @Injectable()
-export class MealService {
+export class VictualService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly categoryService: CategoryService
   ) {}
   private PERMISSION_DENIED = "permission denied for meal";
 
-  async create(data: CreateMealData): Promise<Meal> {
+  async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;
     if (categoryId)
       await this.categoryService.find({ id: categoryId, restaurantId });
     try {
-      const meal = await this.prismaService.meal.create({
+      const meal = await this.prismaService.victual.create({
         data: {
           ...rest,
           restaurant: {
@@ -60,7 +60,7 @@ export class MealService {
     }
   }
 
-  async createMany(data: CreateMeals[]): Promise<MealsCreated> {
+  async createMany(data: CreateVictuals[]): Promise<VictualsCreated> {
     const checked = await Promise.all(
       data.map(async (d) => {
         const { restaurantId, categoryId, ...rest } = d;
@@ -73,7 +73,7 @@ export class MealService {
       })
     );
     try {
-      await this.prismaService.meal.createMany({
+      await this.prismaService.victual.createMany({
         data: checked,
         skipDuplicates: true,
       });
@@ -83,11 +83,11 @@ export class MealService {
     }
   }
 
-  async update(data: UpdateMeal): Promise<Meal> {
+  async update(data: UpdateVictual): Promise<Victual> {
     const { where, update } = data;
     await this.find(where);
     try {
-      const updated = await this.prismaService.meal.update({
+      const updated = await this.prismaService.victual.update({
         where: {
           id: where.id,
         },
@@ -101,10 +101,10 @@ export class MealService {
     }
   }
 
-  async delete(where: WhereMeal): Promise<Deleted> {
+  async delete(where: WhereVictual): Promise<Deleted> {
     await this.find(where);
     try {
-      await this.prismaService.meal.delete({
+      await this.prismaService.victual.delete({
         where: {
           id: where.id,
         },
@@ -115,21 +115,21 @@ export class MealService {
     }
   }
 
-  async list(restaurantId: number): Promise<Meal[]> {
+  async list(restaurantId: number): Promise<Victual[]> {
     const restaurant = await this.prismaService.restaurant.findFirstOrThrow({
       where: {
         id: restaurantId,
       },
       select: {
-        meals: true,
+        victuals: true,
       },
     });
-    return restaurant.meals;
+    return restaurant.victuals;
   }
 
-  async find(where: WhereMeal): Promise<Meal> {
+  async find(where: WhereVictual): Promise<Victual> {
     try {
-      const meal = await this.prismaService.meal.findFirstOrThrow({
+      const meal = await this.prismaService.victual.findFirstOrThrow({
         where: {
           id: where.id,
         },
@@ -145,7 +145,7 @@ export class MealService {
   }
 
   async getCategory(id: number) {
-    const meal = await this.prismaService.meal.findFirstOrThrow({
+    const meal = await this.prismaService.victual.findFirstOrThrow({
       where: {
         id,
       },
@@ -157,7 +157,7 @@ export class MealService {
   }
 
   async getRestaurant(id: number) {
-    const meal = await this.prismaService.meal.findFirstOrThrow({
+    const meal = await this.prismaService.victual.findFirstOrThrow({
       where: {
         id,
       },
@@ -169,7 +169,7 @@ export class MealService {
   }
 
   async getOrders(id: number) {
-    const meal = await this.prismaService.meal.findFirstOrThrow({
+    const meal = await this.prismaService.victual.findFirstOrThrow({
       where: {
         id,
       },

@@ -13,11 +13,11 @@ import {
   JwtPayload,
   ListenOrder,
   ListenOrders,
-  Meal,
   Order,
   Restaurant,
   Table,
   UpdateOrder,
+  Victual,
   Waiter,
   WhereOrder,
 } from "../models/model";
@@ -169,9 +169,9 @@ export class OrderResolver {
   getWaiter(@Parent() order: Order) {
     return this.orderService.getWaiter(order.id);
   }
-  @ResolveField(() => Meal, { name: "meal" })
-  getMeal(@Parent() order: Order) {
-    return this.orderService.getMeal(order.id);
+  @ResolveField(() => Victual, { name: "victual" })
+  getVictual(@Parent() order: Order) {
+    return this.orderService.getVictual(order.id);
   }
   @ResolveField(() => Table, { name: "table" })
   getTable(@Parent() order: Order) {

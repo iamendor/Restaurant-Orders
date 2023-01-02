@@ -23,7 +23,7 @@ model Restaurant{
   address Address?
   waiters Waiter[]
   orders Order[]
-  meals Meal[]
+  victuals Victual[]
   categories Category[]
   tables Table[]
 }
@@ -58,14 +58,14 @@ model Order{
   waiter Waiter @relation(fields: [waiterId], references: [id])
   table Table @relation(fields: [tableId], references: [id])
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
-  mealId Int
+  victual Victual @relation(fields: [victualId], references: [id], onDelete: Cascade)
+  victualId Int
   restaurantId Int
   tableId Int
   waiterId Int
 }
 
-model Meal{
+model Victual{
   id Int @unique @id @default(autoincrement())
   name String
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -78,7 +78,7 @@ model Meal{
 model Category{
   id Int @unique @id @default(autoincrement())
   name String
-  meals Meal[]
+  victuals Victual[]
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
 }

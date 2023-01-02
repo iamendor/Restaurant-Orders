@@ -6,18 +6,18 @@ import {
   ResolveField,
   Parent,
 } from "@nestjs/graphql";
-import { MealService } from "./meal.service";
+import { VictualService } from "./victual.service";
 import {
   Category,
-  CreateMeal,
-  CreateMeals,
+  CreateVictual,
+  CreateVictuals,
   Deleted,
   JwtPayload,
-  Meal,
-  MealsCreated,
   Order,
-  UpdateMeal,
-  WhereMeal,
+  UpdateVictual,
+  Victual,
+  VictualsCreated,
+  WhereVictual,
 } from "../models/model";
 import { User } from "../auth/decorators/user.decorator";
 import { HttpException, UseGuards } from "@nestjs/common";
@@ -25,48 +25,51 @@ import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
 import { WaiterService } from "../waiter/waiter.service";
 
-@Resolver("Meal")
-export class MealResolver {
+@Resolver("Victual")
+export class VictualResolver {
   constructor(
-    private readonly mealService: MealService,
+    private readonly victualService: VictualService,
     private readonly waiterService: WaiterService
   ) {}
 
-  @Mutation(() => Meal, { name: "createMeal" })
+  @Mutation(() => Victual, { name: "createVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  create(@User() restaurant: JwtPayload, @Args("data") data: CreateMeal) {
+  create(@User() restaurant: JwtPayload, @Args("data") data: CreateVictual) {
     if (!data.category && !data.categoryId)
       throw new HttpException("category or categoryId is required", 400);
-    return this.mealService.create({ ...data, restaurantId: restaurant.id });
+    return this.victualService.create({ ...data, restaurantId: restaurant.id });
   }
 
-  @Mutation(() => MealsCreated, { name: "createMeals" })
+  @Mutation(() => VictualsCreated, { name: "createVictuals" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   createMany(
     @User() restaurant: JwtPayload,
-    @Args("data") data: CreateMeals[]
+    @Args("data") data: CreateVictuals[]
   ) {
-    return this.mealService.createMany(
+    return this.victualService.createMany(
       data.map((meal) => ({ ...meal, restaurantId: restaurant.id }))
     );
   }
 
-  @Mutation(() => Meal, { name: "updateMeal" })
+  @Mutation(() => Victual, { name: "updateVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  update(@User() restaurant: JwtPayload, @Args("data") data: UpdateMeal) {
-    return this.mealService.update({
+  update(@User() restaurant: JwtPayload, @Args("data") data: UpdateVictual) {
+    return this.victualService.update({
       ...data,
       where: { ...data.where, restaurantId: restaurant.id },
     });
   }
 
-  @Mutation(() => Deleted, { name: "deleteMeal" })
+  @Mutation(() => Deleted, { name: "deleteVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  delete(@User() restaurant: JwtPayload, @Args("where") where: WhereMeal) {
-    return this.mealService.delete({ ...where, restaurantId: restaurant.id });
+  delete(@User() restaurant: JwtPayload, @Args("where") where: WhereVictual) {
+    return this.victualService.delete({
+      ...where,
+      restaurantId: restaurant.id,
+    });
   }
 
-  @Query(() => [Meal], { name: "meals" })
+  @Query(() => [Victual], { name: "victuals" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
   async list(@User() user: JwtPayload) {
     const id =
@@ -74,31 +77,31 @@ export class MealResolver {
         ? user.id
         : (await this.waiterService.getRestaurant(user.email)).id;
 
-    return this.mealService.list(id);
+    return this.victualService.list(id);
   }
 
-  @Query(() => Meal, { name: "meal" })
+  @Query(() => Victual, { name: "victual" })
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  async find(@User() user: JwtPayload, @Args("where") where: WhereMeal) {
+  async find(@User() user: JwtPayload, @Args("where") where: WhereVictual) {
     const id =
       user.role === "restaurant"
         ? user.id
         : (await this.waiterService.getRestaurant(user.email)).id;
-    return this.mealService.find({ ...where, restaurantId: id });
+    return this.victualService.find({ ...where, restaurantId: id });
   }
 
   @ResolveField(() => Category, { name: "category" })
-  getCategory(@Parent() meal: Meal) {
-    return this.mealService.getCategory(meal.id);
+  getCategory(@Parent() meal: Victual) {
+    return this.victualService.getCategory(meal.id);
   }
 
   @ResolveField(() => Category, { name: "restaurant" })
-  getRestaurant(@Parent() meal: Meal) {
-    return this.mealService.getRestaurant(meal.id);
+  getRestaurant(@Parent() meal: Victual) {
+    return this.victualService.getRestaurant(meal.id);
   }
 
   @ResolveField(() => [Order], { name: "orders" })
-  getOrders(@Parent() meal: Meal) {
-    return this.mealService.getOrders(meal.id);
+  getOrders(@Parent() meal: Victual) {
+    return this.victualService.getOrders(meal.id);
   }
 }

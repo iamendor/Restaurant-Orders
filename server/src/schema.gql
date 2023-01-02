@@ -32,10 +32,10 @@ type Mutation {
   """
   Meal operations
   """
-  createMeal(data: CreateMeal!): Meal
-  createMeals(data: [CreateMeals!]): MealsCreated
-  updateMeal(data: UpdateMeal!): Meal
-  deleteMeal(where: WhereMeal!): Deleted
+  createVictual(data: CreateVictual!): Victual
+  createVictuals(data: [CreateVictuals!]): VictualsCreated
+  updateVictual(data: UpdateVictual!): Victual
+  deleteVictual(where: WhereVictual!): Deleted
   """
   Order operations
   """
@@ -55,8 +55,8 @@ type Query {
   table(where: WhereTable!): Table
   categories: [Category]
   category(where: WhereCategory!): Category
-  meals: [Meal]
-  meal(where: WhereMeal!): Meal
+  victuals: [Victual]
+  victual(where: WhereVictual!): Victual
   orders: [Order]
   order(where: WhereOrder!): Order
 }
@@ -82,7 +82,7 @@ type RestaurantModel {
   address: Address
   waiters: [Waiter]
   orders: [Order]
-  meals: [Meal]
+  victuals: [Victual]
   categories: [Category]
   tables: [Table]
 }
@@ -116,10 +116,10 @@ type Order {
   waiter: Waiter
   table: Table
   restaurant: Restaurant
-  meal: Meal
+  victual: Victual
 }
 
-type Meal {
+type Victual {
   id: Int!
   name: String!
   price: Float!
@@ -131,7 +131,7 @@ type Meal {
 type Category {
   id: Int!
   name: String!
-  meals: [Meal]
+  victuals: [Victual]
   restaurant: Restaurant
 }
 
@@ -194,7 +194,7 @@ type Restaurant {
   address: Address
   waiters: [Waiter]
   orders: [Order]
-  meals: [Meal]
+  victuals: [Victual]
   categories: [Category]
   tables: [Table]
 }
@@ -359,16 +359,16 @@ type CategoriesCreated {
 }
 
 """
-Meal Dto
+Victual Dto
 """
-input CreateMeal {
+input CreateVictual {
   name: String!
   price: Float!
   categoryId: Int
   category: CreateCategory
 }
 
-input CreateMealData {
+input CreateVictualData {
   name: String!
   price: Float!
   restaurantId: Int!
@@ -376,32 +376,32 @@ input CreateMealData {
   category: CreateCategory
 }
 
-input CreateMeals {
+input CreateVictuals {
   name: String!
   price: Float!
   restaurantId: Int
   categoryId: Int!
 }
 
-input UpdateMeal {
-  where: WhereMeal!
-  update: UpdateMealData!
+input UpdateVictual {
+  where: WhereVictual!
+  update: UpdateVictualData!
 }
-input UpdateMealData {
+input UpdateVictualData {
   name: String
   price: Float
   categoryId: Int
 }
 
-input WhereMeal {
+input WhereVictual {
   id: Int!
   restaurantId: Int
 }
 
 """
-Meal Response
+Victual Response
 """
-type MealsCreated {
+type VictualsCreated {
   message: String!
 }
 
@@ -413,7 +413,7 @@ input CreateOrder {
   isReady: Boolean = false
   waiterId: Int
   tableId: Int!
-  mealId: Int!
+  victualId: Int!
   restaurantId: Int
 }
 
@@ -431,7 +431,7 @@ input UpdateOrderData {
   description: String
   isReady: Boolean
   tableId: Int
-  mealId: Int
+  victualId: Int
 }
 
 """

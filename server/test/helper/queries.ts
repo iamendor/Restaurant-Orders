@@ -75,14 +75,14 @@ export const getQueries = () => ({
       }
     `,
   },
-  meal: {
+  victual: {
     listAndFind: () => `
-      query listAndFind($where: WhereMeal!){
-        meals{
+      query listAndFind($where: WhereVictual!){
+        victuals{
           id
           name
         }
-        meal(where: $where){
+        victual(where: $where){
           id
           name
         }

@@ -10,7 +10,7 @@ describe("OrderService", () => {
   const mocks = getMocks();
   const mockOrder = mocks.order({
     restaurantId: 1,
-    mealId: 1,
+    victualId: 1,
     tableId: 1,
     waiterId: 1,
   });

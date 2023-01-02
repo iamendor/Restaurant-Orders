@@ -30,7 +30,7 @@ describe("Orders API", () => {
   let restaurantId: number;
   let catId: number;
   let catIds: number[];
-  let mealId: number;
+  let victualId: number;
   let tableId: number;
   let orderId: number;
 
@@ -702,8 +702,8 @@ describe("Orders API", () => {
     });
   });
 
-  describe("Meal", () => {
-    let mockMeal;
+  describe("Victual", () => {
+    let mockVictual;
 
     beforeAll(async () => {
       catIds = (
@@ -718,7 +718,7 @@ describe("Orders API", () => {
       ).categories.map((cat) => {
         return cat.id;
       });
-      mockMeal = mocks.meal.withCategoryId(catIds[0]);
+      mockVictual = mocks.victual.withCategoryId(catIds[0]);
     });
     describe("Create", () => {
       let create;
@@ -726,39 +726,39 @@ describe("Orders API", () => {
 
       beforeAll(async () => {
         const { body } = await req(server, {
-          query: mutations.meal.create(),
+          query: mutations.victual.create(),
           variables: {
             data: {
-              ...mockMeal,
+              ...mockVictual,
             },
-            dataMeals: [
+            dataVictuals: [
               ...[1, 2].map(() => ({
-                ...mocks.meal.withCategoryId(catIds[0]),
+                ...mocks.victual.withCategoryId(catIds[0]),
               })),
             ],
           },
         }).set("Authorization", restaurantToken);
-        create = body.data.createMeal;
-        createMultiple = body.data.createMeals;
+        create = body.data.createVictual;
+        createMultiple = body.data.createVictuals;
       });
 
-      it("creates a meal", () => {
-        expect(create.name).toBe(mockMeal.name);
-        mealId = create.id;
+      it("creates a victual", () => {
+        expect(create.name).toBe(mockVictual.name);
+        victualId = create.id;
       });
-      it("creates multiple meals", () => {
+      it("creates multiple victual", () => {
         expect(createMultiple.message).toBe("success");
       });
     });
 
-    it("updates meal", async () => {
+    it("updates victual", async () => {
       const update = "updated";
       const { body } = await req(server, {
-        query: mutations.meal.update(),
+        query: mutations.victual.update(),
         variables: {
           data: {
             where: {
-              id: mealId,
+              id: victualId,
             },
             update: {
               name: update,
@@ -769,7 +769,7 @@ describe("Orders API", () => {
       }).set("Authorization", restaurantToken);
       const {
         data: {
-          updateMeal: { name, category },
+          updateVictual: { name, category },
         },
       } = body;
       expect(name).toBe(update);
@@ -780,15 +780,15 @@ describe("Orders API", () => {
       let find;
       beforeAll(async () => {
         const { body } = await req(server, {
-          query: queries.meal.listAndFind(),
+          query: queries.victual.listAndFind(),
           variables: {
             where: {
-              id: mealId,
+              id: victualId,
             },
           },
         }).set("Authorization", restaurantToken);
-        list = body.data.meals;
-        find = body.data.meal;
+        list = body.data.victuals;
+        find = body.data.victual;
       });
       it("list", async () => {
         expect(list.length).toEqual(3);
@@ -802,15 +802,15 @@ describe("Orders API", () => {
       let find;
       beforeAll(async () => {
         const { body } = await req(server, {
-          query: queries.meal.listAndFind(),
+          query: queries.victual.listAndFind(),
           variables: {
             where: {
-              id: mealId,
+              id: victualId,
             },
           },
         }).set("Authorization", waiterToken);
-        list = body.data.meals;
-        find = body.data.meal;
+        list = body.data.victuals;
+        find = body.data.victual;
       });
       it("list", async () => {
         expect(list.length).toEqual(3);
@@ -819,29 +819,29 @@ describe("Orders API", () => {
         expect(find.name).toBe("updated");
       });
     });
-    it("deletes meal", async () => {
+    it("deletes victual", async () => {
       const { body } = await req(server, {
-        query: mutations.meal.delete(),
+        query: mutations.victual.delete(),
         variables: {
           where: {
-            id: mealId,
+            id: victualId,
           },
         },
       }).set("Authorization", restaurantToken);
       const {
-        data: { deleteMeal },
+        data: { deleteVictual },
       } = body;
-      expect(deleteMeal).toBeDefined();
-      expect(deleteMeal.message).toBe("success");
+      expect(deleteVictual).toBeDefined();
+      expect(deleteVictual.message).toBe("success");
     });
 
     afterAll(async () => {
-      mealId = (
+      victualId = (
         await prisma.restaurant.findUnique({
           where: { id: restaurantId },
-          select: { meals: true },
+          select: { victuals: true },
         })
-      ).meals[0].id;
+      ).victuals[0].id;
     });
   });
 
@@ -852,7 +852,7 @@ describe("Orders API", () => {
       catId = catId[0];
       const { createdAt: _, ...rest } = mocks.order({
         restaurantId,
-        mealId,
+        victualId,
         tableId,
         waiterId,
       });
@@ -874,6 +874,7 @@ describe("Orders API", () => {
             dataMultiple: createMultiple,
           },
         }).set("Authorization", waiterToken);
+        console.log(body);
         create = body.data.createOrder;
         multiple = body.data.createOrders;
       });
