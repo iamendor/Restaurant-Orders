@@ -60,10 +60,15 @@ type Query {
   orders: [Order]
   order(where: WhereOrder!): Order
 }
+type Subscription {
+  listenOrders: ListenOrders
+  listenOrder(where: WhereOrder!): ListenOrder
+}
 
 schema {
   mutation: Mutation
   query: Query
+  subscription: Subscription
 }
 
 """
@@ -453,4 +458,20 @@ type Deleted {
 
 type PasswordUpdated {
   message: String!
+}
+
+"""
+Subscription
+"""
+type ListenOrders {
+  orders: [Order]
+}
+
+type ListenOrder {
+  order: Order
+}
+
+input InvalidateQuery {
+  restaurantId: Int!
+  orderId: Int
 }

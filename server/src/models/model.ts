@@ -224,6 +224,11 @@ export class UpdateOrderData {
     mealId?: Nullable<number>;
 }
 
+export class InvalidateQuery {
+    restaurantId: number;
+    orderId?: Nullable<number>;
+}
+
 export abstract class IMutation {
     abstract signup(data: CreateRestaurant): Nullable<Restaurant> | Promise<Nullable<Restaurant>>;
 
@@ -304,6 +309,12 @@ export abstract class IQuery {
     abstract orders(): Nullable<Nullable<Order>[]> | Promise<Nullable<Nullable<Order>[]>>;
 
     abstract order(where: WhereOrder): Nullable<Order> | Promise<Nullable<Order>>;
+}
+
+export abstract class ISubscription {
+    abstract listenOrders(): Nullable<ListenOrders> | Promise<Nullable<ListenOrders>>;
+
+    abstract listenOrder(where: WhereOrder): Nullable<ListenOrder> | Promise<Nullable<ListenOrder>>;
 }
 
 export class RestaurantModel {
@@ -436,6 +447,14 @@ export class Deleted {
 
 export class PasswordUpdated {
     message: string;
+}
+
+export class ListenOrders {
+    orders?: Nullable<Nullable<Order>[]>;
+}
+
+export class ListenOrder {
+    order?: Nullable<Order>;
 }
 
 type Nullable<T> = T | null;

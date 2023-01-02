@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ConsoleLogger, INestApplication } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import { AppModule } from "../src/app.module";
 import * as request from "supertest";
 import { getMutations } from "./helper/mutations";
@@ -12,9 +12,9 @@ import {
 import { PrismaModule } from "../src/prisma/prisma.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import req from "./helper/graphql-request";
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { Config } from "../src/config";
+import { JwtService } from "@nestjs/jwt";
+import { CoreModule } from "../src/core/core.module";
+import { ConfigService } from "@nestjs/config";
 describe("Orders API", () => {
   let app: INestApplication;
   const mutations = getMutations();
@@ -22,6 +22,7 @@ describe("Orders API", () => {
   const mocks = getMocks();
   let prisma: PrismaService;
   let jwt: JwtService;
+  let privateKey: string;
   let server;
   let restaurantToken: string;
   let waiterToken: string;
@@ -35,18 +36,13 @@ describe("Orders API", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-        AppModule,
-        PrismaModule,
-      ],
+      imports: [CoreModule, AppModule, PrismaModule],
     }).compile();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
+    const config = moduleFixture.get<ConfigService>(ConfigService);
     jwt = moduleFixture.get<JwtService>(JwtService);
+    privateKey = config.get("JWT_SECRET");
+
     await clearMocks({ prisma });
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -255,7 +251,7 @@ describe("Orders API", () => {
         waiterId: wId,
         waiterToken: wToken,
         restaurantToken: rToken,
-      } = await createRestaurantWithWaiter({ prisma, jwt });
+      } = await createRestaurantWithWaiter({ prisma, jwt, secret: privateKey });
       waiterId = wId;
       waiterToken = wToken;
       restaurantToken = rToken;
@@ -459,7 +455,7 @@ describe("Orders API", () => {
         waiterToken: Wtoken,
         waiterId: wId,
         restaurantId: rId,
-      } = await createRestaurantWithWaiter({ prisma, jwt });
+      } = await createRestaurantWithWaiter({ prisma, jwt, secret: privateKey });
       restaurantToken = Rtoken;
       waiterToken = Wtoken;
       waiterId = wId;
@@ -920,7 +916,6 @@ describe("Orders API", () => {
             },
           },
         }).set("Authorization", restaurantToken);
-        console.log(body);
         list = body.data.orders;
         find = body.data.order;
       });

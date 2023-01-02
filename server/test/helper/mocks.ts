@@ -57,9 +57,11 @@ export const getMocks = () => ({
 export const createRestaurantWithWaiter = async ({
   prisma,
   jwt,
+  secret,
 }: {
   prisma: PrismaService;
   jwt: JwtService;
+  secret?: string;
 }) => {
   await clearMocks({ prisma });
   const mocks = getMocks();
@@ -101,8 +103,8 @@ export const createRestaurantWithWaiter = async ({
     role: "waiter",
     restaurantId: restaurant.id,
   };
-  const restaurantToken = jwt.sign(Rpayload);
-  const waiterToken = jwt.sign(Wpayload);
+  const restaurantToken = jwt.sign(Rpayload, secret && { secret });
+  const waiterToken = jwt.sign(Wpayload, secret && { secret });
 
   return {
     restaurantToken: `Bearer ${restaurantToken}`,

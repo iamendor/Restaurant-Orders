@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import {
   CreateOrder,
   Deleted,
+  InvalidateQuery,
   Order,
   OrdersCreated,
   UpdateOrder,
@@ -12,6 +13,7 @@ import {
   NotFoundResourceException,
   SomethingWentWrongException,
 } from "../error/errors";
+import { PubSub } from "graphql-subscriptions";
 
 @Injectable()
 export class OrderService {
@@ -181,4 +183,6 @@ export class OrderService {
     if (!order) throw new NotFoundResourceException("order");
     return order.waiter;
   }
+
+  
 }

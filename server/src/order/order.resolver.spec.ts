@@ -9,6 +9,7 @@ import { Config } from "../config";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { CreateOrder, JwtPayload, Order } from "../models/model";
+import { SubscriptionModule } from "../subscription/subscription.module";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -31,6 +32,7 @@ describe("OrderResolver", () => {
           inject: [ConfigService],
           useFactory: Config.getJwtConfig,
         }),
+        SubscriptionModule,
       ],
       providers: [OrderResolver, OrderService],
     }).compile();
