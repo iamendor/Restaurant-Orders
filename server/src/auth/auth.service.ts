@@ -26,7 +26,6 @@ export class AuthService {
     const restaurant = await this.restaurantService.find({
       email: credentials.email,
     });
-
     return this.securityService.compare({
       str: credentials.password,
       hash: restaurant.password,

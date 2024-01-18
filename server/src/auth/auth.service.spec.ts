@@ -10,6 +10,7 @@ import { mockRestaurant } from "../restaurant/restaurant.service.spec";
 import { JwtPayload, Restaurant } from "../models/model";
 import { mockWaiter } from "../waiter/waiter.service.spec";
 import { SecurityModule } from "../security/security.module";
+import { PrismaModule } from "../prisma/prisma.module";
 
 const returnPassword = {
   password: bcrypt.hashSync("test", 10),
@@ -36,14 +37,14 @@ describe("AuthService", () => {
         }),
         SecurityModule,
         WaiterModule,
-        RestaurantModule,
+        PrismaModule,
       ],
-      providers: [AuthService],
+      providers: [AuthService, RestaurantService],
     }).compile();
     const restaurantService = module.get<RestaurantService>(RestaurantService);
     const waiterService = module.get<WaiterService>(WaiterService);
     jwt = module.get<JwtService>(JwtService);
-    restaurantService.find = jest.fn().mockReturnValue(returnPassword);
+    restaurantService.find = jest.fn().mockImplementation(() => returnPassword);
     waiterService.find = jest.fn().mockReturnValue(returnPassword);
 
     service = module.get<AuthService>(AuthService);

@@ -21,12 +21,9 @@ export class VictualService {
     private readonly prismaService: PrismaService,
     private readonly categoryService: CategoryService
   ) {}
-  private PERMISSION_DENIED = "permission denied for meal";
 
   async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;
-    if (categoryId)
-      await this.categoryService.find({ id: categoryId, restaurantId });
     try {
       const meal = await this.prismaService.victual.create({
         data: {
@@ -64,7 +61,6 @@ export class VictualService {
     const checked = await Promise.all(
       data.map(async (d) => {
         const { restaurantId, categoryId, ...rest } = d;
-        await this.categoryService.find({ id: categoryId, restaurantId });
         return {
           ...rest,
           restaurantId,
@@ -85,7 +81,6 @@ export class VictualService {
 
   async update(data: UpdateVictual): Promise<Victual> {
     const { where, update } = data;
-    await this.find(where);
     try {
       const updated = await this.prismaService.victual.update({
         where: {
@@ -102,7 +97,6 @@ export class VictualService {
   }
 
   async delete(where: WhereVictual): Promise<Deleted> {
-    await this.find(where);
     try {
       await this.prismaService.victual.delete({
         where: {
@@ -134,12 +128,8 @@ export class VictualService {
           id: where.id,
         },
       });
-      if (meal.restaurantId !== where.restaurantId)
-        throw new Error(this.PERMISSION_DENIED);
       return meal;
     } catch (e) {
-      if (e.message === this.PERMISSION_DENIED)
-        throw new HttpException(this.PERMISSION_DENIED, 403);
       throw new NotFoundResourceException("meal");
     }
   }

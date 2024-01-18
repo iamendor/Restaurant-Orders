@@ -169,7 +169,6 @@ export class UpdateCategoryData {
 
 export class WhereCategory {
     id: number;
-    restaurantId?: Nullable<number>;
 }
 
 export class CreateVictual {
@@ -416,6 +415,7 @@ export class Category {
     name: string;
     victuals?: Nullable<Nullable<Victual>[]>;
     restaurant?: Nullable<Restaurant>;
+    restaurantId?: Nullable<number>;
 }
 
 export class Table {

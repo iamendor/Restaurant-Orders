@@ -5,7 +5,7 @@ import { RestaurantModule } from "../restaurant/restaurant.module";
 import { WaiterService } from "./waiter.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
-import { JwtPayload, Waiter } from "../models/model";
+import { JwtPayload } from "../models/model";
 import * as bcrypt from "bcrypt";
 import { SecurityModule } from "../security/security.module";
 

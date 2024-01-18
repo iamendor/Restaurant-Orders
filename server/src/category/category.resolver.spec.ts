@@ -8,6 +8,7 @@ import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Config } from "../config";
 import { Category, JwtPayload } from "../models/model";
+import { CategoryGuardModule } from "./guard/category.guard.module";
 
 describe("CategoryResolver", () => {
   let resolver: CategoryResolver;
@@ -16,7 +17,7 @@ describe("CategoryResolver", () => {
   let Wpayload: JwtPayload;
   let Rpayload: JwtPayload;
   let categoryId: number;
-  let Rid: number;
+  let cat: Category;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +28,7 @@ describe("CategoryResolver", () => {
           inject: [ConfigService],
           useFactory: Config.getJwtConfig,
         }),
+        CategoryGuardModule,
       ],
       providers: [CategoryResolver, CategoryService],
     }).compile();
@@ -39,7 +41,6 @@ describe("CategoryResolver", () => {
       await createRestaurantWithWaiter({ prisma, jwt });
     Wpayload = waiterPayload;
     Rpayload = restaurantPayload;
-    Rid = restaurantId;
   });
 
   it("should be defined", () => {
@@ -52,6 +53,7 @@ describe("CategoryResolver", () => {
     });
     expect(category.name).toBe(mocks.category.name);
     categoryId = category.id;
+    cat = category;
   });
   it("create multiple", async () => {
     const created = await resolver.createMany(
@@ -69,7 +71,7 @@ describe("CategoryResolver", () => {
   });
   it("update the category", async () => {
     const update = "updatedCategory";
-    const updated = await resolver.update(Rpayload, {
+    const updated = await resolver.update({
       where: {
         id: categoryId,
       },
@@ -90,35 +92,23 @@ describe("CategoryResolver", () => {
   });
   describe("List", () => {
     it("list as restaurant", async () => {
-      const categories = await resolver.list(Rpayload);
+      const categories = await resolver.list(Rpayload.id);
       expect(categories.length).toEqual(2);
       categoryId = categories[0].id;
     });
     it("list as waiter", async () => {
-      const categories = await resolver.list(Wpayload);
+      const categories = await resolver.list(Rpayload.id);
       expect(categories.length).toEqual(2);
     });
   });
   describe("Find", () => {
     it("find as restaurant", async () => {
-      const category = await resolver.find(Rpayload, { id: categoryId });
+      const category = await resolver.find(cat);
       expect(category).toBeDefined();
     });
     it("find as waiter", async () => {
-      const category = await resolver.find(Wpayload, { id: categoryId });
+      const category = await resolver.find(cat);
       expect(category).toBeDefined();
     });
-  });
-
-  it("returns victuals of category", async () => {
-    const victuals = await resolver.getVictuals({ id: categoryId } as Category);
-    expect(victuals.length).toEqual(0);
-  });
-
-  it("returns restaurant of category", async () => {
-    const restaurant = await resolver.getResturant({
-      id: categoryId,
-    } as Category);
-    expect(restaurant.id).toBe(Rid);
   });
 });

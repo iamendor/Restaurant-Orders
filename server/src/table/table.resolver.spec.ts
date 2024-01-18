@@ -2,12 +2,12 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TableResolver } from "./table.resolver";
 import { TableService } from "./table.service";
 import { PrismaModule } from "../prisma/prisma.module";
-import { WaiterModule } from "../waiter/waiter.module";
 import { PrismaService } from "../prisma/prisma.service";
 import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { JwtPayload } from "../models/model";
 import { JwtService } from "@nestjs/jwt";
 import { CoreModule } from "../core/core.module";
+import { TableGuardModule } from "./guard/table.guard.module";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
@@ -20,7 +20,7 @@ describe("TableResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, PrismaModule],
+      imports: [CoreModule, PrismaModule, TableGuardModule],
       providers: [TableResolver, TableService],
     }).compile();
 
@@ -87,16 +87,6 @@ describe("TableResolver", () => {
     });
     expect(table).toBeDefined();
     expect(table.name).toBe("updatedTableName");
-  });
-
-  it("returns the restaurant of table", async () => {
-    const restaurant = await resolver.getRestaurant(mockTable);
-    expect(restaurant.id).toBe(Rpayload.id);
-  });
-
-  it("returns orders of table", async () => {
-    const orders = await resolver.getOrders(mockTable);
-    expect(orders.length).toEqual(0);
   });
 
   it("deletes table", async () => {

@@ -6,6 +6,8 @@ import {
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { Observable } from "rxjs";
+import { RESTAURANT } from "../role/role";
+import { getReq } from "../helper/helper";
 
 @Injectable()
 export class UpdateWaiterGuard implements CanActivate {
@@ -16,8 +18,8 @@ export class UpdateWaiterGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const ctx = GqlExecutionContext.create(context);
     const args = ctx.getArgs();
-    const { role } = ctx.getContext().req;
-    if (role === "restaurant") {
+    const { role } = getReq(ctx);
+    if (role === RESTAURANT) {
       if (!args.data.where)
         throw new HttpException(this.WAITER_NOT_PROVIDED, 400);
       return true;

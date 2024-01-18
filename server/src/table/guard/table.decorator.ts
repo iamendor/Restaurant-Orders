@@ -1,7 +1,9 @@
 import { createParamDecorator } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
+import { getReq } from "../../helper/helper";
 
 export const GetTable = createParamDecorator((data, ctx) => {
-  const req = GqlExecutionContext.create(ctx).getContext().req;
+  const context = GqlExecutionContext.create(ctx);
+  const req = getReq(context);
   return req.table;
 });

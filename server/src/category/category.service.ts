@@ -16,7 +16,6 @@ import {
 @Injectable()
 export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
-  private PERMISSION_DENIED = "permission denied for table";
 
   async create(data: CreateCategoryData): Promise<Category> {
     try {
@@ -51,7 +50,6 @@ export class CategoryService {
 
   async update(data: UpdateCategory): Promise<Category> {
     const { update, where } = data;
-    await this.find(where);
     try {
       const updated = await this.prismaService.category.update({
         where: {
@@ -68,7 +66,6 @@ export class CategoryService {
   }
 
   async delete(where: WhereCategory): Promise<Deleted> {
-    await this.find(where);
     try {
       await this.prismaService.category.delete({
         where: {
@@ -88,13 +85,8 @@ export class CategoryService {
           id: where.id,
         },
       });
-      if (category.restaurantId !== where.restaurantId) {
-        throw new Error(this.PERMISSION_DENIED);
-      }
       return category;
     } catch (e) {
-      if (e.message === this.PERMISSION_DENIED)
-        throw new HttpException(this.PERMISSION_DENIED, HttpStatus.FORBIDDEN);
       throw new NotFoundResourceException("category");
     }
   }
@@ -109,25 +101,5 @@ export class CategoryService {
       },
     });
     return categories;
-  }
-
-  async getRestaurant(id: number) {
-    const category = await this.prismaService.category.findFirstOrThrow({
-      where: { id },
-      select: {
-        restaurant: true,
-      },
-    });
-    return category.restaurant;
-  }
-
-  async getVictuals(id: number) {
-    const category = await this.prismaService.category.findFirstOrThrow({
-      where: { id },
-      select: {
-        victuals: true,
-      },
-    });
-    return category.victuals;
   }
 }

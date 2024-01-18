@@ -13,9 +13,9 @@ import { User } from "../auth/decorators/user.decorator";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
-import { TableGuard } from "./table.guard";
+import { TableGuard } from "./guard/table.guard";
 import { IdIntercept } from "../auth/guards/id";
-import { GetTable } from "./table.decorator";
+import { GetTable } from "./guard/table.decorator";
 import { RID } from "../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../role/role";
 
@@ -40,13 +40,13 @@ export class TableResolver {
   }
 
   @Mutation(() => Table, { name: "updateTable" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), IdIntercept, TableGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
   update(@Args("data") data: UpdateTable) {
     return this.tableService.update(data);
   }
 
   @Mutation(() => Deleted, { name: "deleteTable" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), IdIntercept, TableGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
   delete(@Args("where") where: WhereTable) {
     return this.tableService.delete(where);
   }
@@ -58,12 +58,7 @@ export class TableResolver {
   }
 
   @Query(() => Table, { name: "table" })
-  @UseGuards(
-    JwtAuthGuard,
-    RoleGuard(RESTAURANT, WAITER),
-    IdIntercept,
-    TableGuard
-  )
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), TableGuard)
   async find(@GetTable() table: Table) {
     return table;
   }

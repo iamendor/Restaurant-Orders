@@ -12,10 +12,9 @@ import {
   UpdateRestaurantPassword,
 } from "../models/model";
 import { RestaurantService } from "./restaurant.service";
-import { RestaurantGuard } from "./restaurant.guard";
+import { RestaurantGuard } from "./guard/restaurant.guard";
 import { RESTAURANT, WAITER } from "../role/role";
-import { IdIntercept } from "../auth/guards/id";
-import { GetRestaurant } from "./restaurant.decorator";
+import { GetRestaurant } from "./guard/restaurant.decorator";
 import { Restaurant as PRestaurant } from "@prisma/client";
 import { SecurityService } from "../security/security.service";
 
@@ -26,12 +25,7 @@ export class RestaurantResolver {
     private readonly securityService: SecurityService
   ) {}
 
-  @UseGuards(
-    JwtAuthGuard,
-    RoleGuard("restaurant"),
-    IdIntercept,
-    RestaurantGuard
-  )
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"), RestaurantGuard)
   @Mutation(() => Restaurant, { name: "updateRestaurant" })
   update(
     @GetRestaurant() { id }: Restaurant,
@@ -67,12 +61,7 @@ export class RestaurantResolver {
     return this.restaurantService.delete({ id: restaurant.id });
   }
 
-  @UseGuards(
-    JwtAuthGuard,
-    RoleGuard(RESTAURANT, WAITER),
-    IdIntercept,
-    RestaurantGuard
-  )
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), RestaurantGuard)
   @Query(() => Restaurant, { name: "restaurantInfo" })
   info(@GetRestaurant() restaurant: Restaurant) {
     return restaurant;

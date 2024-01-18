@@ -149,6 +149,7 @@ type Category {
   name: String!
   victuals: [Victual]
   restaurant: Restaurant
+  restaurantId: Int
 }
 
 type Table {
@@ -370,7 +371,6 @@ input UpdateCategoryData {
 
 input WhereCategory {
   id: Int!
-  restaurantId: Int
 }
 
 """

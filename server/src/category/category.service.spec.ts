@@ -57,12 +57,12 @@ describe("CategoryService", () => {
     expect(categories.message).toBe("success");
   });
   it("find by id", async () => {
-    const category = await service.find({ id: catId, restaurantId: 1 });
+    const category = await service.find({ id: catId });
     expect(category).toBeDefined();
   });
   it("updates the category", async () => {
     const updatedCategory = await service.update({
-      where: { id: catId, restaurantId: 1 },
+      where: { id: catId },
       update: {
         name: "updated",
       },
@@ -72,7 +72,6 @@ describe("CategoryService", () => {
   it("deletes the category", async () => {
     const deleted = await service.delete({
       id: catId,
-      restaurantId: 1,
     });
     expect(deleted.message).toBe("success");
   });

@@ -21,6 +21,10 @@ import {
   WhereCategory,
 } from "../models/model";
 import { User } from "../auth/decorators/user.decorator";
+import { CategoryGuard } from "./guard/category.guard";
+import { GetCategory } from "./guard/category.decorator";
+import { IdIntercept } from "../auth/guards/id";
+import { RID } from "../auth/decorators/role.decorator";
 
 @Resolver("Category")
 export class CategoryResolver {
@@ -28,8 +32,8 @@ export class CategoryResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @Mutation(() => Category, { name: "createCategory" })
-  create(@User() user: JwtPayload, @Args("data") data: CreateCategory) {
-    return this.categoryService.create({ ...data, restaurantId: user.id });
+  create(@User() { id }: JwtPayload, @Args("data") data: CreateCategory) {
+    return this.categoryService.create({ ...data, restaurantId: id });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -40,46 +44,29 @@ export class CategoryResolver {
     );
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"), CategoryGuard)
   @Mutation(() => Category, { name: "updateCategory" })
-  update(@User() user: JwtPayload, @Args("data") data: UpdateCategory) {
-    return this.categoryService.update({
-      ...data,
-      where: { ...data.where, restaurantId: user.id },
-    });
+  update(@Args("data") data: UpdateCategory) {
+    return this.categoryService.update(data);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"), CategoryGuard)
   @Mutation(() => Deleted, { name: "deleteCategory" })
   delete(@User() user: JwtPayload, @Args("where") where: WhereCategory) {
-    return this.categoryService.delete({ ...where, restaurantId: user.id });
+    return this.categoryService.delete(where);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"), CategoryGuard)
   @Query(() => Category, { name: "category" })
-  async find(@User() user: JwtPayload, @Args("where") where: WhereCategory) {
-    return this.categoryService.find({
-      ...where,
-      restaurantId: user.role === "restaurant" ? user.id : user.restaurantId,
-    });
+  async find(@GetCategory() category: Category) {
+    return category;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
+  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"), IdIntercept)
   @Query(() => [Category], { name: "categories" })
-  async list(@User() user: JwtPayload) {
-    return this.categoryService.list(
-      user.role === "restaurant" ? user.id : user.restaurantId
-    );
+  async list(@RID() restaurantId: number) {
+    return this.categoryService.list(restaurantId);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @ResolveField(() => [Victual], { name: "victuals" })
-  getVictuals(@Parent() category: Category) {
-    return this.categoryService.getVictuals(category.id);
-  }
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @ResolveField(() => Restaurant, { name: "restaurant" })
-  getResturant(@Parent() category: Category) {
-    return this.categoryService.getRestaurant(category.id);
-  }
+  
 }

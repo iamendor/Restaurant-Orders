@@ -15,6 +15,7 @@ import { VictualModule } from "../victual/victual.module";
 import { MealModule } from "../meal/meal.module";
 import { CurrencyModule } from "../currency/currency.module";
 import { SecurityModule } from "../security/security.module";
+import { RestaurantGuardModule } from "./guard/restaurant.guard.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
@@ -34,6 +35,7 @@ describe("Restaurant Resolver", () => {
         OrderModule,
         MealModule,
         CurrencyModule,
+        RestaurantGuardModule,
       ],
       providers: [RestaurantResolver, RestaurantService],
     }).compile();
