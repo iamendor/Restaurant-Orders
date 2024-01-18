@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import {
   CreateTableData,
@@ -16,7 +16,6 @@ import {
 @Injectable()
 export class TableService {
   constructor(private readonly prismaService: PrismaService) {}
-  private PERMISSION_DENIED = "permission denied for table";
   async create(data: CreateTableData): Promise<Table> {
     try {
       const { restaurantId, ...rest } = data;
@@ -49,9 +48,6 @@ export class TableService {
   }
 
   async update(data: UpdateTable) {
-    if (!data.where.restaurantId)
-      throw new HttpException(this.PERMISSION_DENIED, 403);
-    await this.find(data.where);
     try {
       const updatedTable = await this.prismaService.table.update({
         where: { id: data.where.id },
@@ -64,9 +60,6 @@ export class TableService {
   }
 
   async delete(where: WhereTable): Promise<Deleted> {
-    if (!where.restaurantId)
-      throw new HttpException(this.PERMISSION_DENIED, 403);
-    await this.find(where);
     try {
       await this.prismaService.table.delete({
         where: {
@@ -90,44 +83,13 @@ export class TableService {
 
   async find(where: WhereTable): Promise<Table> {
     try {
-      const table = await this.prismaService.table.findUnique({
+      return await this.prismaService.table.findUniqueOrThrow({
         where: {
           id: where.id,
         },
       });
-      if (table.restaurantId !== where.restaurantId) {
-        throw new Error(this.PERMISSION_DENIED);
-      }
-      return table;
     } catch (e) {
-      if (e.message === this.PERMISSION_DENIED) {
-        throw new HttpException(this.PERMISSION_DENIED, 403);
-      }
       throw new NotFoundResourceException("table");
     }
-  }
-
-  async getRestaurant(id: number) {
-    const table = await this.prismaService.table.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        restaurant: true,
-      },
-    });
-    return table.restaurant;
-  }
-
-  async getOrders(id: number) {
-    const table = await this.prismaService.table.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        orders: true,
-      },
-    });
-    return table.orders;
   }
 }

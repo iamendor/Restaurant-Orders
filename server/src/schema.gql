@@ -156,6 +156,7 @@ type Table {
   name: String!
   orders: [Order]
   restaurant: Restaurant
+  restaurantId: Int
 }
 
 type Meal {
@@ -337,7 +338,6 @@ input UpdateTableData {
 
 input WhereTable {
   id: Int!
-  restaurantId: Int
 }
 
 """

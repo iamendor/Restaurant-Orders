@@ -63,7 +63,7 @@ describe("TableResolver", () => {
   });
   it("update table", async () => {
     const update = "updatedTableName";
-    const updatedTable = await resolver.update(Rpayload, {
+    const updatedTable = await resolver.update({
       where: { id: mockTable.id },
       update: {
         name: update,
@@ -72,30 +72,21 @@ describe("TableResolver", () => {
     expect(updatedTable.name).toBe(update);
   });
   it("lists all table of restaurant", async () => {
-    const tables = await resolver.list(Rpayload);
+    const tables = await resolver.list(Rpayload.id);
     expect(tables.length).toEqual(3);
   });
   it("lists all table of restaurant as waiter", async () => {
-    const tables = await resolver.list(Wpayload);
+    const tables = await resolver.list(Wpayload.restaurantId);
 
     expect(tables.length).toEqual(3);
   });
   it("returns table with specific id", async () => {
-    const table = await resolver.find(Rpayload, { id: mockTable.id });
+    const table = await resolver.find({
+      ...mockTable,
+      name: "updatedTableName",
+    });
     expect(table).toBeDefined();
     expect(table.name).toBe("updatedTableName");
-  });
-  it("returns table for waiter", async () => {
-    const table = await resolver.find(Rpayload, { id: mockTable.id });
-    expect(table).toBeDefined();
-    expect(table.name).toBe("updatedTableName");
-  });
-
-  it("returns permission denied because table is not belongs to the restaurant", async () => {
-    expect(
-      async () =>
-        await resolver.find({ ...Rpayload, id: 0 }, { id: mockTable.id })
-    ).rejects.toThrowError("permission denied for table");
   });
 
   it("returns the restaurant of table", async () => {
@@ -109,7 +100,7 @@ describe("TableResolver", () => {
   });
 
   it("deletes table", async () => {
-    await resolver.delete(Rpayload, { id: mockTable.id });
+    await resolver.delete({ id: mockTable.id });
     expect(
       await prisma.table.findUnique({ where: { id: mockTable.id } })
     ).toBeNull();

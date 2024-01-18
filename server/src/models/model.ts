@@ -147,7 +147,6 @@ export class UpdateTableData {
 
 export class WhereTable {
     id: number;
-    restaurantId?: Nullable<number>;
 }
 
 export class CreateCategory {
@@ -424,6 +423,7 @@ export class Table {
     name: string;
     orders?: Nullable<Nullable<Order>[]>;
     restaurant?: Nullable<Restaurant>;
+    restaurantId?: Nullable<number>;
 }
 
 export class Meal {

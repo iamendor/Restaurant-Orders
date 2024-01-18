@@ -1,7 +1,6 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { Waiter } from "@prisma/client";
 import { Restaurant, Order, Meal } from "../../models/model";
-import { WaiterService } from "../waiter.service";
 import { FieldService } from "./field.service";
 
 @Resolver("Waiter")

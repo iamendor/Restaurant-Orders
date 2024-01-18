@@ -6,7 +6,6 @@ import {
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { Observable } from "rxjs";
-import { WAITER } from "../role/role";
 
 @Injectable()
 export class UpdateWaiterGuard implements CanActivate {

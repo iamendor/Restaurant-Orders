@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpException,
   UnauthorizedException,
   UseGuards,
@@ -87,7 +88,7 @@ export class WaiterResolver {
         where: { id },
       });
     }
-    throw new UnauthorizedException();
+    throw new ForbiddenException();
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
@@ -97,7 +98,7 @@ export class WaiterResolver {
     @Args("where") where: WhereWaiter
   ) {
     const { restaurantId } = await this.waiterService.find({ id: where.id });
-    if (restaurantId != restaurant.id) throw new UnauthorizedException();
+    if (restaurantId != restaurant.id) throw new ForbiddenException();
     return this.waiterService.delete({
       ...where,
       restaurantId: restaurant.id,
@@ -119,14 +120,12 @@ export class WaiterResolver {
       if (!where) return this.waiterService.find({ id: user.id });
       const waiter = await this.waiterService.find({ ...where });
       if (waiter.restaurantId != user.restaurantId)
-        throw new UnauthorizedException();
+        throw new ForbiddenException();
       return waiter;
     }
     if (!where) throw new SomethingWentWrongException("no waiter specified");
     const waiter = await this.waiterService.find({ ...where });
-    if (waiter.restaurantId != user.id) throw new UnauthorizedException();
+    if (waiter.restaurantId != user.id) throw new ForbiddenException();
     return waiter;
   }
-
-  
 }

@@ -27,7 +27,7 @@ describe("TableService", () => {
     prisma.table.create = jest.fn().mockImplementation(({ data }) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { restaurant: _, ...rest } = data;
-      return rest;
+      return { ...rest, id: 1 };
     });
 
     prisma.table.update = jest.fn().mockImplementation(({ where, data }) => ({
@@ -41,7 +41,13 @@ describe("TableService", () => {
     prisma.restaurant.findUnique = jest.fn().mockReturnValue({
       tables: [1, 2, 3].map(() => mocks.table()),
     });
-
+    prisma.table.findUniqueOrThrow = jest
+      .fn()
+      .mockImplementation(({ where }) => ({
+        ...mocks.table(),
+        where,
+        restaurantId: restaurant.id,
+      }));
     prisma.table.findUnique = jest
       .fn()
       .mockImplementationOnce(({ where }) => ({
@@ -53,11 +59,6 @@ describe("TableService", () => {
         ...mocks.table(),
         where,
         restaurantId: restaurant.id,
-      }))
-      .mockImplementationOnce(({ where }) => ({
-        ...mocks.table(),
-        where,
-        restaurantId: 0,
       }))
       .mockImplementationOnce(({ where }) => ({
         ...mocks.table(),
@@ -102,7 +103,6 @@ describe("TableService", () => {
     const updated = await service.update({
       where: {
         id: tableId,
-        restaurantId: restaurant.id,
       },
       update: {
         name: update,
@@ -119,21 +119,14 @@ describe("TableService", () => {
   it("should find the table", async () => {
     const table = await service.find({
       id: tableId,
-      restaurantId: restaurant.id,
     });
 
     expect(table).toBeDefined();
-  });
-  it("should return error of permission denied", async () => {
-    expect(
-      async () => await service.find({ id: tableId, restaurantId: 9012 })
-    ).rejects.toThrowError("permission denied for table");
   });
 
   it("should delete the table", async () => {
     const { message } = await service.delete({
       id: tableId,
-      restaurantId: restaurant.id,
     });
     expect(message).toBe("success");
   });
