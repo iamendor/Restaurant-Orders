@@ -19,7 +19,7 @@ import { TableService } from "../../table/table.service";
 import { VictualService } from "../../victual/victual.service";
 import { WaiterService } from "../../waiter/waiter.service";
 
-@Resolver()
+@Resolver('Restaurant')
 export class FieldResolver {
   constructor(
     private readonly addressService: AddressService,

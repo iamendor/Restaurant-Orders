@@ -21,5 +21,6 @@ import { WaiterModule } from "../../waiter/waiter.module";
     CurrencyModule,
   ],
   providers: [FieldResolver],
+  exports: [FieldResolver],
 })
 export class FieldModule {}

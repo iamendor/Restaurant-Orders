@@ -110,16 +110,14 @@ export class UpdateWaiterData {
 export class UpdateWaiter {
     where?: Nullable<WhereWaiter>;
     update: UpdateWaiterData;
-    role?: Nullable<string>;
 }
 
 export class UpdateWaiterPassword {
     where?: Nullable<WhereWaiter>;
-    update: UpdateWaiterDataPassword;
-    role?: Nullable<string>;
+    update: UpdateWaiterPasswordData;
 }
 
-export class UpdateWaiterDataPassword {
+export class UpdateWaiterPasswordData {
     password: string;
     old?: Nullable<string>;
 }
@@ -351,6 +349,32 @@ export abstract class ISubscription {
     abstract listenOrder(where: WhereOrder): Nullable<ListenOrder> | Promise<Nullable<ListenOrder>>;
 }
 
+export class Restaurant {
+    id: number;
+    name: string;
+    email: string;
+    address?: Nullable<Address>;
+    currency?: Nullable<Currency>;
+    waiters?: Nullable<Nullable<Waiter>[]>;
+    orders?: Nullable<Nullable<Order>[]>;
+    victuals?: Nullable<Nullable<Victual>[]>;
+    categories?: Nullable<Nullable<Category>[]>;
+    tables?: Nullable<Nullable<Table>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
+}
+
+export class Waiter {
+    id: number;
+    name: string;
+    email: string;
+    gender: string;
+    profileIcon?: Nullable<string>;
+    orders?: Nullable<Nullable<Order>[]>;
+    meals?: Nullable<Nullable<Meal>[]>;
+    restaurant?: Nullable<Restaurant>;
+    restaurantId?: Nullable<number>;
+}
+
 export class Currency {
     id: number;
     currency: string;
@@ -366,19 +390,6 @@ export class Address {
     address1: string;
     address2: string;
     restaurant?: Nullable<Restaurant>;
-}
-
-export class WaiterModel {
-    id: number;
-    name: string;
-    email: string;
-    gender: string;
-    profileIcon?: Nullable<string>;
-    password: string;
-    orders?: Nullable<Nullable<Order>[]>;
-    meals?: Nullable<Nullable<Meal>[]>;
-    restaurant?: Nullable<Restaurant>;
-    restaurantId?: Nullable<number>;
 }
 
 export class Order {
@@ -432,31 +443,6 @@ export class AuthRestaurant {
     access_token: string;
 }
 
-export class Restaurant {
-    id: number;
-    name: string;
-    email: string;
-    address?: Nullable<Address>;
-    currency?: Nullable<Currency>;
-    waiters?: Nullable<Nullable<Waiter>[]>;
-    orders?: Nullable<Nullable<Order>[]>;
-    victuals?: Nullable<Nullable<Victual>[]>;
-    categories?: Nullable<Nullable<Category>[]>;
-    tables?: Nullable<Nullable<Table>[]>;
-    meals?: Nullable<Nullable<Meal>[]>;
-}
-
-export class Waiter {
-    id: number;
-    name: string;
-    email: string;
-    gender: string;
-    profileIcon?: Nullable<string>;
-    orders?: Nullable<Nullable<Order>[]>;
-    meals?: Nullable<Nullable<Meal>[]>;
-    restaurant?: Nullable<Restaurant>;
-}
-
 export class AuthWaiter {
     access_token: string;
     waiter: Waiter;
@@ -483,7 +469,6 @@ export class JwtPayload {
     sub: number;
     role: string;
     id: number;
-    email: string;
     restaurantId?: Nullable<number>;
 }
 

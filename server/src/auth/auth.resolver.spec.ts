@@ -11,6 +11,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { PrismaModule } from "../prisma/prisma.module";
 import * as bcrypt from "bcrypt";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
+import { SecurityModule } from "../security/security.module";
 
 export const checkRestaurantInDatabase = async (
   prisma: PrismaService,
@@ -29,6 +30,7 @@ describe("Auth Resolver", () => {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        SecurityModule,
         RestaurantModule,
         PrismaModule,
         WaiterModule,

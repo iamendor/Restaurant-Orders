@@ -5,19 +5,21 @@ import {
   LoginRestaurant,
   LoginWaiter,
   Restaurant,
-  WaiterModel,
+  Waiter,
 } from "../models/model";
 import { RestaurantService } from "../restaurant/restaurant.service";
-import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { WaiterService } from "../waiter/waiter.service";
+import { SecurityService } from "../security/security.service";
+import { Waiter as PWaiter } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
   constructor(
     private restaurantService: RestaurantService,
     private waiterService: WaiterService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private readonly securityService: SecurityService
   ) {}
 
   async validateRestaurant(credentials: LoginRestaurant) {
@@ -25,20 +27,23 @@ export class AuthService {
       email: credentials.email,
     });
 
-    return bcrypt.compareSync(credentials.password, restaurant.password)
+    return this.securityService.compare({
+      str: credentials.password,
+      hash: restaurant.password,
+    })
       ? restaurant
       : null;
   }
 
   async validateWaiter(credentials: LoginWaiter) {
-    const waiter = await this.waiterService.find(
-      {
-        email: credentials.email,
-      },
-      true
-    );
+    const waiter = (await this.waiterService.find({
+      email: credentials.email,
+    })) as PWaiter;
 
-    return bcrypt.compareSync(credentials.password, waiter.password)
+    return this.securityService.compare({
+      str: credentials.password,
+      hash: waiter.password,
+    })
       ? waiter
       : null;
   }
@@ -47,17 +52,15 @@ export class AuthService {
     const payload = {
       sub: restaurant.id,
       name: restaurant.name,
-      email: restaurant.email,
       role: "restaurant",
     };
     return this.jwtService.sign(payload);
   }
 
-  generateWaiterJwt(waiter: WaiterModel): string {
+  generateWaiterJwt(waiter: Waiter): string {
     const payload = {
       sub: waiter.id,
       name: waiter.name,
-      email: waiter.email,
       role: "waiter",
       restaurantId: waiter.restaurantId,
     };

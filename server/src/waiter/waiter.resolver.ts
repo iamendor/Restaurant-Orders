@@ -1,4 +1,8 @@
-import { HttpException, UseGuards } from "@nestjs/common";
+import {
+  HttpException,
+  UnauthorizedException,
+  UseGuards,
+} from "@nestjs/common";
 import {
   Resolver,
   Query,
@@ -24,11 +28,20 @@ import {
   WhereWaiter,
 } from "../models/model";
 import { WaiterService } from "./waiter.service";
+import { SecurityService } from "../security/security.service";
+import { RESTAURANT, WAITER } from "../role/role";
+import { UpdateWaiterGuard } from "./waiter.guard";
+import { IdIntercept } from "../auth/guards/id";
+import { RID } from "../auth/decorators/role.decorator";
+import { SomethingWentWrongException } from "../error/errors";
+import { Waiter as PWaiter } from "@prisma/client";
 
 @Resolver("Waiter")
 export class WaiterResolver {
-  constructor(private readonly waiterService: WaiterService) {}
-  private WAITER_NOT_PROVIDED = "no waiter specified";
+  constructor(
+    private readonly waiterService: WaiterService,
+    private readonly securityService: SecurityService
+  ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
   @Mutation(() => Waiter, { name: "createWaiter" })
@@ -39,77 +52,81 @@ export class WaiterResolver {
     });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @Mutation(() => Waiter, { name: "updateWaiter" })
   update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
-    if (role === "restaurant" && !data.where)
-      throw new HttpException(this.WAITER_NOT_PROVIDED, 400);
     const where: WhereWaiter =
-      role === "waiter"
+      role === WAITER
         ? { id: user.id }
         : { ...data.where, restaurantId: user.id };
     return this.waiterService.update({
       ...data,
       where,
-      role,
     });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @Mutation(() => PasswordUpdated, { name: "updateWaiterPassword" })
-  updatePassword(
+  async updatePassword(
     @User() user: JwtPayload,
     @Args("data") data: UpdateWaiterPassword
   ) {
-    const { role } = user;
-    if (role === "restaurant") {
-      if (!data.where) throw new HttpException(this.WAITER_NOT_PROVIDED, 400);
-      return this.waiterService.updatePassword({ ...data, role });
+    const { role, id } = user;
+    if (role === RESTAURANT) {
+      return this.waiterService.updatePassword({ ...data });
     }
+    const { password } = (await this.waiterService.find({ id })) as PWaiter;
     if (!data.update.old)
       throw new HttpException("old password is not provided", 400);
-    return this.waiterService.updatePassword({
-      ...data,
-      where: { id: user.id },
-      role,
-    });
+    if (
+      this.securityService.compare({ str: data.update.old, hash: password })
+    ) {
+      return this.waiterService.updatePassword({
+        ...data,
+        where: { id },
+      });
+    }
+    throw new UnauthorizedException();
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Deleted, { name: "deleteWaiter" })
-  delete(@User() restaurant: JwtPayload, @Args("where") where: WhereWaiter) {
-    return this.waiterService.delete({ ...where, restaurantId: restaurant.id });
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  @Query(() => [Waiter])
-  async waiters(@User() user: JwtPayload) {
-    return this.waiterService.list({
-      id: user.role === "restaurant" ? user.id : user.restaurantId,
+  async delete(
+    @User() restaurant: JwtPayload,
+    @Args("where") where: WhereWaiter
+  ) {
+    const { restaurantId } = await this.waiterService.find({ id: where.id });
+    if (restaurantId != restaurant.id) throw new UnauthorizedException();
+    return this.waiterService.delete({
+      ...where,
+      restaurantId: restaurant.id,
     });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @Query(() => [Waiter])
+  async waiters(@RID() restaurantId: number) {
+    return this.waiterService.list({
+      id: restaurantId,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
   @Query(() => Waiter, { name: "waiterInfo" })
-  info(@User() user: JwtPayload, @Args("where") where?: WhereWaiter) {
-    if (user.role === "waiter")
-      return this.waiterService.find({ id: user.id }, true);
-    return this.waiterService.find({ ...where, restaurantId: user.id });
+  async info(@User() user: JwtPayload, @Args("where") where?: WhereWaiter) {
+    if (user.role === WAITER) {
+      if (!where) return this.waiterService.find({ id: user.id });
+      const waiter = await this.waiterService.find({ ...where });
+      if (waiter.restaurantId != user.restaurantId)
+        throw new UnauthorizedException();
+      return waiter;
+    }
+    if (!where) throw new SomethingWentWrongException("no waiter specified");
+    const waiter = await this.waiterService.find({ ...where });
+    if (waiter.restaurantId != user.id) throw new UnauthorizedException();
+    return waiter;
   }
 
-  @ResolveField(() => Restaurant, { name: "restaurant" })
-  getRestaurant(@Parent() waiter: Waiter) {
-    return this.waiterService.getRestaurant(waiter.email);
-  }
-
-  @ResolveField(() => [Order], { name: "orders" })
-  getOrders(@Parent() waiter: Waiter) {
-    return this.waiterService.getOrders(waiter.id);
-  }
-
-  @ResolveField(() => [Meal], { name: "meals" })
-  getMeals(@Parent() waiter: Waiter) {
-    return this.waiterService.getMeals(waiter.id);
-  }
+  
 }

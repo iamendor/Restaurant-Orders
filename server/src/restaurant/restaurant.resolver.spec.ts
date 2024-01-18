@@ -14,14 +14,17 @@ import { OrderModule } from "../order/order.module";
 import { VictualModule } from "../victual/victual.module";
 import { MealModule } from "../meal/meal.module";
 import { CurrencyModule } from "../currency/currency.module";
+import { SecurityModule } from "../security/security.module";
 describe("Restaurant Resolver", () => {
   let resolver: RestaurantResolver;
   let payload: JwtPayload;
   let prisma: PrismaService;
+  let rst: Restaurant;
   const mocks = getMocks();
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [
+        SecurityModule,
         PrismaModule,
         AddressModule,
         TableModule,
@@ -42,13 +45,13 @@ describe("Restaurant Resolver", () => {
       id: restaurant.id,
       sub: restaurant.id,
       role: "restaurant",
-      email: restaurant.email,
     };
+    rst = restaurant;
   });
 
   it("updates the restaurant", async () => {
     const updatePayload = { name: "updatedName" };
-    const update = await resolver.update(payload, updatePayload);
+    const update = await resolver.update(rst, updatePayload);
     expect(update).toBeDefined();
     expect(update.name).toBe(updatePayload.name);
   });
@@ -72,7 +75,7 @@ describe("Restaurant Resolver", () => {
   });
 
   it("return restaurant info", async () => {
-    const info = await resolver.info(payload);
+    const info = await resolver.info(rst);
     expect(info.email).toBe(mocks.restaurant.email);
   });
 });

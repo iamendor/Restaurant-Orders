@@ -3,6 +3,7 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { PrismaService } from "../prisma/prisma.service";
 import { mockRestaurant } from "../restaurant/restaurant.service.spec";
 import { WaiterService } from "./waiter.service";
+import { SecurityModule } from "../security/security.module";
 
 export const mockWaiter = {
   name: "waiter1",
@@ -17,7 +18,7 @@ describe("WaiterService", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaModule, SecurityModule],
       providers: [WaiterService],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);
@@ -53,7 +54,7 @@ describe("WaiterService", () => {
   });
 
   it("should find the waiter", async () => {
-    expect(await service.find({ id: 1 }, true)).toBeDefined();
+    expect(await service.find({ id: 1 })).toBeDefined();
   });
 
   it("should list all waiter of restaurant", async () => {

@@ -82,6 +82,31 @@ schema {
 """
 Models
 """
+type Restaurant {
+  id: Int!
+  name: String!
+  email: String!
+  address: Address
+  currency: Currency
+  waiters: [Waiter]
+  orders: [Order]
+  victuals: [Victual]
+  categories: [Category]
+  tables: [Table]
+  meals: [Meal]
+}
+
+type Waiter {
+  id: Int!
+  name: String!
+  email: String!
+  gender: String!
+  profileIcon: String
+  orders: [Order]
+  meals: [Meal]
+  restaurant: Restaurant
+  restaurantId: Int
+}
 
 type Currency {
   id: Int!
@@ -99,20 +124,6 @@ type Address {
   address2: String!
   restaurant: Restaurant
 }
-
-type WaiterModel {
-  id: Int!
-  name: String!
-  email: String!
-  gender: String!
-  profileIcon: String
-  password: String!
-  orders: [Order]
-  meals: [Meal]
-  restaurant: Restaurant
-  restaurantId: Int
-}
-
 type Order {
   id: Int!
   description: String!
@@ -206,20 +217,6 @@ type AuthRestaurant {
   access_token: String!
 }
 
-type Restaurant {
-  id: Int!
-  name: String!
-  email: String!
-  address: Address
-  currency: Currency
-  waiters: [Waiter]
-  orders: [Order]
-  victuals: [Victual]
-  categories: [Category]
-  tables: [Table]
-  meals: [Meal]
-}
-
 """
 Address Input
 """
@@ -292,16 +289,14 @@ input UpdateWaiterData {
 input UpdateWaiter {
   where: WhereWaiter
   update: UpdateWaiterData!
-  role: String
 }
 
 input UpdateWaiterPassword {
   where: WhereWaiter
-  update: UpdateWaiterDataPassword!
-  role: String
+  update: UpdateWaiterPasswordData!
 }
 
-input UpdateWaiterDataPassword {
+input UpdateWaiterPasswordData {
   password: String!
   old: String
 }
@@ -314,17 +309,6 @@ input LoginWaiter {
 """
 Waiter Response
 """
-type Waiter {
-  id: Int!
-  name: String!
-  email: String!
-  gender: String!
-  profileIcon: String
-  orders: [Order]
-  meals: [Meal]
-  restaurant: Restaurant
-}
-
 type AuthWaiter {
   access_token: String!
   waiter: Waiter!
@@ -499,7 +483,6 @@ type JwtPayload {
   sub: Int!
   role: String!
   id: Int!
-  email: String!
   restaurantId: Int
 }
 

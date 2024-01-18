@@ -7,8 +7,9 @@ import * as bcrypt from "bcrypt";
 import { RestaurantService } from "../restaurant/restaurant.service";
 import { WaiterService } from "../waiter/waiter.service";
 import { mockRestaurant } from "../restaurant/restaurant.service.spec";
-import { JwtPayload, Restaurant, WaiterModel } from "../models/model";
+import { JwtPayload, Restaurant } from "../models/model";
 import { mockWaiter } from "../waiter/waiter.service.spec";
+import { SecurityModule } from "../security/security.module";
 
 const returnPassword = {
   password: bcrypt.hashSync("test", 10),
@@ -33,6 +34,7 @@ describe("AuthService", () => {
         JwtModule.register({
           secret: "test",
         }),
+        SecurityModule,
         WaiterModule,
         RestaurantModule,
       ],
@@ -77,7 +79,7 @@ describe("AuthService", () => {
     expect(decoded.role).toBe("restaurant");
   });
   it("should generate jwt for waiter", async () => {
-    const payload = service.generateWaiterJwt(mockWaiter as WaiterModel);
+    const payload = service.generateWaiterJwt(mockWaiter);
     expect(typeof payload === "string").toBeTruthy();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);

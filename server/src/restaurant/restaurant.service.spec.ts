@@ -4,6 +4,7 @@ import { RestaurantService } from "./restaurant.service";
 import * as bcrypt from "bcrypt";
 import { PrismaModule } from "../prisma/prisma.module";
 import { mockWaiter } from "../waiter/waiter.service.spec";
+import { SecurityModule } from "../security/security.module";
 
 export const mockRestaurant = {
   id: 1,
@@ -28,7 +29,7 @@ describe("RestaurantService", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaModule, SecurityModule],
       providers: [RestaurantService],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);

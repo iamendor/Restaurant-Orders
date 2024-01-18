@@ -7,6 +7,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
 import { JwtPayload, Waiter } from "../models/model";
 import * as bcrypt from "bcrypt";
+import { SecurityModule } from "../security/security.module";
 
 describe("Waiter Resolver", () => {
   let resolver: WaiterResolver;
@@ -14,10 +15,11 @@ describe("Waiter Resolver", () => {
   let payload: JwtPayload;
   let waiterPayload: JwtPayload;
   const mocks = getMocks();
+  let restaurantId: number;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule, RestaurantModule],
+      imports: [SecurityModule, PrismaModule, RestaurantModule],
       providers: [WaiterService, WaiterResolver],
     }).compile();
     resolver = module.get<WaiterResolver>(WaiterResolver);
@@ -28,8 +30,8 @@ describe("Waiter Resolver", () => {
       id: restaurant.id,
       sub: restaurant.id,
       role: "restaurant",
-      email: restaurant.email,
     };
+    restaurantId = restaurant.id;
   });
 
   it("creates a new waiter", async () => {
@@ -41,7 +43,7 @@ describe("Waiter Resolver", () => {
       id: create.id,
       sub: create.id,
       role: "waiter",
-      email: create.email,
+      restaurantId,
     };
   });
 
@@ -94,42 +96,12 @@ describe("Waiter Resolver", () => {
         })
     ).rejects.toThrowError("old password is not provided");
   });
-  it("returns error because restaurant didn't provide the waiter", async () => {
-    await expect(
-      async () =>
-        await resolver.updatePassword(payload, {
-          update: { password: "error" },
-        })
-    ).rejects.toThrowError("no waiter specified");
-  });
   it("lists waiters of restaurant", async () => {
-    const waiters = await resolver.waiters(payload);
+    const waiters = await resolver.waiters(restaurantId);
     expect(waiters.length).toEqual(1);
   });
   it("returns info of waiter", async () => {
     const info = await resolver.info(waiterPayload);
     expect(info.name).toBe("updatedWaiter");
-  });
-
-  it("returns the restaurant of waiter", async () => {
-    const restaurant = await resolver.getRestaurant(
-      waiterPayload as unknown as Waiter
-    );
-    expect(restaurant.id).toBe(payload.id);
-  });
-
-  it("list orders of waiter", async () => {
-    const orders = await resolver.getOrders(waiterPayload as unknown as Waiter);
-    expect(orders.length).toEqual(0);
-  });
-
-  it("list meals of waiter", async () => {
-    const meals = await resolver.getMeals(waiterPayload as unknown as Waiter);
-    expect(meals.length).toEqual(0);
-  });
-
-  it("deletes the waiter", async () => {
-    const deleted = await resolver.delete(payload, { id: waiterPayload.id });
-    expect(deleted.message).toBe("success");
   });
 });
