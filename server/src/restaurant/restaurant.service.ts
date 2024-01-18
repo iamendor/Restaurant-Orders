@@ -3,11 +3,10 @@ import {
   CreateRestaurant,
   Restaurant,
   WhereRestaurant,
-  RestaurantModel,
   Deleted,
   PasswordUpdated,
   UpdateRestaurantData,
-  UpdateRestaurantDataPassword,
+  UpdateRestaurantPasswordData,
 } from "../models/model";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
@@ -15,19 +14,21 @@ import {
   NotFoundResourceException,
   SomethingWentWrongException,
 } from "../error/errors";
+import { Restaurant as PRestaurant } from "@prisma/client";
+import { SecurityService } from "../security/security.service";
 
 @Injectable()
 export class RestaurantService {
-  constructor(private readonly prismaService: PrismaService) {}
-  private hashPassword(pw: string) {
-    return bcrypt.hashSync(pw, 10);
-  }
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly securityService: SecurityService
+  ) {}
   async create(data: CreateRestaurant): Promise<Restaurant> {
     try {
       const restaurant = await this.prismaService.restaurant.create({
         data: {
           ...data,
-          password: this.hashPassword(data.password),
+          password: this.securityService.hash(data.password),
           address: {
             create: data.address,
           },
@@ -48,13 +49,9 @@ export class RestaurantService {
   async updatePassword({
     where,
     update,
-  }: UpdateRestaurantDataPassword): Promise<PasswordUpdated> {
-    const restaurant = await this.find(where);
-    if (!bcrypt.compareSync(update.old, restaurant.password)) {
-      throw new UnauthorizedException("invalid password");
-    }
+  }: UpdateRestaurantPasswordData): Promise<PasswordUpdated> {
     try {
-      const encrypted = this.hashPassword(update.password);
+      const encrypted = this.securityService.hash(update.password);
       await this.prismaService.restaurant.update({
         where,
         data: {
@@ -105,7 +102,7 @@ export class RestaurantService {
     }
   }
 
-  async find(where: WhereRestaurant): Promise<RestaurantModel> {
+  async find(where: WhereRestaurant): Promise<PRestaurant> {
     try {
       const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
         where: {

@@ -82,20 +82,6 @@ schema {
 """
 Models
 """
-type RestaurantModel {
-  id: Int!
-  name: String!
-  email: String!
-  password: String!
-  address: Address
-  currency: Currency
-  waiters: [Waiter]
-  orders: [Order]
-  victuals: [Victual]
-  categories: [Category]
-  tables: [Table]
-  meals: [Meal]
-}
 
 type Currency {
   id: Int!
@@ -202,7 +188,7 @@ input UpdateRestaurant {
   currency: UpdateCurrency
 }
 
-input UpdateRestaurantDataPassword {
+input UpdateRestaurantPasswordData {
   where: WhereRestaurant!
   update: UpdateRestaurantPassword!
 }

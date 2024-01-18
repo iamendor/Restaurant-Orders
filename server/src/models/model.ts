@@ -37,7 +37,7 @@ export class UpdateRestaurant {
     currency?: Nullable<UpdateCurrency>;
 }
 
-export class UpdateRestaurantDataPassword {
+export class UpdateRestaurantPasswordData {
     where: WhereRestaurant;
     update: UpdateRestaurantPassword;
 }
@@ -349,21 +349,6 @@ export abstract class ISubscription {
     abstract listenOrders(): Nullable<ListenOrders> | Promise<Nullable<ListenOrders>>;
 
     abstract listenOrder(where: WhereOrder): Nullable<ListenOrder> | Promise<Nullable<ListenOrder>>;
-}
-
-export class RestaurantModel {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-    address?: Nullable<Address>;
-    currency?: Nullable<Currency>;
-    waiters?: Nullable<Nullable<Waiter>[]>;
-    orders?: Nullable<Nullable<Order>[]>;
-    victuals?: Nullable<Nullable<Victual>[]>;
-    categories?: Nullable<Nullable<Category>[]>;
-    tables?: Nullable<Nullable<Table>[]>;
-    meals?: Nullable<Nullable<Meal>[]>;
 }
 
 export class Currency {

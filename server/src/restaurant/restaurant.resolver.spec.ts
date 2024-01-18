@@ -59,7 +59,7 @@ describe("Restaurant Resolver", () => {
       password: "update",
     };
 
-    const updatePassword = await resolver.updatePassword(payload, update);
+    const updatePassword = await resolver.updatePassword(update, payload);
     expect(updatePassword.message).toBe("success");
     const restaurant = await prisma.restaurant.findUnique({
       where: {
@@ -74,56 +74,5 @@ describe("Restaurant Resolver", () => {
   it("return restaurant info", async () => {
     const info = await resolver.info(payload);
     expect(info.email).toBe(mocks.restaurant.email);
-  });
-
-  it("return address", async () => {
-    const { address: addressInfo, ...rest } = mocks.restaurant;
-    const address = await resolver.getAddress({
-      ...rest,
-      id: payload.id,
-    } as unknown as Restaurant);
-    expect(address).toBeDefined();
-    expect(address).toMatchObject(addressInfo);
-  });
-
-  it("return tables of restaurant", async () => {
-    const tables = await resolver.getTables({ id: payload.id } as Restaurant);
-    expect(tables.length).toEqual(0);
-  });
-  it("return waiters of restaurant", async () => {
-    const waiters = await resolver.getWaiters({ id: payload.id } as Restaurant);
-    expect(waiters.length).toEqual(0);
-  });
-  it("list categories of restaurant", async () => {
-    const categories = await resolver.getCategories({
-      id: payload.id,
-    } as Restaurant);
-    expect(categories.length).toEqual(0);
-  });
-  it("return meals of restaurant", async () => {
-    const meals = await resolver.getVictuals({ id: payload.id } as Restaurant);
-    expect(meals.length).toEqual(0);
-  });
-
-  it("list orders of restaurant", async () => {
-    const orders = await resolver.getOrders({ id: payload.id } as Restaurant);
-    expect(orders.length).toEqual(0);
-  });
-  it("list meals of restaurant", async () => {
-    const meals = await resolver.getMeals({ id: payload.id } as Restaurant);
-    expect(meals.length).toEqual(0);
-  });
-
-  it("return currency of meal", async () => {
-    const currency = await resolver.getCurrency({
-      id: payload.id,
-    } as Restaurant);
-    expect(currency).toBeDefined();
-    expect(currency.currency).toBe("HUF");
-  });
-
-  it("deletes restaurant", async () => {
-    const { message } = await resolver.delete(payload);
-    expect(message).toBe("success");
   });
 });

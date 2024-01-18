@@ -1,0 +1,16 @@
+services:
+  db:
+    container_name: swr_db
+    image: mysql
+    volumes:
+      - swr_db:/var/lib/mysql
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+volumes:
+  swr_db:
