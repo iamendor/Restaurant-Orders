@@ -15,18 +15,19 @@ import {
   NotFoundResourceException,
   SomethingWentWrongException,
 } from "../error/errors";
+import { CreateMealData } from "../models/other";
 
 @Injectable()
 export class MealService {
   constructor(private readonly prismaService: PrismaService) {}
-
-  async create(data: CreateMeal, restaurantId: number): Promise<Meal> {
-    const table = await this.prismaService.table.findFirst({
-      where: { id: data.tableId },
+  getOrdersOfTable(tableId: number) {
+    return this.prismaService.table.findFirst({
+      where: { id: tableId },
       include: {
         restaurant: {
           select: {
             currency: true,
+            id: true,
           },
         },
         orders: {
@@ -36,64 +37,73 @@ export class MealService {
         },
       },
     });
-    if (!table) throw new NotFoundResourceException("table");
-    if (table.restaurantId !== restaurantId)
-      throw new HttpException(
-        "permission denied for table",
-        HttpStatus.FORBIDDEN
-      );
-    if (table.orders.length === 0) {
-      throw new HttpException("no orders to close table", 400);
-    }
-
-    const sorted = table.orders.sort(
-      (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt)
-    );
-    const start = sorted[0].createdAt;
-    const end = sorted[sorted.length - 1].createdAt;
-    const waiterId = sorted[0]?.waiterId;
-    const total = sorted.reduce((acc, c) => acc + c.victual.price, 0);
-    const meal = await this.prismaService.meal.create({
-      data: {
-        start,
-        end,
-        total,
-        table: {
-          connect: { id: table.id },
-        },
-        currency: {
-          connect: {
-            id: table.restaurant.currency.id,
-          },
-        },
-        restaurant: {
-          connect: {
-            id: restaurantId,
-          },
-        },
-        orders: {
-          connect: [
-            ...sorted.map((ord) => ({
-              id: ord.id,
-            })),
-          ],
-        },
-        waiter: {
-          connect: {
-            id: waiterId,
-          },
-        },
-      },
-    });
+  }
+  async clearTable(tableId: number) {
     await this.prismaService.order.updateMany({
       where: {
-        tableId: data.tableId,
+        tableId: tableId,
       },
       data: {
         tableId: null,
       },
     });
-    return meal;
+  }
+  formatTable(table: any) {
+    const sorted = table.orders.sort(
+      (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt)
+    );
+    const start = sorted[0].createdAt;
+    const end = sorted[sorted.length - 1].createdAt;
+    const waiterId = sorted[0].waiterId;
+    const total = sorted.reduce((acc, c) => acc + c.victual.price, 0);
+    return { sorted, start, end, waiterId, total };
+  }
+
+  async create(data: CreateMealData): Promise<Meal> {
+    try {
+      const {
+        start,
+        end,
+        total,
+        tableId,
+        restaurantId,
+        currencyId,
+        orderIds,
+        waiterId,
+      } = data;
+      const meal = await this.prismaService.meal.create({
+        data: {
+          start,
+          end,
+          total,
+          table: {
+            connect: { id: tableId },
+          },
+          currency: {
+            connect: {
+              id: currencyId,
+            },
+          },
+          restaurant: {
+            connect: {
+              id: restaurantId,
+            },
+          },
+          orders: {
+            connect: orderIds,
+          },
+          waiter: {
+            connect: {
+              id: waiterId,
+            },
+          },
+        },
+      });
+
+      return meal;
+    } catch (e) {
+      throw new SomethingWentWrongException();
+    }
   }
 
   async list(restaurantId: number): Promise<Meal[]> {
@@ -115,16 +125,8 @@ export class MealService {
           id: where.id,
         },
       });
-      if (meal.restaurantId !== where.restaurantId) {
-        throw new Error("permission denied");
-      }
       return meal;
     } catch (e) {
-      if (e.message === "permission denied")
-        throw new HttpException(
-          "permission denied for meal",
-          HttpStatus.FORBIDDEN
-        );
       throw new NotFoundResourceException("meal");
     }
   }
@@ -138,44 +140,5 @@ export class MealService {
     }
   }
 
-  async getWaiter(id: number): Promise<Waiter> {
-    const meal = await this.prismaService.meal.findFirst({
-      where: { id },
-      include: { waiter: true },
-    });
-    return meal.waiter;
-  }
-
-  async getTable(id: number): Promise<Table> {
-    const meal = await this.prismaService.meal.findFirst({
-      where: { id },
-      include: { table: true },
-    });
-    return meal.table;
-  }
-
-  async getRestaurant(id: number): Promise<Restaurant> {
-    const meal = await this.prismaService.meal.findFirst({
-      where: { id },
-      include: { restaurant: true },
-    });
-    return meal.restaurant;
-  }
-  async getOrders(id: number): Promise<Order[]> {
-    const meal = await this.prismaService.meal.findFirst({
-      where: { id },
-      include: { orders: true },
-    });
-    return meal.orders;
-  }
-
-  async getCurrency(id: number): Promise<Currency> {
-    const meal = await this.prismaService.meal.findFirst({
-      where: {
-        id,
-      },
-      include: { currency: true },
-    });
-    return meal.currency;
-  }
+  
 }

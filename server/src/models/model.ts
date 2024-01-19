@@ -432,6 +432,7 @@ export class Meal {
     orders?: Nullable<Nullable<Order>[]>;
     currency?: Nullable<Currency>;
     restaurant?: Nullable<Restaurant>;
+    restaurantId?: Nullable<number>;
 }
 
 export class AuthRestaurant {

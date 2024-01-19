@@ -171,6 +171,7 @@ type Meal {
   orders: [Order]
   currency: Currency
   restaurant: Restaurant
+  restaurantId: Int
 }
 
 """

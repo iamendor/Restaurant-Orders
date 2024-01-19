@@ -10,7 +10,7 @@ export class RestaurantBaseGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
     const req = getReq(ctx);
-    const id = req.id;
+    const id = req.restaurantId;
     const { password: _, ...restaurant } = await this.restaurantService.find({
       id,
     });

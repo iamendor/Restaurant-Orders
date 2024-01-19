@@ -20,65 +20,71 @@ import {
   WhereMeal,
 } from "../models/model";
 import { User } from "../auth/decorators/user.decorator";
-import { UseGuards } from "@nestjs/common";
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  UseGuards,
+} from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
+import {
+  NotFoundResourceException,
+  SomethingWentWrongException,
+} from "../error/errors";
+import { RESTAURANT, WAITER } from "../role/role";
+import { IdIntercept } from "../auth/guards/id";
+import { RID } from "../auth/decorators/role.decorator";
+import { MealGuard } from "./guard/meal.guard";
+import { GetMeal } from "./guard/meal.decorator";
 
 @Resolver("Meal")
 export class MealResolver {
   constructor(private readonly mealService: MealService) {}
 
-  private getRestaurantId(user: JwtPayload) {
-    return user.role === "restaurant" ? user.id : user.restaurantId;
-  }
-
   @Mutation(() => Meal, { name: "createMeal" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter"))
-  async create(@User() user: JwtPayload, @Args("data") data: CreateMeal) {
-    const restaurantId = this.getRestaurantId(user);
-    return this.mealService.create(data, restaurantId);
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
+  async create(
+    @RID() restaurantId: number,
+    @Args("data") { tableId }: CreateMeal
+  ) {
+    const tableWithOrders = await this.mealService.getOrdersOfTable(tableId);
+    if (!tableWithOrders) throw new NotFoundResourceException("table");
+    if (tableWithOrders.restaurantId != restaurantId)
+      throw new ForbiddenException();
+    if (tableWithOrders.orders.length == 0)
+      throw new HttpException("no order on table", HttpStatus.BAD_REQUEST);
+    const { sorted, ...formatTable } =
+      this.mealService.formatTable(tableWithOrders);
+    const meal = this.mealService.create({
+      ...formatTable,
+      restaurantId,
+      tableId,
+      currencyId: tableWithOrders.restaurant.currency.id,
+      orderIds: sorted.map((ord) => ({ id: ord.id })),
+    });
+    if (!meal) throw new SomethingWentWrongException();
+    await this.mealService.clearTable(tableId);
+    return meal;
   }
 
   @Mutation(() => Deleted, { name: "deleteMeal" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  async delete(@User() user: JwtPayload, @Args("where") where: WhereMeal) {
-    const restaurantId = this.getRestaurantId(user);
-    return this.mealService.delete({ ...where, restaurantId });
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), MealGuard)
+  async delete(@Args("where") where: WhereMeal) {
+    return this.mealService.delete({ ...where });
   }
 
   @Query(() => [Meal], { name: "meals" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async list(@User() user: JwtPayload) {
-    const restaurantId = this.getRestaurantId(user);
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  async list(@RID() restaurantId: number) {
     return this.mealService.list(restaurantId);
   }
 
   @Query(() => Meal, { name: "meal" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async find(@User() user: JwtPayload, @Args("where") where: WhereMeal) {
-    const restaurantId = this.getRestaurantId(user);
-    return this.mealService.find({ ...where, restaurantId });
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), MealGuard)
+  async find(@GetMeal() meal: Meal) {
+    return meal;
   }
 
-  @ResolveField(() => [Order], { name: "orders" })
-  getOrders(@Parent() meal: Meal) {
-    return this.mealService.getOrders(meal.id);
-  }
-  @ResolveField(() => Table, { name: "table" })
-  getTable(@Parent() meal: Meal) {
-    return this.mealService.getTable(meal.id);
-  }
-  @ResolveField(() => Waiter, { name: "waiter" })
-  getWaiter(@Parent() meal: Meal) {
-    return this.mealService.getWaiter(meal.id);
-  }
-  @ResolveField(() => Restaurant, { name: "restaurant" })
-  getRestaurant(@Parent() meal: Meal) {
-    return this.mealService.getRestaurant(meal.id);
-  }
-
-  @ResolveField(() => Currency, { name: "currency" })
-  getCurrency(@Parent() meal: Meal) {
-    return this.mealService.getCurrency(meal.id);
-  }
+  
 }

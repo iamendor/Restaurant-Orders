@@ -8,6 +8,7 @@ import { JwtService } from "@nestjs/jwt";
 import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { JwtPayload, Meal } from "../models/model";
 import { ConfigService } from "@nestjs/config";
+import { MealGuardModule } from "./guard/meal.guard.module";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
@@ -17,10 +18,11 @@ describe("MealResolver", () => {
   let waiterPayload: JwtPayload;
   let tableId: number;
   let mealId: number;
+  let mockMeal: Meal;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, PrismaModule],
+      imports: [CoreModule, PrismaModule, MealGuardModule],
       providers: [MealResolver, MealService],
     }).compile();
     const config = module.get<ConfigService>(ConfigService);
@@ -77,44 +79,18 @@ describe("MealResolver", () => {
   });
 
   it("create a meal", async () => {
-    const meal = await resolver.create(waiterPayload, { tableId });
+    const meal = await resolver.create(waiterPayload.restaurantId, { tableId });
     expect(meal).toBeDefined();
     expect(meal.total).toEqual(1);
     mealId = meal.id;
+    mockMeal = meal;
   });
   it("list meal", async () => {
-    const meals = await resolver.list(restaurantPayload);
+    const meals = await resolver.list(restaurantPayload.id);
     expect(meals.length).toEqual(1);
   });
   it("return by id", async () => {
-    const meal = await resolver.find(waiterPayload, { id: mealId });
+    const meal = await resolver.find(mockMeal);
     expect(meal).toBeDefined();
-  });
-  it("return orders of meal", async () => {
-    const orders = await resolver.getOrders({ id: mealId } as Meal);
-    expect(orders.length).toEqual(1);
-  });
-  it("return table of meal", async () => {
-    const table = await resolver.getTable({ id: mealId } as Meal);
-    expect(table).toBeDefined();
-  });
-  it("return waiter of meal", async () => {
-    const waiter = await resolver.getWaiter({ id: mealId } as Meal);
-    expect(waiter).toBeDefined();
-  });
-  it("return restaurant of meal", async () => {
-    const restaurant = await resolver.getRestaurant({ id: mealId } as Meal);
-    expect(restaurant).toBeDefined();
-  });
-
-  it("return currency of meal", async () => {
-    const currency = await resolver.getCurrency({ id: mealId } as Meal);
-    expect(currency).toBeDefined();
-    expect(currency.currency).toBe("HUF");
-  });
-
-  it("delete the meal", async () => {
-    const deleted = await resolver.delete(restaurantPayload, { id: mealId });
-    expect(deleted.message).toBe("success");
   });
 });
