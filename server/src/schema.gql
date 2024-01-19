@@ -69,8 +69,8 @@ type Query {
   currency(where: WhereCurrency!): Currency
 }
 type Subscription {
-  listenOrders: ListenOrders
-  listenOrder(where: WhereOrder!): ListenOrder
+  listenOrders: [Order]
+  listenOrder(where: WhereOrder!): Order
 }
 
 schema {
@@ -430,7 +430,6 @@ Order Dto
 """
 input CreateOrder {
   description: String
-  isReady: Boolean = false
   waiterId: Int
   tableId: Int!
   victualId: Int!
@@ -439,7 +438,6 @@ input CreateOrder {
 
 input WhereOrder {
   id: Int!
-  restaurantId: Int
 }
 
 input UpdateOrder {

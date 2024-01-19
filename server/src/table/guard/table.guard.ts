@@ -6,35 +6,27 @@ import {
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { TableService } from "../table.service";
-import {
-  extractRIdFromContext,
-  getGqlFunction,
-  getReq,
-} from "../../helper/helper";
+import { ModelGuard, initGuardProps } from "../../helper/helper";
 import { IdIntercept } from "../../auth/guards/id";
-import { Observable } from "rxjs";
 
 @Injectable()
-export class TableBaseGuard implements CanActivate {
-  private UPDATE = "updateTable";
-  private DELETE = "deleteTable";
-  private FIND = "table";
+export class TableBaseGuard implements ModelGuard {
+  UPDATE = "updateTable";
+  DELETE = "deleteTable";
+  FIND = "table";
   constructor(private readonly tableService: TableService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
-    const args = ctx.getArgs();
-    const restaurantId = extractRIdFromContext(ctx);
-    const req = getReq(ctx);
-    const key = getGqlFunction(ctx);
+    const { args, req, id, fnContext: mutation } = initGuardProps(ctx);
     let where;
-    if (key == this.UPDATE) {
+    if (mutation == this.UPDATE) {
       where = args.data.where;
     }
-    if (key == this.DELETE || key == this.FIND) {
+    if (mutation == this.DELETE || mutation == this.FIND) {
       where = args.where;
     }
     const table = await this.tableService.find(where);
-    if (table.restaurantId != restaurantId) throw new ForbiddenException();
+    if (table.restaurantId != id) throw new ForbiddenException();
     req.table = table;
     return true;
   }

@@ -5,26 +5,19 @@ import {
   Injectable,
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import {
-  extractRIdFromContext,
-  getGqlFunction,
-  getReq,
-} from "../../helper/helper";
+import { ModelGuard, initGuardProps } from "../../helper/helper";
 import { VictualService } from "../victual.service";
 import { IdIntercept } from "../../auth/guards/id";
 
 @Injectable()
-export class VictualBaseGuard implements CanActivate {
-  private UPDATE = "updateVictual";
-  private DELETE = "deleteVictual";
-  private FIND = "victual";
+export class VictualBaseGuard implements ModelGuard {
+  UPDATE = "updateVictual";
+  DELETE = "deleteVictual";
+  FIND = "victual";
   constructor(private readonly victualService: VictualService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
-    const args = ctx.getArgs();
-    const req = getReq(ctx);
-    const id = extractRIdFromContext(ctx);
-    const mutation = getGqlFunction(ctx);
+    const { args, req, id, fnContext: mutation } = initGuardProps(ctx);
     let where;
     if (mutation == this.UPDATE) {
       where = args.data.where;

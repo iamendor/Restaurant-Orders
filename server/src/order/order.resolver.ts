@@ -27,6 +27,11 @@ import { RoleGuard } from "../auth/guards/role-guard";
 import { User } from "../auth/decorators/user.decorator";
 import { pubSub } from "../config";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { RESTAURANT, WAITER } from "../role/role";
+import { IdIntercept } from "../auth/guards/id";
+import { RID } from "../auth/decorators/role.decorator";
+import { OrderGuard } from "./guard/order.guard";
+import { GetOrder } from "./guard/order.decorator";
 
 @Resolver("Order")
 export class OrderResolver {
@@ -35,55 +40,44 @@ export class OrderResolver {
     private subscriptionService: SubscriptionService
   ) {}
 
-  private getRestaurantId(user: JwtPayload) {
-    return user.role === "restaurant" ? user.id : user.restaurantId;
-  }
-
   @Mutation(() => Order, { name: "createOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter"))
-  async create(@User() waiter: JwtPayload, @Args("data") data: CreateOrder) {
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
+  async create(
+    @User() { id }: JwtPayload,
+    @RID() restaurantId: number,
+    @Args("data") data: CreateOrder
+  ) {
     const order = await this.orderService.create({
       ...data,
-      restaurantId: waiter.restaurantId,
-      waiterId: waiter.id,
+      restaurantId,
+      waiterId: id,
     });
-    await this.subscriptionService.invalidateOrders(
-      { restaurantId: waiter.restaurantId },
-      pubSub
-    );
+    await this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
     return order;
   }
 
   @Mutation(() => Order, { name: "createOrders" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter"))
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
   async createMany(
-    @User() waiter: JwtPayload,
+    @User() { id }: JwtPayload,
+    @RID() restaurantId: number,
     @Args("data") data: CreateOrder[]
   ) {
-    const orders = this.orderService.createMany(
-      data.map((order) => ({
-        ...order,
-        restaurantId: waiter.restaurantId,
-        waiterId: waiter.id,
-        description: order.description || "",
-        isReady: false,
-      }))
-    );
-    await this.subscriptionService.invalidateOrders(
-      { restaurantId: waiter.restaurantId },
-      pubSub
-    );
+    const ordersData = data.map((order) => ({
+      ...order,
+      restaurantId,
+      waiterId: id,
+      description: order.description,
+    }));
+    const orders = this.orderService.createMany(ordersData);
+    await this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
     return orders;
   }
 
   @Mutation(() => Order, { name: "updateOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async update(@User() user: JwtPayload, @Args("data") data: UpdateOrder) {
-    const restaurantId = this.getRestaurantId(user);
-    const updatedOrder = await this.orderService.update({
-      ...data,
-      where: { ...data.where, restaurantId },
-    });
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
+  async update(@RID() restaurantId: number, @Args("data") data: UpdateOrder) {
+    const updatedOrder = await this.orderService.update(data);
     await this.subscriptionService.invalidateOrders(
       { restaurantId, orderId: updatedOrder.id },
       pubSub
@@ -92,12 +86,10 @@ export class OrderResolver {
   }
 
   @Mutation(() => Order, { name: "deleteOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  async delete(@User() user: JwtPayload, @Args("where") where: WhereOrder) {
-    const restaurantId = this.getRestaurantId(user);
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), OrderGuard)
+  async delete(@RID() restaurantId: number, @Args("where") where: WhereOrder) {
     const deleted = await this.orderService.delete({
       ...where,
-      restaurantId: restaurantId,
     });
     await this.subscriptionService.invalidateOrders(
       { restaurantId, orderId: where.id },
@@ -107,53 +99,32 @@ export class OrderResolver {
   }
 
   @Query(() => [Order], { name: "orders" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async list(@User() user: JwtPayload) {
-    return this.orderService.list(this.getRestaurantId(user));
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  async list(@RID() restaurantId: number) {
+    return this.orderService.list(restaurantId);
   }
 
   @Query(() => Order, { name: "order" })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async find(@User() user: JwtPayload, @Args("where") where: WhereOrder) {
-    return this.orderService.find({
-      ...where,
-      restaurantId: this.getRestaurantId(user),
-    });
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
+  async find(@GetOrder() order: Order) {
+    return order;
   }
 
-  @Subscription(() => ListenOrders, { resolve: (payload) => payload })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async listenOrders(@User() user: JwtPayload) {
-    return pubSub.asyncIterator(`${this.getRestaurantId(user).toString()}`);
+  @Subscription(() => [Order], { resolve: (payload) => payload.orders })
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  async listenOrders(@RID() restaurantId: number) {
+    return pubSub.asyncIterator(`${restaurantId}`);
   }
 
-  @Subscription(() => ListenOrder, { resolve: (p) => p })
-  @UseGuards(JwtAuthGuard, RoleGuard("waiter", "restaurant"))
-  async listenOrder(
-    @User() user: JwtPayload,
-    @Args("where") where: WhereOrder
-  ) {
-    await this.orderService.find({
-      ...where,
-      restaurantId: this.getRestaurantId(user),
-    });
+  @Subscription(() => Order, {
+    resolve: (p) => {
+      return p.order;
+    },
+  })
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
+  async listenOrder(@Args("where") where: WhereOrder) {
     return pubSub.asyncIterator(`${where.id}`);
   }
 
-  @ResolveField(() => Restaurant, { name: "restaurant" })
-  getRestaurant(@Parent() order: Order) {
-    return this.orderService.getRestaurant(order.id);
-  }
-  @ResolveField(() => Waiter, { name: "waiter" })
-  getWaiter(@Parent() order: Order) {
-    return this.orderService.getWaiter(order.id);
-  }
-  @ResolveField(() => Victual, { name: "victual" })
-  getVictual(@Parent() order: Order) {
-    return this.orderService.getVictual(order.id);
-  }
-  @ResolveField(() => Table, { name: "table" })
-  getTable(@Parent() order: Order) {
-    return this.orderService.getTable(order.id);
-  }
+  
 }

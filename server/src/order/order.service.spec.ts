@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { OrderService } from "./order.service";
 import { PrismaModule } from "../prisma/prisma.module";
-import { WaiterModule } from "../waiter/waiter.module";
 import { PrismaService } from "../prisma/prisma.service";
 import { clearMocks, getMocks } from "../../test/helper/mocks";
 
@@ -56,7 +55,6 @@ describe("OrderService", () => {
     const order = await service.update({
       where: {
         id: 1,
-        restaurantId: 1,
       },
       update: {
         isReady: true,
@@ -64,17 +62,9 @@ describe("OrderService", () => {
     });
     expect(order.isReady).toBeTruthy();
   });
-  it("returns permission denied because the restaurant id is not belongs to this order", async () => {
-    expect(
-      async () =>
-        await service.update({
-          where: { id: 1, restaurantId: 2 },
-          update: { isReady: true },
-        })
-    ).rejects.toThrowError("permission denied for order");
-  });
+
   it("deletes the order", async () => {
-    const deleted = await service.delete({ id: 1, restaurantId: 1 });
+    const deleted = await service.delete({ id: 1 });
     expect(deleted.message).toBe("success");
   });
   it("list all order", async () => {
@@ -82,7 +72,7 @@ describe("OrderService", () => {
     expect(orders.length).toEqual(2);
   });
   it("find by id", async () => {
-    const order = await service.find({ id: 2, restaurantId: 1 });
+    const order = await service.find({ id: 2 });
     expect(order.restaurantId).toBe(1);
   });
 });

@@ -63,9 +63,9 @@ model Waiter{
 
 model Order{
   id Int @unique @id @default(autoincrement())
-  description String
+  description String @default("")
   createdAt String
-  isReady Boolean
+  isReady Boolean @default(false)
   waiter Waiter @relation(fields: [waiterId], references: [id])
   table Table? @relation(fields: [tableId], references: [id])
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)

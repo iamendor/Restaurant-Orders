@@ -11,6 +11,7 @@ import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { CreateOrder, JwtPayload, Order } from "../models/model";
 import { SubscriptionModule } from "../subscription/subscription.module";
 import { CoreModule } from "../core/core.module";
+import { OrderGuardModule } from "./guard/order.guard.module";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -25,7 +26,13 @@ describe("OrderResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, PrismaModule, WaiterModule, SubscriptionModule],
+      imports: [
+        CoreModule,
+        OrderGuardModule,
+        PrismaModule,
+        WaiterModule,
+        SubscriptionModule,
+      ],
       providers: [OrderResolver, OrderService],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);
@@ -85,16 +92,18 @@ describe("OrderResolver", () => {
   });
 
   it("creates a new order", async () => {
-    const order = await resolver.create(waiterToken, mockOrder);
+    const order = await resolver.create(waiterToken, restaurantId, mockOrder);
     expect(order.description).toBe("this is a mock order");
     orderId = order.id;
   });
   it("creates multiple order", async () => {
-    const created = await resolver.createMany(waiterToken, [mockOrder]);
+    const created = await resolver.createMany(waiterToken, restaurantId, [
+      mockOrder,
+    ]);
     expect(created.message).toBe("success");
   });
   it("updates the order", async () => {
-    const updated = await resolver.update(waiterToken, {
+    const updated = await resolver.update(restaurantId, {
       where: {
         id: orderId,
       },
@@ -105,35 +114,15 @@ describe("OrderResolver", () => {
     expect(updated.isReady).toBeTruthy();
   });
   it("deletes the order", async () => {
-    const deleted = await resolver.delete(restaurantToken, { id: orderId });
+    const deleted = await resolver.delete(restaurantId, { id: orderId });
     expect(deleted.message).toBe("success");
     expect(
       await prisma.order.findUnique({ where: { id: orderId } })
     ).toBeNull();
   });
   it("list all order", async () => {
-    const orders = await resolver.list(waiterToken);
+    const orders = await resolver.list(restaurantId);
     expect(orders.length).toEqual(1);
     orderId = orders[0].id;
-  });
-  it("find order by id", async () => {
-    const order = await resolver.find(waiterToken, { id: orderId });
-    expect(order.isReady).toBeFalsy();
-  });
-  it("returns restaurant of order", async () => {
-    const restaurant = await resolver.getRestaurant({ id: orderId } as Order);
-    expect(restaurant.id).toBe(restaurantId);
-  });
-  it("returns waiter of order", async () => {
-    const waiter = await resolver.getWaiter({ id: orderId } as Order);
-    expect(waiter.id).toBe(waiterId);
-  });
-  it("returns victual of order", async () => {
-    const victual = await resolver.getVictual({ id: orderId } as Order);
-    expect(victual.price).toEqual(1.0);
-  });
-  it("returns table of order", async () => {
-    const table = await resolver.getTable({ id: orderId } as Order);
-    expect(table).toBeDefined();
   });
 });

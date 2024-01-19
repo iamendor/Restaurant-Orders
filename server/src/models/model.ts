@@ -208,7 +208,6 @@ export class WhereVictual {
 
 export class CreateOrder {
     description?: Nullable<string>;
-    isReady?: Nullable<boolean>;
     waiterId?: Nullable<number>;
     tableId: number;
     victualId: number;
@@ -217,7 +216,6 @@ export class CreateOrder {
 
 export class WhereOrder {
     id: number;
-    restaurantId?: Nullable<number>;
 }
 
 export class UpdateOrder {
@@ -339,9 +337,9 @@ export abstract class IQuery {
 }
 
 export abstract class ISubscription {
-    abstract listenOrders(): Nullable<ListenOrders> | Promise<Nullable<ListenOrders>>;
+    abstract listenOrders(): Nullable<Nullable<Order>[]> | Promise<Nullable<Nullable<Order>[]>>;
 
-    abstract listenOrder(where: WhereOrder): Nullable<ListenOrder> | Promise<Nullable<ListenOrder>>;
+    abstract listenOrder(where: WhereOrder): Nullable<Order> | Promise<Nullable<Order>>;
 }
 
 export class Restaurant {

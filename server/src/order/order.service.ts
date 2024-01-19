@@ -56,7 +56,6 @@ export class OrderService {
       });
       return order;
     } catch (e) {
-      console.log(e);
       throw new SomethingWentWrongException(e.message);
     }
   }
@@ -79,7 +78,6 @@ export class OrderService {
   }
   async update(data: UpdateOrder): Promise<Order> {
     const { update, where } = data;
-    await this.find(where);
     try {
       const updatedOrder = await this.prismaService.order.update({
         where: {
@@ -95,7 +93,6 @@ export class OrderService {
     }
   }
   async delete(where: WhereOrder): Promise<Deleted> {
-    await this.find(where);
     try {
       await this.prismaService.order.delete({
         where: {
@@ -126,59 +123,8 @@ export class OrderService {
       },
     });
     if (!order) throw new NotFoundResourceException("order");
-    if (order.restaurantId !== where.restaurantId) {
-      throw new HttpException("permission denied for order", 403);
-    }
     return order;
   }
 
-  async getRestaurant(id: number) {
-    const order = await this.prismaService.order.findFirst({
-      where: {
-        id,
-      },
-      select: {
-        restaurant: true,
-      },
-    });
-    if (!order) throw new NotFoundResourceException("order");
-    return order.restaurant;
-  }
-
-  async getTable(id: number) {
-    const order = await this.prismaService.order.findFirst({
-      where: {
-        id,
-      },
-      select: {
-        table: true,
-      },
-    });
-    if (!order) throw new NotFoundResourceException("order");
-    return order.table;
-  }
-  async getVictual(id: number) {
-    const order = await this.prismaService.order.findFirst({
-      where: {
-        id,
-      },
-      select: {
-        victual: true,
-      },
-    });
-    if (!order) throw new NotFoundResourceException("order");
-    return order.victual;
-  }
-  async getWaiter(id: number) {
-    const order = await this.prismaService.order.findFirst({
-      where: {
-        id,
-      },
-      select: {
-        waiter: true,
-      },
-    });
-    if (!order) throw new NotFoundResourceException("order");
-    return order.waiter;
-  }
+ 
 }

@@ -5,30 +5,34 @@ import {
   Injectable,
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { extractRIdFromContext, getGqlFunction } from "../../helper/helper";
+import {
+  ModelGuard,
+  extractRIdFromContext,
+  getGqlFunction,
+  initGuardProps,
+} from "../../helper/helper";
 import { CategoryService } from "../category.service";
 import { IdIntercept } from "../../auth/guards/id";
 
 @Injectable()
-export class CategoryBaseGuard implements CanActivate {
-  private UPDATE = "updateCategory";
-  private DELETE = "deleteCategory";
-  private FIND = "category";
+export class CategoryBaseGuard implements ModelGuard {
+  UPDATE = "updateCategory";
+  DELETE = "deleteCategory";
+  FIND = "category";
   constructor(private readonly categoryService: CategoryService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
-    const args = ctx.getArgs();
-    const restaurantId = extractRIdFromContext(ctx);
-    const key = getGqlFunction(ctx);
+    const { args, id, fnContext: mutation } = initGuardProps(ctx);
+
     let where;
-    if (key == this.UPDATE) {
+    if (mutation == this.UPDATE) {
       where = args.data.where;
     }
-    if (key == this.DELETE || key == this.FIND) {
+    if (mutation == this.DELETE || mutation == this.FIND) {
       where = args.where;
     }
     const cat = await this.categoryService.find(where);
-    if (cat.restaurantId != restaurantId) throw new ForbiddenException();
+    if (cat.restaurantId != id) throw new ForbiddenException();
     ctx.getContext().req.category = cat;
     return true;
   }
