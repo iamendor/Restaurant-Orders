@@ -9,7 +9,7 @@ import { getMocks } from "../../test/helper/mocks";
 describe("MealService", () => {
   let service: VictualService;
   const mocks = getMocks();
-  const mockMeal = mocks.victual.withCategory();
+  const mockMeal = mocks.victual.withCategoryId(2);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

@@ -140,6 +140,7 @@ type Victual {
   name: String!
   price: Float!
   restaurant: Restaurant
+  restaurantId: Int
   category: Category
   orders: [Order]
 }
@@ -386,16 +387,14 @@ Victual Dto
 input CreateVictual {
   name: String!
   price: Float!
-  categoryId: Int
-  category: CreateCategory
+  categoryId: Int!
 }
 
 input CreateVictualData {
   name: String!
   price: Float!
   restaurantId: Int!
-  categoryId: Int
-  category: CreateCategory
+  categoryId: Int!
 }
 
 input CreateVictuals {
@@ -417,7 +416,6 @@ input UpdateVictualData {
 
 input WhereVictual {
   id: Int!
-  restaurantId: Int
 }
 
 """

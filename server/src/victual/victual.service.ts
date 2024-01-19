@@ -1,6 +1,5 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CategoryService } from "../category/category.service";
 import {
   CreateVictualData,
   CreateVictuals,
@@ -17,10 +16,7 @@ import {
 
 @Injectable()
 export class VictualService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly categoryService: CategoryService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;
@@ -33,22 +29,11 @@ export class VictualService {
               id: restaurantId,
             },
           },
-          category: categoryId
-            ? {
-                connect: {
-                  id: categoryId,
-                },
-              }
-            : {
-                create: {
-                  ...rest.category,
-                  restaurant: {
-                    connect: {
-                      id: restaurantId,
-                    },
-                  },
-                },
-              },
+          category: {
+            connect: {
+              id: categoryId,
+            },
+          },
         },
       });
       return meal;
@@ -58,16 +43,15 @@ export class VictualService {
   }
 
   async createMany(data: CreateVictuals[]): Promise<VictualsCreated> {
-    const checked = await Promise.all(
-      data.map(async (d) => {
-        const { restaurantId, categoryId, ...rest } = d;
-        return {
-          ...rest,
-          restaurantId,
-          categoryId,
-        };
-      })
-    );
+    const checked = data.map((d) => {
+      const { restaurantId, categoryId, ...rest } = d;
+      return {
+        ...rest,
+        restaurantId,
+        categoryId,
+      };
+    });
+
     try {
       await this.prismaService.victual.createMany({
         data: checked,
@@ -134,39 +118,5 @@ export class VictualService {
     }
   }
 
-  async getCategory(id: number) {
-    const meal = await this.prismaService.victual.findFirstOrThrow({
-      where: {
-        id,
-      },
-      select: {
-        category: true,
-      },
-    });
-    return meal.category;
-  }
 
-  async getRestaurant(id: number) {
-    const meal = await this.prismaService.victual.findFirstOrThrow({
-      where: {
-        id,
-      },
-      select: {
-        restaurant: true,
-      },
-    });
-    return meal.restaurant;
-  }
-
-  async getOrders(id: number) {
-    const meal = await this.prismaService.victual.findFirstOrThrow({
-      where: {
-        id,
-      },
-      select: {
-        orders: true,
-      },
-    });
-    return meal.orders;
-  }
 }

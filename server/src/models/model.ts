@@ -174,16 +174,14 @@ export class WhereCategory {
 export class CreateVictual {
     name: string;
     price: number;
-    categoryId?: Nullable<number>;
-    category?: Nullable<CreateCategory>;
+    categoryId: number;
 }
 
 export class CreateVictualData {
     name: string;
     price: number;
     restaurantId: number;
-    categoryId?: Nullable<number>;
-    category?: Nullable<CreateCategory>;
+    categoryId: number;
 }
 
 export class CreateVictuals {
@@ -206,7 +204,6 @@ export class UpdateVictualData {
 
 export class WhereVictual {
     id: number;
-    restaurantId?: Nullable<number>;
 }
 
 export class CreateOrder {
@@ -406,6 +403,7 @@ export class Victual {
     name: string;
     price: number;
     restaurant?: Nullable<Restaurant>;
+    restaurantId?: Nullable<number>;
     category?: Nullable<Category>;
     orders?: Nullable<Nullable<Order>[]>;
 }

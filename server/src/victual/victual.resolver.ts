@@ -20,80 +20,87 @@ import {
   WhereVictual,
 } from "../models/model";
 import { User } from "../auth/decorators/user.decorator";
-import { HttpException, UseGuards } from "@nestjs/common";
+import { ForbiddenException, HttpException, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-guard";
 import { RoleGuard } from "../auth/guards/role-guard";
+import { RESTAURANT, WAITER } from "../role/role";
+import { CategoryService } from "../category/category.service";
+import { IdIntercept } from "../auth/guards/id";
+import { RID } from "../auth/decorators/role.decorator";
+import { VictualGuard } from "./guard/victual.guard";
+import { GetVictual } from "./guard/victual.decorator";
+
+export interface VerifyCategory {
+  restaurantId: number;
+  categoryId: number;
+}
 
 @Resolver("Victual")
 export class VictualResolver {
-  constructor(private readonly victualService: VictualService) {}
-  private getRestaurantId(user: JwtPayload) {
-    return user.role === "restaurant" ? user.id : user.restaurantId;
+  constructor(
+    private readonly victualService: VictualService,
+    private readonly categoryService: CategoryService
+  ) {}
+
+  private async checkCategory({ restaurantId, categoryId }: VerifyCategory) {
+    const category = await this.categoryService.find({ id: categoryId });
+    if (category.restaurantId != restaurantId) throw new ForbiddenException();
+    return true;
   }
 
   @Mutation(() => Victual, { name: "createVictual" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  create(@User() restaurant: JwtPayload, @Args("data") data: CreateVictual) {
-    if (!data.category && !data.categoryId)
-      throw new HttpException("category or categoryId is required", 400);
-    return this.victualService.create({ ...data, restaurantId: restaurant.id });
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  async create(@User() { id }: JwtPayload, @Args("data") data: CreateVictual) {
+    const { categoryId } = data;
+    await this.checkCategory({ restaurantId: id, categoryId });
+    return this.victualService.create({
+      ...data,
+      restaurantId: id,
+    });
   }
 
   @Mutation(() => VictualsCreated, { name: "createVictuals" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  createMany(
-    @User() restaurant: JwtPayload,
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  async createMany(
+    @User() { id }: JwtPayload,
     @Args("data") data: CreateVictuals[]
   ) {
+    const categories = [...new Set(data.map((v) => v.categoryId))];
+    for (let i = 0; i < categories.length; i++) {
+      const catId = categories[i];
+      await this.checkCategory({
+        categoryId: catId,
+        restaurantId: id,
+      });
+    }
     return this.victualService.createMany(
-      data.map((meal) => ({ ...meal, restaurantId: restaurant.id }))
+      data.map((meal) => ({ ...meal, restaurantId: id }))
     );
   }
-
+  //Victual Guard
   @Mutation(() => Victual, { name: "updateVictual" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  update(@User() restaurant: JwtPayload, @Args("data") data: UpdateVictual) {
-    return this.victualService.update({
-      ...data,
-      where: { ...data.where, restaurantId: restaurant.id },
-    });
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
+  update(@Args("data") data: UpdateVictual) {
+    return this.victualService.update(data);
   }
 
   @Mutation(() => Deleted, { name: "deleteVictual" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
-  delete(@User() restaurant: JwtPayload, @Args("where") where: WhereVictual) {
-    return this.victualService.delete({
-      ...where,
-      restaurantId: restaurant.id,
-    });
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
+  delete(@Args("where") where: WhereVictual) {
+    return this.victualService.delete(where);
   }
 
   @Query(() => [Victual], { name: "victuals" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  async list(@User() user: JwtPayload) {
-    const id = this.getRestaurantId(user);
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  async list(@RID() id: number) {
     return this.victualService.list(id);
   }
 
   @Query(() => Victual, { name: "victual" })
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant", "waiter"))
-  async find(@User() user: JwtPayload, @Args("where") where: WhereVictual) {
-    const id = this.getRestaurantId(user);
-    return this.victualService.find({ ...where, restaurantId: id });
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), VictualGuard)
+  async find(@GetVictual() victual: Victual) {
+    return victual;
   }
 
-  @ResolveField(() => Category, { name: "category" })
-  getCategory(@Parent() meal: Victual) {
-    return this.victualService.getCategory(meal.id);
-  }
-
-  @ResolveField(() => Category, { name: "restaurant" })
-  getRestaurant(@Parent() meal: Victual) {
-    return this.victualService.getRestaurant(meal.id);
-  }
-
-  @ResolveField(() => [Order], { name: "orders" })
-  getOrders(@Parent() meal: Victual) {
-    return this.victualService.getOrders(meal.id);
-  }
+  
 }
