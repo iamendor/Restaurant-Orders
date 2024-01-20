@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { IdIntercept } from "../../auth/guards/id";
-import { OrderService } from "../order.service";
+import { IdIntercept } from "../../auth/guards/id.guard";
+import { OrderService } from "../services/order.service";
 import { OrderBaseGuard, OrderGuard } from "./order.guard";
 
 @Module({

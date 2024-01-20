@@ -6,10 +6,10 @@ import { createRestaurantWithWaiter, getMocks } from "../../test/helper/mocks";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Config } from "../config";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "../prisma/services/prisma.service";
 import { JwtPayload, Victual } from "../models/model";
-import { VictualResolver } from "./victual.resolver";
-import { VictualService } from "./victual.service";
+import { VictualResolver } from "./resolvers/victual.resolver";
+import { VictualService } from "./services/victual.service";
 import { CoreModule } from "../core/core.module";
 import { VictualGuardModule } from "./guard/victual.guard.module";
 

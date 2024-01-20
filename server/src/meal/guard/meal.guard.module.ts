@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { MealService } from "../meal.service";
-import { IdIntercept } from "../../auth/guards/id";
+import { MealService } from "../services/meal.service";
+import { IdIntercept } from "../../auth/guards/id.guard";
 import { MealBaseGuard, MealGuard } from "./meal.guard";
 
 @Module({

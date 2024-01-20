@@ -1,11 +1,6 @@
 import { Module } from "@nestjs/common";
-import { MealService } from "./meal.service";
-import { MealResolver } from "./meal.resolver";
-import { MealGuardModule } from "./guard/meal.guard.module";
-import { FieldModule } from './field/field.module';
+import { MealResolverModule } from "./resolvers/meal.resolver.module";
 @Module({
-  imports: [MealGuardModule, FieldModule],
-  providers: [MealResolver, MealService],
-  exports: [MealService],
+  imports: [MealResolverModule],
 })
 export class MealModule {}

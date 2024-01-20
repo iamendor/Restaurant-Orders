@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../helper/helper";
-import { VictualService } from "../victual.service";
-import { IdIntercept } from "../../auth/guards/id";
+import { VictualService } from "../services/victual.service";
+import { IdIntercept } from "../../auth/guards/id.guard";
 
 @Injectable()
 export class VictualBaseGuard implements ModelGuard {

@@ -11,8 +11,8 @@ import {
   getGqlFunction,
   initGuardProps,
 } from "../../helper/helper";
-import { CategoryService } from "../category.service";
-import { IdIntercept } from "../../auth/guards/id";
+import { CategoryService } from "../services/category.service";
+import { IdIntercept } from "../../auth/guards/id.guard";
 
 @Injectable()
 export class CategoryBaseGuard implements ModelGuard {

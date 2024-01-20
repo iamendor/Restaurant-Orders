@@ -5,9 +5,9 @@ import {
   Injectable,
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { TableService } from "../table.service";
+import { TableService } from "../services/table.service";
 import { ModelGuard, initGuardProps } from "../../helper/helper";
-import { IdIntercept } from "../../auth/guards/id";
+import { IdIntercept } from "../../auth/guards/id.guard";
 
 @Injectable()
 export class TableBaseGuard implements ModelGuard {

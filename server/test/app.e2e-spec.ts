@@ -10,7 +10,7 @@ import {
   getMocks,
 } from "./helper/mocks";
 import { PrismaModule } from "../src/prisma/prisma.module";
-import { PrismaService } from "../src/prisma/prisma.service";
+import { PrismaService } from "../src/prisma/services/prisma.service";
 import req from "./helper/graphql-request";
 import { JwtService } from "@nestjs/jwt";
 import { CoreModule } from "../src/core/core.module";

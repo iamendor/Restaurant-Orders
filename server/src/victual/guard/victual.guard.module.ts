@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { VictualService } from "../victual.service";
+import { VictualService } from "../services/victual.service";
 import { VictualBaseGuard, VictualGuard } from "./victual.guard";
-import { IdIntercept } from "../../auth/guards/id";
+import { IdIntercept } from "../../auth/guards/id.guard";
 
 @Module({
   providers: [VictualService, VictualBaseGuard, IdIntercept, VictualGuard],

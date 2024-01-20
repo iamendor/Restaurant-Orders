@@ -1,9 +1,7 @@
 import { Module } from "@nestjs/common";
-import { AddressService } from "./address.service";
-import { PrismaModule } from "../prisma/prisma.module";
+import { AddressService } from "./services/address.service";
 
 @Module({
-  imports: [PrismaModule],
   providers: [AddressService],
   exports: [AddressService],
 })

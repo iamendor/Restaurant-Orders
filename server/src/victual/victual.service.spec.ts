@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { VictualService } from "./victual.service";
+import { VictualService } from "./services/victual.service";
 import { PrismaModule } from "../prisma/prisma.module";
 import { CategoryModule } from "../category/category.module";
-import { PrismaService } from "../prisma/prisma.service";
-import { CategoryService } from "../category/category.service";
+import { PrismaService } from "../prisma/services/prisma.service";
+import { CategoryService } from "../category/services/category.service";
 import { getMocks } from "../../test/helper/mocks";
 
 describe("MealService", () => {

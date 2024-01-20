@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../helper/helper";
-import { OrderService } from "../order.service";
-import { IdIntercept } from "../../auth/guards/id";
+import { OrderService } from "../services/order.service";
+import { IdIntercept } from "../../auth/guards/id.guard";
 import { WAITER } from "../../role/role";
 
 @Injectable()

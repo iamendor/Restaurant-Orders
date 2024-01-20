@@ -1,5 +1,5 @@
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "../../src/prisma/prisma.service";
+import { PrismaService } from "../../src/prisma/services/prisma.service";
 import * as bcrypt from "bcrypt";
 export const getMocks = () => ({
   restaurant: {
