@@ -53,6 +53,7 @@ export const getMutations = () => ({
     signupAndLogin: () => `
       mutation createWithWaiter($data: CreateRestaurant!, $credentials: LoginRestaurant!){
         signup(data: $data){
+          id
           name
           address{
             address1

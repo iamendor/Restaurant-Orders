@@ -1,7 +1,22 @@
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../../src/prisma/services/prisma.service";
 import * as bcrypt from "bcrypt";
+import { JwtPayload } from "../../src/models/model";
+import { RESTAURANT, WAITER } from "../../src/role/role";
 export const getMocks = () => ({
+  restaurantPayload: (restaurant): JwtPayload => ({
+    name: restaurant.name,
+    id: restaurant.id,
+    sub: restaurant.id,
+    role: RESTAURANT,
+  }),
+  waiterPayload: (waiter, restaurantId) => ({
+    name: waiter.name,
+    id: waiter.id,
+    sub: waiter.id,
+    role: WAITER,
+    restaurantId,
+  }),
   restaurant: {
     name: "Test Kft.",
     email: "test@gmail.com",
@@ -17,7 +32,21 @@ export const getMocks = () => ({
     },
     password: "mockRestaurant123",
   },
+  restaurantModel: {
+    name: "Test Kft.",
+    email: "test@gmail.com",
+    password: "mockRestaurant123",
+    id: 1,
+  },
   waiter: {
+    id: 1,
+    name: "waiter1",
+    gender: "male",
+    profileIcon: null,
+    email: "waiter@gmail.com",
+    password: "mockWaiter123",
+  },
+  waiterWithNoId: {
     name: "waiter1",
     gender: "male",
     profileIcon: null,
@@ -55,6 +84,17 @@ export const getMocks = () => ({
     isReady: false,
     createdAt: new Date().toLocaleString(),
   }),
+  meal: () => ({
+    id: 1,
+    start: new Date().toLocaleString(),
+    end: new Date().toLocaleString(),
+    total: 100,
+    orders: [],
+    waiterId: 1,
+    tableId: 1,
+    currencyId: 1,
+    restaurantId: 1,
+  }),
 });
 
 export const createRestaurantWithWaiter = async ({
@@ -79,8 +119,8 @@ export const createRestaurantWithWaiter = async ({
       },
       waiters: {
         create: {
-          ...mocks.waiter,
-          password: bcrypt.hashSync(mocks.waiter.password, 10),
+          ...mocks.waiterWithNoId,
+          password: bcrypt.hashSync(mocks.waiterWithNoId.password, 10),
         },
       },
       currency: {

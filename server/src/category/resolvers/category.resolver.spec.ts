@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Config } from "../../config";
 import { Category, JwtPayload } from "../../models/model";
 import { CategoryGuardModule } from "../guard/category.guard.module";
+import { CategoryServiceMock } from "../services/mock/category.service.mock";
 
 describe("CategoryResolver", () => {
   let resolver: CategoryResolver;
@@ -21,29 +22,21 @@ describe("CategoryResolver", () => {
   let Rpayload: JwtPayload;
   let categoryId: number;
   let cat: Category;
+  const SUCCESS = "success";
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        PrismaModule,
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
-        CategoryGuardModule,
+      imports: [PrismaModule, CategoryGuardModule],
+      providers: [
+        CategoryResolver,
+        { provide: CategoryService, useClass: CategoryServiceMock },
       ],
-      providers: [CategoryResolver, CategoryService],
     }).compile();
 
     resolver = module.get<CategoryResolver>(CategoryResolver);
     prisma = module.get<PrismaService>(PrismaService);
-    const jwt = module.get<JwtService>(JwtService);
-
-    const { waiterPayload, restaurantPayload, restaurantId } =
-      await createRestaurantWithWaiter({ prisma, jwt });
-    Wpayload = waiterPayload;
-    Rpayload = restaurantPayload;
+    Wpayload = mocks.waiterPayload(mocks.waiter, 1);
+    Rpayload = mocks.restaurantPayload(mocks.restaurant);
   });
 
   it("should be defined", () => {
@@ -59,18 +52,10 @@ describe("CategoryResolver", () => {
     cat = category;
   });
   it("create multiple", async () => {
-    const created = await resolver.createMany(
-      Rpayload,
-      [1, 2].map((i) => ({ name: `category${i}` }))
-    );
-    expect(created.message).toBe("success");
-    const categories = (
-      await prisma.restaurant.findUnique({
-        where: { id: Rpayload.id },
-        include: { categories: true },
-      })
-    ).categories;
-    expect(categories.length).toEqual(3);
+    const categories = [1, 2].map((i) => ({ name: `category${i}` }));
+
+    const created = await resolver.createMany(Rpayload, categories);
+    expect(created.message).toBe(SUCCESS);
   });
   it("update the category", async () => {
     const update = "updatedCategory";
@@ -88,10 +73,7 @@ describe("CategoryResolver", () => {
     const deleted = await resolver.delete(Rpayload, {
       id: categoryId,
     });
-    expect(deleted.message).toBe("success");
-    expect(
-      await prisma.category.findUnique({ where: { id: categoryId } })
-    ).toBeNull();
+    expect(deleted.message).toBe(SUCCESS);
   });
   describe("List", () => {
     it("list as restaurant", async () => {

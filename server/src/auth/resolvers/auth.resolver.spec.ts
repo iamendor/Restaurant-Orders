@@ -1,24 +1,16 @@
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule } from "@nestjs/config";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { Config } from "../../config";
-import { RestaurantModule } from "../../restaurant/restaurant.module";
-import { WaiterModule } from "../../waiter/waiter.module";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "../services/auth.service";
 import { JwtStrategy } from "../strategies/jwt.strategy";
 import { PrismaService } from "../../prisma/services/prisma.service";
 import { PrismaModule } from "../../prisma/prisma.module";
-import * as bcrypt from "bcrypt";
-import { clearMocks, getMocks } from "../../../test/helper/mocks";
+import { getMocks } from "../../../test/helper/mocks";
 import { SecurityModule } from "../../security/security.module";
-
-export const checkRestaurantInDatabase = async (
-  prisma: PrismaService,
-  id: number
-) => {
-  return (await prisma.restaurant.findUnique({ where: { id } })) ? true : false;
-};
+import { AuthServiceMock } from "../services/mock/auth.service.mock";
+import { RestaurantService } from "../../restaurant/services/restaurant.service";
+import { RestaurantServiceMock } from "../../restaurant/services/mock/restaurant.service.mock";
 
 describe("Auth Resolver", () => {
   let resolver: AuthResolver;
@@ -30,24 +22,21 @@ describe("Auth Resolver", () => {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        JwtModule.register({ secret: "test" }),
         SecurityModule,
-        RestaurantModule,
         PrismaModule,
-        WaiterModule,
-        JwtModule.registerAsync({
-          inject: [ConfigService],
-          useFactory: Config.getJwtConfig,
-        }),
       ],
-      providers: [AuthResolver, AuthService, JwtStrategy],
-      exports: [AuthService],
+      providers: [
+        AuthResolver,
+        { provide: AuthService, useClass: AuthServiceMock },
+        { provide: RestaurantService, useClass: RestaurantServiceMock },
+        JwtStrategy,
+      ],
     }).compile();
 
     resolver = module.get<AuthResolver>(AuthResolver);
     prisma = module.get<PrismaService>(PrismaService);
     jwt = module.get<JwtService>(JwtService);
-
-    await clearMocks({ prisma });
   });
 
   it("the resolver is defined", () => {
@@ -60,7 +49,6 @@ describe("Auth Resolver", () => {
     });
     expect(signup).toBeDefined();
     expect(signup.name).toBe(mocks.restaurant.name);
-    expect(await checkRestaurantInDatabase(prisma, signup.id)).toBeTruthy();
     restaurantId = signup.id;
   });
 
@@ -75,20 +63,6 @@ describe("Auth Resolver", () => {
   });
 
   describe("Waiter", () => {
-    beforeAll(async () => {
-      await prisma.waiter.create({
-        data: {
-          ...mocks.waiter,
-          password: bcrypt.hashSync(mocks.waiter.password, 10),
-          restaurant: {
-            connect: {
-              id: restaurantId,
-            },
-          },
-        },
-      });
-    });
-
     it("login waiter", async () => {
       const { waiter, access_token } = await resolver.loginWaiter({
         email: mocks.waiter.email,

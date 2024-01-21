@@ -6,6 +6,8 @@ import { clearMocks, getMocks } from "../../../test/helper/mocks";
 
 describe("OrderService", () => {
   let service: OrderService;
+  let prisma: PrismaService;
+
   const mocks = getMocks();
   const mockOrder = mocks.order({
     restaurantId: 1,
@@ -14,29 +16,16 @@ describe("OrderService", () => {
     waiterId: 1,
   });
 
-  beforeEach(async () => {
+  const SUCCESS = "success";
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaModule],
       providers: [OrderService],
     }).compile();
 
     service = module.get<OrderService>(OrderService);
-    const prisma = module.get<PrismaService>(PrismaService);
-    await clearMocks({ prisma });
-    prisma.order.create = jest.fn().mockReturnValue(mockOrder);
-    prisma.order.createMany = jest.fn().mockReturnValue({ count: 2 });
-    prisma.order.update = jest.fn().mockImplementation(({ data, where }) => ({
-      ...mockOrder,
-      ...where,
-      ...data,
-    }));
-    prisma.order.delete = jest.fn().mockReturnValue("ok");
-    prisma.order.findUnique = jest
-      .fn()
-      .mockImplementation(({ where }) => ({ ...mockOrder, where }));
-    prisma.restaurant.findFirst = jest
-      .fn()
-      .mockReturnValue({ orders: [mockOrder, mockOrder] });
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it("should be defined", () => {
@@ -44,14 +33,24 @@ describe("OrderService", () => {
   });
 
   it("create an order", async () => {
+    prisma.order.create = jest.fn().mockReturnValue(mockOrder);
+
     const order = await service.create(mockOrder);
     expect(order.isReady).toBeFalsy();
   });
   it("create multiple order", async () => {
+    prisma.order.createMany = jest.fn().mockReturnValue({ count: 2 });
+
     const orders = await service.createMany([mockOrder, mockOrder]);
-    expect(orders.message).toBe("success");
+    expect(orders.message).toBe(SUCCESS);
   });
   it("updates the order", async () => {
+    prisma.order.update = jest.fn().mockImplementation(({ data, where }) => ({
+      ...mockOrder,
+      ...where,
+      ...data,
+    }));
+
     const order = await service.update({
       where: {
         id: 1,
@@ -64,14 +63,24 @@ describe("OrderService", () => {
   });
 
   it("deletes the order", async () => {
+    prisma.order.delete = jest.fn().mockReturnValue("ok");
+
     const deleted = await service.delete({ id: 1 });
-    expect(deleted.message).toBe("success");
+    expect(deleted.message).toBe(SUCCESS);
   });
   it("list all order", async () => {
+    prisma.restaurant.findFirst = jest
+      .fn()
+      .mockReturnValue({ orders: [mockOrder, mockOrder] });
+
     const orders = await service.list(1);
     expect(orders.length).toEqual(2);
   });
   it("find by id", async () => {
+    prisma.order.findUnique = jest
+      .fn()
+      .mockImplementation(({ where }) => ({ ...mockOrder, where }));
+
     const order = await service.find({ id: 2 });
     expect(order.restaurantId).toBe(1);
   });

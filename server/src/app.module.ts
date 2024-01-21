@@ -11,8 +11,8 @@ import { CoreModule } from "./core/core.module";
 import { SubscriptionModule } from "./subscription/subscription.module";
 import { MealModule } from "./meal/meal.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { CurrencyModule } from './currency/currency.module';
-import { SecurityModule } from './security/security.module';
+import { CurrencyModule } from "./currency/currency.module";
+import { SecurityModule } from "./security/security.module";
 
 @Module({
   imports: [

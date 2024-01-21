@@ -12,6 +12,7 @@ import { JwtService } from "@nestjs/jwt";
 import { WaiterService } from "../../waiter/services/waiter.service";
 import { SecurityService } from "../../security/services/security.service";
 import { Waiter as PWaiter } from "@prisma/client";
+import { RESTAURANT, WAITER } from "../../role/role";
 
 @Injectable()
 export class AuthService {
@@ -51,7 +52,7 @@ export class AuthService {
     const payload = {
       sub: restaurant.id,
       name: restaurant.name,
-      role: "restaurant",
+      role: RESTAURANT,
     };
     return this.jwtService.sign(payload);
   }
@@ -60,7 +61,7 @@ export class AuthService {
     const payload = {
       sub: waiter.id,
       name: waiter.name,
-      role: "waiter",
+      role: WAITER,
       restaurantId: waiter.restaurantId,
     };
     return this.jwtService.sign(payload);

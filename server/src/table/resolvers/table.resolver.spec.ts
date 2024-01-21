@@ -3,41 +3,42 @@ import { TableResolver } from "./table.resolver";
 import { TableService } from "../services/table.service";
 import { PrismaModule } from "../../prisma/prisma.module";
 import { PrismaService } from "../../prisma/services/prisma.service";
-import {
-  createRestaurantWithWaiter,
-  getMocks,
-} from "../../../test/helper/mocks";
+import { getMocks } from "../../../test/helper/mocks";
 import { JwtPayload } from "../../models/model";
-import { JwtService } from "@nestjs/jwt";
-import { CoreModule } from "../../core/core.module";
 import { TableGuardModule } from "../guard/table.guard.module";
+import { TableServiceMock } from "../services/mock/table.service.mock";
+
+jest.mock("../../prisma/services/prisma.service");
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
   let prisma: PrismaService;
+  let service: TableService;
+
   let Rpayload: JwtPayload;
   let Wpayload: JwtPayload;
-  const mocks = getMocks();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mocks = getMocks();
   let mockTable: any = mocks.table();
 
-  beforeAll(async () => {
+  const SUCCESS = "success";
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, PrismaModule, TableGuardModule],
-      providers: [TableResolver, TableService],
+      imports: [PrismaModule, TableGuardModule],
+      providers: [
+        TableResolver,
+        { provide: TableService, useClass: TableServiceMock },
+      ],
     }).compile();
 
     resolver = module.get<TableResolver>(TableResolver);
+    service = await module.resolve<TableService>(TableService);
     prisma = module.get<PrismaService>(PrismaService);
-    const jwt = module.get<JwtService>(JwtService);
-    const { restaurantPayload, waiterPayload } =
-      await createRestaurantWithWaiter({
-        prisma,
-        jwt,
-      });
 
-    Rpayload = restaurantPayload;
-    Wpayload = waiterPayload;
+    Rpayload = mocks.restaurantPayload({ ...mocks.restaurant, id: 1 });
+    Wpayload = mocks.waiterPayload(mocks.waiter, 1);
   });
 
   it("should be defined", () => {
@@ -50,19 +51,9 @@ describe("TableResolver", () => {
     mockTable = { ...mockTable, id: table.id };
   });
   it("create multiple table", async () => {
-    const tables = await resolver.createMany(
-      Rpayload,
-      [1, 2].map(() => mocks.table())
-    );
-    expect(tables.message).toBe("success");
-    expect(
-      (
-        await prisma.restaurant.findUnique({
-          where: { id: Rpayload.id },
-          include: { tables: true },
-        })
-      ).tables.length
-    ).toEqual(3);
+    const tables = [1, 2].map(() => mocks.table());
+    const createTables = await resolver.createMany(Rpayload, tables);
+    expect(createTables.message).toBe(SUCCESS);
   });
   it("update table", async () => {
     const update = "updatedTableName";
@@ -73,6 +64,8 @@ describe("TableResolver", () => {
       },
     });
     expect(updatedTable.name).toBe(update);
+
+    mockTable = updatedTable;
   });
   it("lists all table of restaurant", async () => {
     const tables = await resolver.list(Rpayload.id);
@@ -86,16 +79,13 @@ describe("TableResolver", () => {
   it("returns table with specific id", async () => {
     const table = await resolver.find({
       ...mockTable,
-      name: "updatedTableName",
     });
     expect(table).toBeDefined();
     expect(table.name).toBe("updatedTableName");
   });
 
   it("deletes table", async () => {
-    await resolver.delete({ id: mockTable.id });
-    expect(
-      await prisma.table.findUnique({ where: { id: mockTable.id } })
-    ).toBeNull();
+    const deletedTable = await resolver.delete({ id: mockTable.id });
+    expect(deletedTable.message).toBe(SUCCESS);
   });
 });

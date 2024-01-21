@@ -1,4 +1,9 @@
-import { ForbiddenException, HttpException, UseGuards } from "@nestjs/common";
+import {
+  ForbiddenException,
+  HttpException,
+  UnauthorizedException,
+  UseGuards,
+} from "@nestjs/common";
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { User } from "../../auth/decorators/user.decorator";
 import { JwtAuthGuard } from "../../auth/guards/jwt.guard";
@@ -60,20 +65,20 @@ export class WaiterResolver {
   ) {
     const { role, id } = user;
     if (role === RESTAURANT) {
+      if (!data.where)
+        throw new SomethingWentWrongException("no waiter specified");
       return this.waiterService.updatePassword({ ...data });
     }
     const { password } = (await this.waiterService.find({ id })) as PWaiter;
     if (!data.update.old)
       throw new HttpException("old password is not provided", 400);
-    if (
-      this.securityService.compare({ str: data.update.old, hash: password })
-    ) {
-      return this.waiterService.updatePassword({
-        ...data,
-        where: { id },
-      });
-    }
-    throw new ForbiddenException();
+    if (!this.securityService.compare({ str: data.update.old, hash: password }))
+      throw new UnauthorizedException();
+
+    return this.waiterService.updatePassword({
+      ...data,
+      where: { id },
+    });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))

@@ -1,36 +1,42 @@
 import { Test } from "@nestjs/testing";
 import { WaiterResolver } from "./waiter.resolver";
 import { PrismaModule } from "../../prisma/prisma.module";
-import { RestaurantModule } from "../../restaurant/restaurant.module";
 import { WaiterService } from "../services/waiter.service";
 import { PrismaService } from "../../prisma/services/prisma.service";
-import { clearMocks, getMocks } from "../../../test/helper/mocks";
+import { getMocks } from "../../../test/helper/mocks";
 import { JwtPayload } from "../../models/model";
 import * as bcrypt from "bcrypt";
 import { SecurityModule } from "../../security/security.module";
+import { WaiterServiceMock } from "../services/mock/waiter.service.mock";
 
+jest.mock("../services/waiter.service");
 describe("Waiter Resolver", () => {
+  let service: WaiterService;
   let resolver: WaiterResolver;
   let prisma: PrismaService;
+
+  const SUCCESS = "success";
+
   let payload: JwtPayload;
   let waiterPayload: JwtPayload;
   const mocks = getMocks();
+  const restaurant = { ...mocks.restaurant, id: 1 };
   let restaurantId: number;
 
   beforeAll(async () => {
+    jest.clearAllMocks();
     const module = await Test.createTestingModule({
-      imports: [SecurityModule, PrismaModule, RestaurantModule],
-      providers: [WaiterService, WaiterResolver],
+      imports: [SecurityModule, PrismaModule],
+      providers: [
+        { provide: WaiterService, useClass: WaiterServiceMock },
+        WaiterResolver,
+      ],
     }).compile();
     resolver = module.get<WaiterResolver>(WaiterResolver);
+    service = module.get<WaiterService>(WaiterService);
     prisma = module.get<PrismaService>(PrismaService);
-    const restaurant = await clearMocks({ prisma, createRestaurant: true });
-    payload = {
-      name: restaurant.name,
-      id: restaurant.id,
-      sub: restaurant.id,
-      role: "restaurant",
-    };
+
+    payload = mocks.restaurantPayload(restaurant);
     restaurantId = restaurant.id;
   });
 
@@ -38,13 +44,8 @@ describe("Waiter Resolver", () => {
     const create = await resolver.create(payload, mocks.waiter);
     expect(create).toBeDefined();
     expect(create.name).toBe(mocks.waiter.name);
-    waiterPayload = {
-      name: create.name,
-      id: create.id,
-      sub: create.id,
-      role: "waiter",
-      restaurantId,
-    };
+
+    waiterPayload = mocks.waiterPayload(create, restaurantId);
   });
 
   it("updates the waiter", async () => {
@@ -67,26 +68,18 @@ describe("Waiter Resolver", () => {
         id: waiterPayload.id,
       },
     });
-    expect(updatedPassword.message).toBe("success");
-    const waiter = await prisma.waiter.findUnique({
-      where: { email: mocks.waiter.email },
-    });
-    expect(bcrypt.compareSync(update.password, waiter.password)).toBeTruthy();
+    expect(updatedPassword.message).toBe(SUCCESS);
   });
 
   it("updates with waiter role", async () => {
     const update = {
-      password: "updatedWaiterPassword",
+      password: mocks.waiter.password,
       old: "updatedPassword",
     };
     const updatedPassword = await resolver.updatePassword(waiterPayload, {
       update,
     });
-    expect(updatedPassword.message).toBe("success");
-    const waiter = await prisma.waiter.findUnique({
-      where: { email: mocks.waiter.email },
-    });
-    expect(bcrypt.compareSync(update.password, waiter.password)).toBeTruthy();
+    expect(updatedPassword.message).toBe(SUCCESS);
   });
   it("returns error because waiter didn't provide the old password", async () => {
     await expect(
@@ -97,6 +90,8 @@ describe("Waiter Resolver", () => {
     ).rejects.toThrowError("old password is not provided");
   });
   it("lists waiters of restaurant", async () => {
+    service.list = jest.fn().mockReturnValue([{ id: 1 }]);
+
     const waiters = await resolver.waiters(restaurantId);
     expect(waiters.length).toEqual(1);
   });
@@ -104,4 +99,6 @@ describe("Waiter Resolver", () => {
     const info = await resolver.info(waiterPayload);
     expect(info.name).toBe("updatedWaiter");
   });
+
+  afterAll(async () => await prisma.$disconnect());
 });

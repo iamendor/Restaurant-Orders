@@ -1,16 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/services/prisma.service";
-import {
-  CreateMeal,
-  Currency,
-  Deleted,
-  Meal,
-  Order,
-  Restaurant,
-  Table,
-  Waiter,
-  WhereMeal,
-} from "../../models/model";
+import { Deleted, Meal, WhereMeal } from "../../models/model";
 import {
   NotFoundResourceException,
   SomethingWentWrongException,

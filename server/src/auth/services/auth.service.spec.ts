@@ -1,31 +1,32 @@
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { RestaurantModule } from "../../restaurant/restaurant.module";
 import { WaiterModule } from "../../waiter/waiter.module";
 import { AuthService } from "./auth.service";
-import * as bcrypt from "bcrypt";
 import { RestaurantService } from "../../restaurant/services/restaurant.service";
 import { WaiterService } from "../../waiter/services/waiter.service";
-import { mockRestaurant } from "../../restaurant/services/restaurant.service.spec";
-import { JwtPayload, Restaurant } from "../../models/model";
-import { mockWaiter } from "../../waiter/services/waiter.service.spec";
+import { JwtPayload } from "../../models/model";
 import { SecurityModule } from "../../security/security.module";
 import { PrismaModule } from "../../prisma/prisma.module";
-
-const returnPassword = {
-  password: bcrypt.hashSync("test", 10),
-};
+import { RestaurantServiceMock } from "../../restaurant/services/mock/restaurant.service.mock";
+import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.mock";
+import { getMocks } from "../../../test/helper/mocks";
 
 describe("AuthService", () => {
   let service: AuthService;
   let jwt: JwtService;
+
+  const mocks = getMocks();
   const credentials = {
-    email: "test@gmail.com",
-    password: "test",
+    email: mocks.restaurantModel.email,
+    password: mocks.restaurantModel.password,
+  };
+  const wCredentials = {
+    email: mocks.waiter.email,
+    password: mocks.waiter.password,
   };
 
   const invalidCredentials = {
-    email: "test@gmail.com",
+    email: mocks.restaurantModel.email,
     password: "invalid",
   };
 
@@ -39,13 +40,13 @@ describe("AuthService", () => {
         WaiterModule,
         PrismaModule,
       ],
-      providers: [AuthService, RestaurantService],
+      providers: [
+        AuthService,
+        { provide: RestaurantService, useClass: RestaurantServiceMock },
+        { provide: WaiterService, useClass: WaiterServiceMock },
+      ],
     }).compile();
-    const restaurantService = module.get<RestaurantService>(RestaurantService);
-    const waiterService = module.get<WaiterService>(WaiterService);
     jwt = module.get<JwtService>(JwtService);
-    restaurantService.find = jest.fn().mockImplementation(() => returnPassword);
-    waiterService.find = jest.fn().mockReturnValue(returnPassword);
 
     service = module.get<AuthService>(AuthService);
   });
@@ -59,7 +60,7 @@ describe("AuthService", () => {
     expect(restaurantValidated).not.toBeNull();
   });
   it("should validate a waiter", async () => {
-    const waiterValidated = await service.validateWaiter(credentials);
+    const waiterValidated = await service.validateWaiter(wCredentials);
     expect(waiterValidated).not.toBeNull();
   });
 
@@ -72,7 +73,7 @@ describe("AuthService", () => {
     expect(invalidWaiter).toBeNull();
   });
   it("should generate jwt for restaurant", async () => {
-    const payload = service.generateRestaurantJwt(mockRestaurant as Restaurant);
+    const payload = service.generateRestaurantJwt(mocks.restaurantModel);
     expect(typeof payload === "string").toBeTruthy();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);
@@ -80,7 +81,7 @@ describe("AuthService", () => {
     expect(decoded.role).toBe("restaurant");
   });
   it("should generate jwt for waiter", async () => {
-    const payload = service.generateWaiterJwt(mockWaiter);
+    const payload = service.generateWaiterJwt(mocks.waiter);
     expect(typeof payload === "string").toBeTruthy();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);

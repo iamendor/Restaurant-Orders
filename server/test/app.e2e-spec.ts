@@ -15,6 +15,8 @@ import req from "./helper/graphql-request";
 import { JwtService } from "@nestjs/jwt";
 import { CoreModule } from "../src/core/core.module";
 import { ConfigService } from "@nestjs/config";
+
+//TODO: fix e2e
 describe("Orders API", () => {
   let app: INestApplication;
   const mutations = getMutations();
@@ -67,6 +69,7 @@ describe("Orders API", () => {
         });
         signup = body.data.signup;
         loginRestaurant = body.data.loginRestaurant;
+        restaurantId = body.data.signup.id;
       });
 
       it("should signup restaurant", () => {
@@ -112,7 +115,7 @@ describe("Orders API", () => {
         const { body } = await req(server, {
           query: mutations.waiter.create(),
           variables: {
-            data: mocks.waiter,
+            data: mocks.waiterWithNoId,
             credentials: {
               email: mocks.waiter.email,
               password: mocks.waiter.password,
@@ -132,7 +135,7 @@ describe("Orders API", () => {
         expect(loginWaiter).not.toBeNull();
         expect(loginWaiter.waiter.name).toBe(mocks.waiter.name);
         expect(loginWaiter.access_token).toBeDefined();
-        waiterToken = loginWaiter.access_token;
+        waiterToken = `Bearer ${loginWaiter.access_token}`;
       });
       it("return unauthorized on login because password is invalid", async () => {
         const invalidCredentials = {
@@ -396,7 +399,7 @@ describe("Orders API", () => {
       const {
         errors: [error],
       } = body;
-      expect(error.message).toBe("no waiter specified");
+      expect(error.message).toBe("something went wrong");
     });
 
     it("returns waiter info", async () => {
@@ -1043,5 +1046,8 @@ describe("Orders API", () => {
     });
   });
 
-  afterAll(async () => await clearMocks({ prisma }));
+  afterAll(async () => {
+    await clearMocks({ prisma });
+    await prisma.$disconnect();
+  });
 });

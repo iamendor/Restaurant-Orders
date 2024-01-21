@@ -59,6 +59,7 @@ export class WaiterService {
         message: "success",
       };
     } catch (e) {
+      console.log(e);
       throw new SomethingWentWrongException(e.message);
     }
   }
