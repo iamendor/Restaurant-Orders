@@ -1,8 +1,8 @@
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../../src/prisma/services/prisma.service";
 import * as bcrypt from "bcrypt";
-import { JwtPayload } from "../../src/models/model";
 import { RESTAURANT, WAITER } from "../../src/role/role";
+import { JwtPayload } from "../../src/models/jwt.model";
 export const getMocks = () => ({
   restaurantPayload: (restaurant): JwtPayload => ({
     name: restaurant.name,

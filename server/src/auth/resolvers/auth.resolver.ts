@@ -1,14 +1,13 @@
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import {
-  AuthRestaurant,
-  AuthWaiter,
-  CreateRestaurant,
-  LoginRestaurant,
-  LoginWaiter,
-  Restaurant,
-} from "../../models/model";
-import { RestaurantService } from "../../restaurant/services/restaurant.service";
+import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { AuthService } from "../services/auth.service";
+import {
+  Restaurant,
+  CreateRestaurant,
+  AuthRestaurant,
+  LoginRestaurant,
+} from "../../models/restaurant.model";
+import { AuthWaiter, LoginWaiter } from "../../models/waiter.model";
 
 @Resolver("Auth")
 export class AuthResolver {

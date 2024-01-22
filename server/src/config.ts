@@ -6,19 +6,9 @@ import { PubSub } from "graphql-subscriptions";
 import { join } from "path";
 
 export class Config {
-  static getGqlConfig(): GenerateOptions {
-    return {
-      typePaths: ["./src/schema.gql"],
-      path: join(process.cwd(), "src/models/model.ts"),
-      outputAs: "class",
-    };
-  }
-
   static getGqlModuleOptions(config: ConfigService): ApolloDriverConfig {
-    const gql = Config.getGqlConfig();
     return {
-      definitions: { ...gql },
-      typePaths: gql.typePaths,
+      autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       playground: config.get("GRAPHQL_PLAYGROUND") || false,
       installSubscriptionHandlers: true,
       subscriptions: {

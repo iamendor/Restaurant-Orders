@@ -1,15 +1,15 @@
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { WaiterModule } from "../../waiter/waiter.module";
+import { WaiterModule } from "../../resources/waiter/waiter.module";
 import { AuthService } from "./auth.service";
-import { RestaurantService } from "../../restaurant/services/restaurant.service";
-import { WaiterService } from "../../waiter/services/waiter.service";
-import { JwtPayload } from "../../models/model";
+import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
+import { WaiterService } from "../../resources/waiter/services/waiter.service";
 import { SecurityModule } from "../../security/security.module";
 import { PrismaModule } from "../../prisma/prisma.module";
-import { RestaurantServiceMock } from "../../restaurant/services/mock/restaurant.service.mock";
-import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.mock";
+import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
+import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
 import { getMocks } from "../../../test/helper/mocks";
+import { JwtPayload } from "../../models/jwt.model";
 
 describe("AuthService", () => {
   let service: AuthService;

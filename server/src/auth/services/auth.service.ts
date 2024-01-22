@@ -1,18 +1,17 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import {
-  AuthRestaurant,
-  AuthWaiter,
-  LoginRestaurant,
-  LoginWaiter,
-  Restaurant,
-  Waiter,
-} from "../../models/model";
-import { RestaurantService } from "../../restaurant/services/restaurant.service";
+
+import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { JwtService } from "@nestjs/jwt";
-import { WaiterService } from "../../waiter/services/waiter.service";
+import { WaiterService } from "../../resources/waiter/services/waiter.service";
 import { SecurityService } from "../../security/services/security.service";
 import { Waiter as PWaiter } from "@prisma/client";
 import { RESTAURANT, WAITER } from "../../role/role";
+import {
+  LoginRestaurant,
+  AuthRestaurant,
+  Restaurant,
+} from "../../models/restaurant.model";
+import { LoginWaiter, AuthWaiter, Waiter } from "../../models/waiter.model";
 
 @Injectable()
 export class AuthService {

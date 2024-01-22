@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";
 import { NotFoundResourceException } from "../../error/errors";
-import { InvalidateQuery } from "../../models/model";
 import { PrismaService } from "../../prisma/services/prisma.service";
+import { InvalidateQuery } from "../../models/subscription.model";
 
 @Injectable()
 export class SubscriptionService {

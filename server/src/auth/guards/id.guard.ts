@@ -1,7 +1,7 @@
 import { Injectable, ExecutionContext, CanActivate } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { RESTAURANT } from "../../role/role";
-import { getReq } from "../../helper/helper";
+import { getReq } from "../../guard/helper";
 
 @Injectable()
 export class IdIntercept implements CanActivate {

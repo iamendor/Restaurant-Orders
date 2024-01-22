@@ -9,8 +9,8 @@ import { PrismaModule } from "../../prisma/prisma.module";
 import { getMocks } from "../../../test/helper/mocks";
 import { SecurityModule } from "../../security/security.module";
 import { AuthServiceMock } from "../services/mock/auth.service.mock";
-import { RestaurantService } from "../../restaurant/services/restaurant.service";
-import { RestaurantServiceMock } from "../../restaurant/services/mock/restaurant.service.mock";
+import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
+import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 
 describe("Auth Resolver", () => {
   let resolver: AuthResolver;
