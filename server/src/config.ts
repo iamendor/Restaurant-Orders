@@ -1,6 +1,5 @@
 import { ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
-import { GenerateOptions } from "@nestjs/graphql";
 import { JwtModuleOptions } from "@nestjs/jwt";
 import { PubSub } from "graphql-subscriptions";
 import { join } from "path";
@@ -9,6 +8,7 @@ export class Config {
   static getGqlModuleOptions(config: ConfigService): ApolloDriverConfig {
     return {
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
+      sortSchema: true,
       playground: config.get("GRAPHQL_PLAYGROUND") || false,
       installSubscriptionHandlers: true,
       subscriptions: {

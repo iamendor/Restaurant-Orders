@@ -3,179 +3,94 @@
 # ------------------------------------------------------
 
 type Address {
-  id: Float!
-  country: String!
-  zip: String!
-  city: String!
   address1: String!
   address2: String!
+  city: String!
+  country: String!
+  id: Float!
   restaurant: Restaurant!
   restaurantId: Float!
+  zip: String!
 }
 
-type Waiter {
-  id: Float!
-  name: String!
-  email: String!
-  gender: String!
-  profileIcon: String!
-  orders: [Order!]!
-  meals: [Meal!]!
+type AuthRestaurant {
+  access_token: String!
   restaurant: Restaurant!
-  restaurantId: Float!
 }
 
 type AuthWaiter {
-  waiter: Waiter!
   access_token: String!
-}
-
-type Table {
-  id: Float!
-  name: String!
-  orders: [Order!]!
-  restaurant: Restaurant!
-  restaurantId: Float!
+  waiter: Waiter!
 }
 
 type Category {
   id: Float!
   name: String!
+  restaurant: Restaurant!
+  restaurantId: Float!
   victuals: [Victual!]!
-  restaurant: Restaurant!
-  restaurantId: Float!
-}
-
-type Victual {
-  id: Float!
-  name: String!
-  price: Float!
-  restaurant: Category!
-  restaurantId: Float!
-  category: Category!
-  orders: [Order!]!
-}
-
-type Order {
-  id: Float!
-  description: String!
-  createdAt: String!
-  isReady: Boolean!
-  waiter: Waiter!
-  table: Table!
-  restaurant: Restaurant!
-  victual: Victual!
-}
-
-type Meal {
-  id: Float!
-  start: String!
-  end: String!
-  total: Float!
-  waiter: Waiter!
-  table: Table!
-  orders: [Order!]!
-  currency: Currency!
-  restaurant: Restaurant!
-  restaurantId: Float!
-}
-
-type Currency {
-  id: Float!
-  currency: String!
-  restaurant: Restaurant!
-  meals: [Meal!]!
-  restaurantId: Float!
-}
-
-type Restaurant {
-  id: Float!
-  name: String!
-  email: String!
-  address: Address!
-  currency: Currency!
-  waiters: [Waiter!]!
-  orders: [Order!]!
-  victuals: [Victual!]!
-  categories: [Category!]!
-  tables: [Table!]!
-  meals: [Meal!]!
-}
-
-type AuthRestaurant {
-  restaurant: Restaurant!
-  access_token: String!
-}
-
-type Success {
-  message: String!
-}
-
-type Query {
-  restaurantInfo: Restaurant!
-  waiters: [Waiter!]!
-  waiterInfo(where: WhereWaiter!): Waiter!
-  category: Category!
-  categories: [Category!]!
-  victuals: [Victual!]!
-  victual: Victual!
-  orders: [Order!]!
-  order: Order!
-  meals: [Meal!]!
-  meal: Meal!
-}
-
-input WhereWaiter {
-  id: Float
-  email: String
-  restaurantId: Float
-}
-
-type Mutation {
-  signup(data: CreateRestaurant!): Restaurant!
-  loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
-  loginWaiter(credentials: LoginWaiter!): AuthWaiter!
-  updateRestaurant(update: UpdateRestaurant!): Restaurant!
-  updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
-  deleteRestaurant: Success!
-  createWaiter(data: CreateWaiter!): Waiter!
-  updateWaiter(data: UpdateWaiter!): Waiter!
-  updateWaiterPassword(data: UpdateWaiterPassword!): Success!
-  deleteWaiter(where: WhereWaiter!): Success!
-  createCategory(data: CreateCategory!): Category!
-  createCategories(data: [CreateCategory!]!): Success!
-  updateCategory(data: UpdateCategory!): Category!
-  deleteCategory(where: WhereCategory!): Success!
-  createVictual(data: CreateVictual!): Victual!
-  createVictuals(data: [CreateVictuals!]!): Success!
-  updateVictual(data: UpdateVictual!): Victual!
-  deleteVictual(where: WhereVictual!): Success!
-  createOrder(data: CreateOrder!): Order!
-  createOrders(data: [CreateOrder!]!): Order!
-  updateOrder(data: UpdateOrder!): Order!
-  deleteOrder(where: WhereOrder!): Order!
-  createMeal(data: CreateMeal!): Meal!
-  deleteMeal(where: WhereMeal!): Success!
-}
-
-input CreateRestaurant {
-  name: String!
-  email: String!
-  password: String!
-  address: CreateAddress!
-  currency: CreateCurrency!
 }
 
 input CreateAddress {
-  country: String!
-  zip: String!
-  city: String!
   address1: String!
   address2: String!
+  city: String!
+  country: String!
+  zip: String!
+}
+
+input CreateCategory {
+  name: String!
 }
 
 input CreateCurrency {
   currency: String!
+}
+
+input CreateMeal {
+  tableId: Float!
+}
+
+input CreateOrder {
+  description: String!
+  restaurantId: Float!
+  tableId: Float!
+  victualId: Float!
+  waiterId: Float!
+}
+
+input CreateRestaurant {
+  address: CreateAddress!
+  currency: CreateCurrency!
+  email: String!
+  name: String!
+  password: String!
+}
+
+input CreateVictual {
+  categoryId: Float!
+  name: String!
+  price: Float!
+}
+
+input CreateVictuals {
+  categoryId: Float!
+  name: String!
+  price: Float!
+  restaurantId: Float!
+}
+
+input CreateWaiter {
+  password: String!
+  profileIcon: String!
+}
+
+type Currency {
+  currency: String!
+  id: Float!
+  meals: [Meal!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
 }
 
 input LoginRestaurant {
@@ -187,115 +102,126 @@ input LoginWaiter {
   password: String!
 }
 
-input UpdateRestaurant {
-  address: UpdateAddress!
-  currency: UpdateCurrency!
+type Meal {
+  currency: Currency!
+  end: String!
+  id: Float!
+  orders: [Order!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  start: String!
+  table: Table!
+  total: Float!
+  waiter: Waiter!
+}
+
+type Mutation {
+  createCategories(data: [CreateCategory!]!): Success!
+  createCategory(data: CreateCategory!): Category!
+  createMeal(data: CreateMeal!): Meal!
+  createOrder(data: CreateOrder!): Order!
+  createOrders(data: [CreateOrder!]!): Order!
+  createVictual(data: CreateVictual!): Victual!
+  createVictuals(data: [CreateVictuals!]!): Success!
+  createWaiter(data: CreateWaiter!): Waiter!
+  deleteCategory(where: WhereCategory!): Success!
+  deleteMeal(where: WhereMeal!): Success!
+  deleteOrder(where: WhereOrder!): Order!
+  deleteRestaurant: Success!
+  deleteVictual(where: WhereVictual!): Success!
+  deleteWaiter(where: WhereWaiter!): Success!
+  loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
+  loginWaiter(credentials: LoginWaiter!): AuthWaiter!
+  signup(data: CreateRestaurant!): Restaurant!
+  updateCategory(data: UpdateCategory!): Category!
+  updateOrder(data: UpdateOrder!): Order!
+  updateRestaurant(update: UpdateRestaurant!): Restaurant!
+  updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
+  updateVictual(data: UpdateVictual!): Victual!
+  updateWaiter(data: UpdateWaiter!): Waiter!
+  updateWaiterPassword(data: UpdateWaiterPassword!): Success!
+}
+
+type Order {
+  createdAt: String!
+  description: String!
+  id: Float!
+  isReady: Boolean!
+  restaurant: Restaurant!
+  table: Table!
+  victual: Victual!
+  waiter: Waiter!
+}
+
+type Query {
+  categories: [Category!]!
+  category: Category!
+  meal: Meal!
+  meals: [Meal!]!
+  order: Order!
+  orders: [Order!]!
+  restaurantInfo: Restaurant!
+  victual: Victual!
+  victuals: [Victual!]!
+  waiterInfo(where: WhereWaiter!): Waiter!
+  waiters: [Waiter!]!
+}
+
+type Restaurant {
+  address: Address!
+  categories: [Category!]!
+  currency: Currency!
+  email: String!
+  id: Float!
+  meals: [Meal!]!
+  name: String!
+  orders: [Order!]!
+  tables: [Table!]!
+  victuals: [Victual!]!
+  waiters: [Waiter!]!
+}
+
+type Subscription {
+  listenOrder(where: WhereOrder!): Order!
+  listenOrders: [Order!]!
+}
+
+type Success {
+  message: String!
+}
+
+type Table {
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
 }
 
 input UpdateAddress {
-  country: String!
-  zip: String!
-  city: String!
   address1: String!
   address2: String!
-}
-
-input UpdateCurrency {
-  currency: String!
-}
-
-input UpdateRestaurantPassword {
-  old: String!
-  password: String!
-}
-
-input CreateWaiter {
-  password: String!
-  profileIcon: String!
-}
-
-input UpdateWaiter {
-  where: WhereWaiter!
-  update: UpdateWaiterData!
-}
-
-input UpdateWaiterData {
-  name: String
-  email: String
-  gender: String
-  profileIcon: String
-}
-
-input UpdateWaiterPassword {
-  where: WhereWaiter!
-  update: UpdateWaiterPasswordData!
-}
-
-input UpdateWaiterPasswordData {
-  password: String!
-  old: String!
-}
-
-input CreateCategory {
-  name: String!
+  city: String!
+  country: String!
+  zip: String!
 }
 
 input UpdateCategory {
-  where: WhereCategory!
   update: UpdateCategoryData!
-}
-
-input WhereCategory {
-  id: Float!
+  where: WhereCategory!
 }
 
 input UpdateCategoryData {
   name: String
 }
 
-input CreateVictual {
-  name: String!
-  price: Float!
-  categoryId: Float!
-}
-
-input CreateVictuals {
-  name: String!
-  price: Float!
-  restaurantId: Float!
-  categoryId: Float!
-}
-
-input UpdateVictual {
-  where: WhereVictual!
-  update: UpdateVictualData!
-}
-
-input WhereVictual {
-  id: Float!
-}
-
-input UpdateVictualData {
-  name: String
-  price: Float
-  categoryId: Float
-}
-
-input CreateOrder {
-  description: String!
-  waiterId: Float!
-  tableId: Float!
-  victualId: Float!
-  restaurantId: Float!
+input UpdateCurrency {
+  currency: String!
 }
 
 input UpdateOrder {
-  where: WhereOrder!
   update: UpdateOrderData!
-}
-
-input WhereOrder {
-  id: Float!
+  where: WhereOrder!
 }
 
 input UpdateOrderData {
@@ -303,8 +229,73 @@ input UpdateOrderData {
   victualId: Float!
 }
 
-input CreateMeal {
-  tableId: Float!
+input UpdateRestaurant {
+  address: UpdateAddress!
+  currency: UpdateCurrency!
+}
+
+input UpdateRestaurantPassword {
+  old: String!
+  password: String!
+}
+
+input UpdateVictual {
+  update: UpdateVictualData!
+  where: WhereVictual!
+}
+
+input UpdateVictualData {
+  categoryId: Float
+  name: String
+  price: Float
+}
+
+input UpdateWaiter {
+  update: UpdateWaiterData!
+  where: WhereWaiter!
+}
+
+input UpdateWaiterData {
+  email: String
+  gender: String
+  name: String
+  profileIcon: String
+}
+
+input UpdateWaiterPassword {
+  update: UpdateWaiterPasswordData!
+  where: WhereWaiter!
+}
+
+input UpdateWaiterPasswordData {
+  old: String!
+  password: String!
+}
+
+type Victual {
+  category: Category!
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  price: Float!
+  restaurant: Category!
+  restaurantId: Float!
+}
+
+type Waiter {
+  email: String!
+  gender: String!
+  id: Float!
+  meals: [Meal!]!
+  name: String!
+  orders: [Order!]!
+  profileIcon: String!
+  restaurant: Restaurant!
+  restaurantId: Float!
+}
+
+input WhereCategory {
+  id: Float!
 }
 
 input WhereMeal {
@@ -312,7 +303,16 @@ input WhereMeal {
   restaurantId: Float!
 }
 
-type Subscription {
-  listenOrders: [Order!]!
-  listenOrder(where: WhereOrder!): Order!
+input WhereOrder {
+  id: Float!
+}
+
+input WhereVictual {
+  id: Float!
+}
+
+input WhereWaiter {
+  email: String
+  id: Float
+  restaurantId: Float
 }
