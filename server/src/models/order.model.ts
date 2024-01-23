@@ -32,16 +32,18 @@ export class Order {
 
 @InputType()
 export class CreateOrder {
-  @Field()
-  description: string;
-  @Field()
-  waiterId: number;
+  @Field({ nullable: true })
+  description?: string;
+  @Field({ nullable: true })
+  waiterId?: number;
   @Field()
   tableId: number;
   @Field()
   victualId: number;
-  @Field()
-  restaurantId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
+  @Field({ nullable: true })
+  isReady?: boolean;
 }
 
 @InputType()
@@ -49,11 +51,11 @@ export class WhereOrder extends PickType(Order, ["id"] as const, InputType) {}
 
 @InputType()
 export class UpdateOrderData extends PartialType(
-  PickType(Order, ["description", "isReady"] as const)
+  PickType(Order, ["description", "isReady"] as const, InputType)
 ) {
-  @Field()
+  @Field({ nullable: true })
   tableId?: number;
-  @Field()
+  @Field({ nullable: true })
   victualId?: number;
 }
 

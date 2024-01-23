@@ -5,7 +5,7 @@ import { Currency } from "../../../models/currency.model";
 import { Restaurant } from "../../../models/restaurant.model";
 import { Table } from "../../../models/table.model";
 import { Waiter } from "../../../models/waiter.model";
-import { Meal } from "../../../models/meal.order";
+import { Meal } from "../../../models/meal.model";
 
 @Resolver((of) => Meal)
 export class FieldResolver {

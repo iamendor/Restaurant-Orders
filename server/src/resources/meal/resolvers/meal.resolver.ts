@@ -17,7 +17,7 @@ import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { MealGuard } from "../guard/meal.guard";
 import { GetMeal } from "../decorators/meal.decorator";
-import { CreateMeal, Meal, WhereMeal } from "../../../models/meal.order";
+import { CreateMeal, Meal, WhereMeal } from "../../../models/meal.model";
 import { Success } from "../../../models/other.model";
 
 @Resolver((of) => Meal)
@@ -64,7 +64,7 @@ export class MealResolver {
 
   @Query(() => Meal, { name: "meal" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), MealGuard)
-  async find(@GetMeal() meal: Meal) {
+  async find(@GetMeal() meal: Meal, @Args("where") _: WhereMeal) {
     return meal;
   }
 }

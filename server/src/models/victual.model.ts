@@ -39,22 +39,8 @@ export class CreateVictual {
 
 @InputType()
 export class CreateVictualData extends CreateVictual {
-  @Field()
-  restaurantId: number;
-  @Field()
-  categoryId: number;
-}
-
-@InputType()
-export class CreateVictuals {
-  @Field()
-  name: string;
-  @Field()
-  price: number;
-  @Field()
+  @Field({ nullable: true })
   restaurantId?: number;
-  @Field()
-  categoryId: number;
 }
 
 @InputType()

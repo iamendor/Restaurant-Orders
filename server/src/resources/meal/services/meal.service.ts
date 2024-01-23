@@ -5,7 +5,7 @@ import {
   SomethingWentWrongException,
 } from "../../../error/errors";
 import { CreateMealData, Success } from "../../../models/other.model";
-import { Meal, WhereMeal } from "../../../models/meal.order";
+import { Meal, WhereMeal } from "../../../models/meal.model";
 
 @Injectable()
 export class MealService {

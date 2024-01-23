@@ -79,7 +79,7 @@ describe("MealResolver", () => {
       mealId = meals[0].id;
     });
     it("returns specific", async () => {
-      const meal = await resolver.find(mockMeal);
+      const meal = await resolver.find(mockMeal, { id: mealId });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
     });
@@ -90,7 +90,7 @@ describe("MealResolver", () => {
       expect(meals.length).toEqual(2);
     });
     it("returns specific", async () => {
-      const meal = await resolver.find(mockMeal);
+      const meal = await resolver.find(mockMeal, { id: mealId });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
     });

@@ -14,7 +14,6 @@ import { JwtPayload } from "../../../models/jwt.model";
 import {
   Victual,
   CreateVictual,
-  CreateVictuals,
   UpdateVictual,
   WhereVictual,
 } from "../../../models/victual.model";
@@ -53,7 +52,7 @@ export class VictualResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateVictuals] }) data: CreateVictuals[]
+    @Args("data", { type: () => [CreateVictual] }) data: CreateVictual[]
   ) {
     const categories = [...new Set(data.map((v) => v.categoryId))];
     for (let i = 0; i < categories.length; i++) {
@@ -88,7 +87,7 @@ export class VictualResolver {
 
   @Query(() => Victual, { name: "victual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), VictualGuard)
-  async find(@GetVictual() victual: Victual) {
+  async find(@GetVictual() victual: Victual, @Args("where") _: WhereVictual) {
     return victual;
   }
 }

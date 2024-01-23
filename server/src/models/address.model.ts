@@ -20,8 +20,8 @@ export class Address {
   city: string;
   @Field()
   address1: string;
-  @Field()
-  address2: string;
+  @Field({ nullable: true })
+  address2?: string;
   @Field(() => Restaurant)
   restaurant?: Restaurant;
   @Field()
@@ -50,7 +50,8 @@ export class UpdateAddress {
 }
 
 @InputType()
-export class WhereAddress extends PickType(Address, [
-  "id",
-  "restaurantId",
-] as const) {}
+export class WhereAddress extends PickType(
+  Address,
+  ["id", "restaurantId"] as const,
+  InputType
+) {}

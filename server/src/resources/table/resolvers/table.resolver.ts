@@ -30,7 +30,10 @@ export class TableResolver {
 
   @Mutation(() => Success, { name: "createTables" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  createMany(@User() { id }: JwtPayload, @Args("data") data: CreateTable[]) {
+  createMany(
+    @User() { id }: JwtPayload,
+    @Args("data", { type: () => [CreateTable] }) data: CreateTable[]
+  ) {
     const modified = data.map((table) => ({
       ...table,
       restaurantId: id,
@@ -58,7 +61,7 @@ export class TableResolver {
 
   @Query(() => Table, { name: "table" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), TableGuard)
-  async find(@GetTable() table: Table) {
+  async find(@GetTable() table: Table, @Args("where") _: WhereTable) {
     return table;
   }
 }

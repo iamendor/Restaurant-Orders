@@ -8,7 +8,7 @@ import {
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";
 import { Order } from "./order.model";
-import { Meal } from "./meal.order";
+import { Meal } from "./meal.model";
 
 @ObjectType()
 export class Waiter {
@@ -20,7 +20,7 @@ export class Waiter {
   email: string;
   @Field()
   gender: string;
-  @Field()
+  @Field({ nullable: true })
   profileIcon?: string;
   @Field(() => [Order])
   orders?: Order[];
@@ -41,15 +41,13 @@ export class AuthWaiter {
 }
 
 @InputType()
-export class CreateWaiter extends PickType(Waiter, [
-  "name",
-  "email",
-  "gender",
-] as const) {
+export class CreateWaiter extends PickType(
+  Waiter,
+  ["name", "email", "gender", "profileIcon"] as const,
+  InputType
+) {
   @Field()
   password: string;
-  @Field()
-  profileIcon?: string;
 }
 
 @InputType()
@@ -61,7 +59,11 @@ export class CreateWaiterData {
 }
 
 @InputType()
-export class LoginWaiter extends PickType(Waiter, ["email"] as const) {
+export class LoginWaiter extends PickType(
+  Waiter,
+  ["email"] as const,
+  InputType
+) {
   @Field()
   password: string;
 }
@@ -79,8 +81,8 @@ export class UpdateWaiterData extends PartialType(
 
 @InputType()
 export class UpdateWaiter {
-  @Field(() => WhereWaiter)
-  where: WhereWaiter;
+  @Field(() => WhereWaiter, { nullable: true })
+  where?: WhereWaiter;
   @Field(() => UpdateWaiterData)
   update: UpdateWaiterData;
 }
@@ -89,13 +91,13 @@ export class UpdateWaiter {
 export class UpdateWaiterPasswordData {
   @Field()
   password: string;
-  @Field()
+  @Field({ nullable: true })
   old?: string;
 }
 
 @InputType()
 export class UpdateWaiterPassword {
-  @Field(() => WhereWaiter)
+  @Field(() => WhereWaiter, { nullable: true })
   where?: WhereWaiter;
   @Field(() => UpdateWaiterPasswordData)
   update: UpdateWaiterPasswordData;

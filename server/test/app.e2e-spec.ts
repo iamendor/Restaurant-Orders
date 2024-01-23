@@ -104,7 +104,7 @@ describe("Orders API", () => {
         } = error;
 
         expect(statusCode).toEqual(401);
-        expect(body.data.loginRestaurant).toBeNull();
+        expect(body.data).toBeNull();
       });
     });
 
@@ -148,10 +148,8 @@ describe("Orders API", () => {
             credentials: invalidCredentials,
           },
         });
-        const {
-          data: { loginWaiter },
-        } = body;
-        expect(loginWaiter).toBeNull();
+        const { data } = body;
+        expect(data).toBeNull();
       });
     });
   });
@@ -346,7 +344,7 @@ describe("Orders API", () => {
         },
       }).set("Authorization", waiterToken);
       const { errors } = body;
-      expect(errors.length).toEqual(2);
+      expect(errors.length).toEqual(1);
       expect(errors[0].message).toBe("old password is not provided");
     });
 
@@ -996,7 +994,6 @@ describe("Orders API", () => {
             },
           },
         }).set("Authorization", restaurantToken);
-        console.log(body);
         [list, find] = [body.data.meals, body.data.meal];
       });
 

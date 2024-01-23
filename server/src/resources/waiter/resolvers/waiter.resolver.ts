@@ -101,7 +101,10 @@ export class WaiterResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
   @Query(() => Waiter, { name: "waiterInfo" })
-  async info(@User() user: JwtPayload, @Args("where") where?: WhereWaiter) {
+  async info(
+    @User() user: JwtPayload,
+    @Args("where", { nullable: true }) where?: WhereWaiter
+  ) {
     if (user.role === WAITER) {
       if (!where) return this.waiterService.find({ id: user.id });
       const waiter = await this.waiterService.find({ ...where });

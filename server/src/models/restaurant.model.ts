@@ -12,7 +12,7 @@ import { Table } from "./table.model";
 import { Victual } from "./victual.model";
 import { Category } from "./category.model";
 import { Order } from "./order.model";
-import { Meal } from "./meal.order";
+import { Meal } from "./meal.model";
 
 @ObjectType()
 export class Restaurant {
@@ -80,16 +80,16 @@ export class LoginRestaurant extends PickType(CreateRestaurant, [
 
 @InputType()
 export class WhereRestaurant extends PartialType(
-  PickType(Restaurant, ["id", "email"] as const)
+  PickType(Restaurant, ["id", "email"] as const, InputType)
 ) {}
 
 @InputType()
 export class UpdateRestaurant extends PartialType(
-  PickType(Restaurant, ["name", "email"] as const)
+  PickType(Restaurant, ["name", "email"] as const, InputType)
 ) {
-  @Field(() => UpdateAddress)
+  @Field(() => UpdateAddress, { nullable: true })
   address?: UpdateAddress;
-  @Field(() => UpdateCurrency)
+  @Field(() => UpdateCurrency, { nullable: true })
   currency?: UpdateCurrency;
 }
 

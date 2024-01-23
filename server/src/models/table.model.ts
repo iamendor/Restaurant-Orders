@@ -23,7 +23,11 @@ export class Table {
 }
 
 @InputType()
-export class CreateTable extends PickType(Table, ["name"] as const) {}
+export class CreateTable extends PickType(
+  Table,
+  ["name"] as const,
+  InputType
+) {}
 
 @InputType()
 export class CreateTableData extends CreateTable {
@@ -32,7 +36,10 @@ export class CreateTableData extends CreateTable {
 }
 
 @InputType()
-export class WhereTable extends PartialType(PickType(Table, ["id"] as const)) {}
+export class WhereTable extends PartialType(
+  PickType(Table, ["id"] as const),
+  InputType
+) {}
 
 @InputType()
 export class UpdateTableData extends PartialType(CreateTable) {}

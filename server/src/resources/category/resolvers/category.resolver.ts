@@ -47,13 +47,16 @@ export class CategoryResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), CategoryGuard)
   @Mutation(() => Success, { name: "deleteCategory" })
-  delete(@User() user: JwtPayload, @Args("where") where: WhereCategory) {
+  delete(@Args("where") where: WhereCategory) {
     return this.categoryService.delete(where);
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), CategoryGuard)
   @Query(() => Category, { name: "category" })
-  async find(@GetCategory() category: Category) {
+  async find(
+    @GetCategory() category: Category,
+    @Args("where") _: WhereCategory
+  ) {
     return category;
   }
 

@@ -3,7 +3,7 @@ import { FieldService } from "../services/field.service";
 import { Address } from "../../../models/address.model";
 import { Category } from "../../../models/category.model";
 import { Currency } from "../../../models/currency.model";
-import { Meal } from "../../../models/meal.order";
+import { Meal } from "../../../models/meal.model";
 import { Order } from "../../../models/order.model";
 import { Table } from "../../../models/table.model";
 import { Victual } from "../../../models/victual.model";

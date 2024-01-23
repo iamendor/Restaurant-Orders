@@ -4,7 +4,7 @@
 
 type Address {
   address1: String!
-  address2: String!
+  address2: String
   city: String!
   country: String!
   id: Float!
@@ -33,7 +33,7 @@ type Category {
 
 input CreateAddress {
   address1: String!
-  address2: String!
+  address2: String
   city: String!
   country: String!
   zip: String!
@@ -52,11 +52,12 @@ input CreateMeal {
 }
 
 input CreateOrder {
-  description: String!
-  restaurantId: Float!
+  description: String
+  isReady: Boolean
+  restaurantId: Float
   tableId: Float!
   victualId: Float!
-  waiterId: Float!
+  waiterId: Float
 }
 
 input CreateRestaurant {
@@ -67,22 +68,22 @@ input CreateRestaurant {
   password: String!
 }
 
+input CreateTable {
+  name: String!
+}
+
 input CreateVictual {
   categoryId: Float!
   name: String!
   price: Float!
 }
 
-input CreateVictuals {
-  categoryId: Float!
-  name: String!
-  price: Float!
-  restaurantId: Float!
-}
-
 input CreateWaiter {
+  email: String!
+  gender: String!
+  name: String!
   password: String!
-  profileIcon: String!
+  profileIcon: String
 }
 
 type Currency {
@@ -99,6 +100,7 @@ input LoginRestaurant {
 }
 
 input LoginWaiter {
+  email: String!
   password: String!
 }
 
@@ -120,14 +122,17 @@ type Mutation {
   createCategory(data: CreateCategory!): Category!
   createMeal(data: CreateMeal!): Meal!
   createOrder(data: CreateOrder!): Order!
-  createOrders(data: [CreateOrder!]!): Order!
+  createOrders(data: [CreateOrder!]!): Success!
+  createTable(data: CreateTable!): Table!
+  createTables(data: [CreateTable!]!): Success!
   createVictual(data: CreateVictual!): Victual!
-  createVictuals(data: [CreateVictuals!]!): Success!
+  createVictuals(data: [CreateVictual!]!): Success!
   createWaiter(data: CreateWaiter!): Waiter!
   deleteCategory(where: WhereCategory!): Success!
   deleteMeal(where: WhereMeal!): Success!
-  deleteOrder(where: WhereOrder!): Order!
+  deleteOrder(where: WhereOrder!): Success!
   deleteRestaurant: Success!
+  deleteTable(where: WhereTable!): Success!
   deleteVictual(where: WhereVictual!): Success!
   deleteWaiter(where: WhereWaiter!): Success!
   loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
@@ -137,6 +142,7 @@ type Mutation {
   updateOrder(data: UpdateOrder!): Order!
   updateRestaurant(update: UpdateRestaurant!): Restaurant!
   updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
+  updateTable(data: UpdateTable!): Table!
   updateVictual(data: UpdateVictual!): Victual!
   updateWaiter(data: UpdateWaiter!): Waiter!
   updateWaiterPassword(data: UpdateWaiterPassword!): Success!
@@ -155,15 +161,17 @@ type Order {
 
 type Query {
   categories: [Category!]!
-  category: Category!
-  meal: Meal!
+  category(where: WhereCategory!): Category!
+  meal(where: WhereMeal!): Meal!
   meals: [Meal!]!
-  order: Order!
+  order(where: WhereOrder!): Order!
   orders: [Order!]!
   restaurantInfo: Restaurant!
-  victual: Victual!
+  table(where: WhereTable!): Table!
+  tables: [Table!]!
+  victual(where: WhereVictual!): Victual!
   victuals: [Victual!]!
-  waiterInfo(where: WhereWaiter!): Waiter!
+  waiterInfo(where: WhereWaiter): Waiter!
   waiters: [Waiter!]!
 }
 
@@ -225,18 +233,31 @@ input UpdateOrder {
 }
 
 input UpdateOrderData {
-  tableId: Float!
-  victualId: Float!
+  description: String
+  isReady: Boolean
+  tableId: Float
+  victualId: Float
 }
 
 input UpdateRestaurant {
-  address: UpdateAddress!
-  currency: UpdateCurrency!
+  address: UpdateAddress
+  currency: UpdateCurrency
+  email: String
+  name: String
 }
 
 input UpdateRestaurantPassword {
   old: String!
   password: String!
+}
+
+input UpdateTable {
+  update: UpdateTableData!
+  where: WhereTable!
+}
+
+input UpdateTableData {
+  name: String
 }
 
 input UpdateVictual {
@@ -252,7 +273,7 @@ input UpdateVictualData {
 
 input UpdateWaiter {
   update: UpdateWaiterData!
-  where: WhereWaiter!
+  where: WhereWaiter
 }
 
 input UpdateWaiterData {
@@ -264,11 +285,11 @@ input UpdateWaiterData {
 
 input UpdateWaiterPassword {
   update: UpdateWaiterPasswordData!
-  where: WhereWaiter!
+  where: WhereWaiter
 }
 
 input UpdateWaiterPasswordData {
-  old: String!
+  old: String
   password: String!
 }
 
@@ -289,7 +310,7 @@ type Waiter {
   meals: [Meal!]!
   name: String!
   orders: [Order!]!
-  profileIcon: String!
+  profileIcon: String
   restaurant: Restaurant!
   restaurantId: Float!
 }
@@ -300,11 +321,15 @@ input WhereCategory {
 
 input WhereMeal {
   id: Float!
-  restaurantId: Float!
+  restaurantId: Float
 }
 
 input WhereOrder {
   id: Float!
+}
+
+input WhereTable {
+  id: Float
 }
 
 input WhereVictual {

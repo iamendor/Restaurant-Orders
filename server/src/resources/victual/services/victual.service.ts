@@ -6,7 +6,6 @@ import {
 } from "../../../error/errors";
 import {
   CreateVictualData,
-  CreateVictuals,
   UpdateVictual,
   WhereVictual,
   Victual,
@@ -41,7 +40,7 @@ export class VictualService {
     }
   }
 
-  async createMany(data: CreateVictuals[]): Promise<Success> {
+  async createMany(data: CreateVictualData[]): Promise<Success> {
     const checked = data.map((d) => {
       const { restaurantId, categoryId, ...rest } = d;
       return {

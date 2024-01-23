@@ -18,6 +18,7 @@ import {
   UpdateOrder,
   WhereOrder,
 } from "../../../models/order.model";
+import { Success } from "../../../models/other.model";
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -42,45 +43,53 @@ export class OrderResolver {
     return order;
   }
 
-  @Mutation(() => Order, { name: "createOrders" })
+  @Mutation(() => Success, { name: "createOrders" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
   async createMany(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
     @Args("data", { type: () => [CreateOrder] }) data: CreateOrder[]
   ) {
-    const ordersData = data.map((order) => ({
+    const ordersData: Required<CreateOrder>[] = data.map((order) => ({
       ...order,
       restaurantId,
       waiterId: id,
       description: order.description,
+      isReady: order.isReady || false,
     }));
-    const orders = this.orderService.createMany(ordersData);
-    await this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
-    return orders;
+
+    const orders = await this.orderService.createMany(ordersData);
+
+    this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
+
+    return { message: "success" };
   }
 
   @Mutation(() => Order, { name: "updateOrder" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
   async update(@RID() restaurantId: number, @Args("data") data: UpdateOrder) {
     const updatedOrder = await this.orderService.update(data);
-    await this.subscriptionService.invalidateOrders(
+
+    this.subscriptionService.invalidateOrders(
       { restaurantId, orderId: updatedOrder.id },
       pubSub
     );
+
     return updatedOrder;
   }
 
-  @Mutation(() => Order, { name: "deleteOrder" })
+  @Mutation(() => Success, { name: "deleteOrder" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), OrderGuard)
   async delete(@RID() restaurantId: number, @Args("where") where: WhereOrder) {
     const deleted = await this.orderService.delete({
       ...where,
     });
-    await this.subscriptionService.invalidateOrders(
+
+    this.subscriptionService.invalidateOrders(
       { restaurantId, orderId: where.id },
       pubSub
     );
+
     return deleted;
   }
 
@@ -92,7 +101,7 @@ export class OrderResolver {
 
   @Query(() => Order, { name: "order" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
-  async find(@GetOrder() order: Order) {
+  async find(@GetOrder() order: Order, @Args("where") _: WhereOrder) {
     return order;
   }
 

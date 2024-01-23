@@ -65,7 +65,7 @@ describe("CategoryResolver", () => {
     expect(updated.name).toBe(update);
   });
   it("delete category", async () => {
-    const deleted = await resolver.delete(Rpayload, {
+    const deleted = await resolver.delete({
       id: categoryId,
     });
     expect(deleted.message).toBe(SUCCESS);
@@ -83,11 +83,11 @@ describe("CategoryResolver", () => {
   });
   describe("Find", () => {
     it("find as restaurant", async () => {
-      const category = await resolver.find(cat);
+      const category = await resolver.find(cat, { id: categoryId });
       expect(category).toBeDefined();
     });
     it("find as waiter", async () => {
-      const category = await resolver.find(cat);
+      const category = await resolver.find(cat, { id: categoryId });
       expect(category).toBeDefined();
     });
   });

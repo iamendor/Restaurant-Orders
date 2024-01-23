@@ -6,7 +6,7 @@ import {
   PickType,
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";
-import { Meal } from "./meal.order";
+import { Meal } from "./meal.model";
 
 @ObjectType()
 export class Currency {
@@ -31,7 +31,7 @@ export class CreateCurrency extends PickType(
 
 @InputType()
 export class WhereCurrency extends PartialType(
-  PickType(Currency, ["restaurantId", "id"] as const)
+  PickType(Currency, ["restaurantId", "id"] as const, InputType)
 ) {}
 
 @InputType()

@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { FieldService } from "../services/field.service";
-import { Meal } from "../../../models/meal.order";
+import { Meal } from "../../../models/meal.model";
 import { Order } from "../../../models/order.model";
 import { Restaurant } from "../../../models/restaurant.model";
 import { Waiter } from "../../../models/waiter.model";

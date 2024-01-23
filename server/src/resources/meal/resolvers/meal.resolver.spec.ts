@@ -7,7 +7,7 @@ import { getMocks } from "../../../../test/helper/mocks";
 import { MealGuardModule } from "../guard/meal.guard.module";
 import { MealServiceMock } from "../services/mock/meal.service.mock";
 import { JwtPayload } from "../../../models/jwt.model";
-import { Meal } from "../../../models/meal.order";
+import { Meal } from "../../../models/meal.model";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
@@ -53,7 +53,7 @@ describe("MealResolver", () => {
     expect(meals.length).toEqual(1);
   });
   it("return by id", async () => {
-    const meal = await resolver.find(mockMeal);
+    const meal = await resolver.find(mockMeal, { id: mealId });
     expect(meal).toBeDefined();
   });
 });

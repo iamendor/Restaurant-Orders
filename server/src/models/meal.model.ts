@@ -39,6 +39,6 @@ export class CreateMeal {
 export class WhereMeal {
   @Field()
   id: number;
-  @Field()
-  restaurantId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
 }

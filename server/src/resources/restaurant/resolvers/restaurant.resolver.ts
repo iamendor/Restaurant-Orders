@@ -58,7 +58,6 @@ export class RestaurantResolver {
   @Mutation(() => Success, { name: "deleteRestaurant" })
   async delete(@User() restaurant: JwtPayload) {
     const deleted = await this.restaurantService.delete({ id: restaurant.id });
-    console.log(deleted);
     return deleted;
   }
 

@@ -74,9 +74,12 @@ describe("TableResolver", () => {
     expect(tables.length).toEqual(3);
   });
   it("returns table with specific id", async () => {
-    const table = await resolver.find({
-      ...mockTable,
-    });
+    const table = await resolver.find(
+      {
+        ...mockTable,
+      },
+      { id: mockTable.id }
+    );
     expect(table).toBeDefined();
     expect(table.name).toBe("updatedTableName");
   });
