@@ -14,7 +14,7 @@ import {
   WhereRestaurant,
   Restaurant,
 } from "../../../models/restaurant.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Injectable()
 export class RestaurantService {

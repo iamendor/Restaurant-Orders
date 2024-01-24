@@ -9,30 +9,21 @@ import { Order } from "@prisma/client";
 import {
   CreateOrder,
   UpdateOrder,
-  UpdateOrderData,
   WhereOrder,
 } from "../../../models/order.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Injectable()
 export class OrderService {
   constructor(private readonly prismaService: PrismaService) {}
-  private getCurrentDate() {
-    return new Date().toLocaleString();
-  }
 
   async create(data: CreateOrder): Promise<Order> {
     const { restaurantId, tableId, victualId, waiterId, ...rest } = data;
-    const formatted = {
-      ...rest,
-      isReady: false,
-      description: rest.description || "",
-      createdAt: this.getCurrentDate(), //?
-    };
+
     try {
       const order = await this.prismaService.order.create({
         data: {
-          ...formatted,
+          ...rest,
           restaurant: {
             connect: {
               id: restaurantId,
@@ -57,19 +48,14 @@ export class OrderService {
       });
       return order;
     } catch (e) {
+      console.log(e);
       throw new SomethingWentWrongException(e.message);
     }
   }
   async createMany(data: Required<CreateOrder>[]): Promise<Success> {
-    const formatted = data.map((order) => {
-      return {
-        ...order,
-        createdAt: this.getCurrentDate(),
-      };
-    });
     try {
       await this.prismaService.order.createMany({
-        data: formatted,
+        data,
         skipDuplicates: true,
       });
       return { message: "success" };

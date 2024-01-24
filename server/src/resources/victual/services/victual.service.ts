@@ -10,7 +10,7 @@ import {
   WhereVictual,
   Victual,
 } from "../../../models/victual.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Injectable()
 export class VictualService {

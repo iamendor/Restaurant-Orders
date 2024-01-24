@@ -9,13 +9,13 @@ import { RESTAURANT, WAITER } from "../../../role/role";
 import { GetRestaurant } from "../decorators/restaurant.decorator";
 import { Restaurant as PRestaurant } from "@prisma/client";
 import { SecurityService } from "../../../security/services/security.service";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Restaurant,
   UpdateRestaurant,
   UpdateRestaurantPassword,
 } from "../../../models/restaurant.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {

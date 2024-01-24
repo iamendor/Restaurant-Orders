@@ -18,7 +18,7 @@ import { RID } from "../../../auth/decorators/role.decorator";
 import { MealGuard } from "../guard/meal.guard";
 import { GetMeal } from "../decorators/meal.decorator";
 import { CreateMeal, Meal, WhereMeal } from "../../../models/meal.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Resolver((of) => Meal)
 export class MealResolver {

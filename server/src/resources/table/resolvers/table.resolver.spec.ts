@@ -6,7 +6,7 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { getMocks } from "../../../../test/helper/mocks";
 import { TableGuardModule } from "../guard/table.guard.module";
 import { TableServiceMock } from "../services/mock/table.service.mock";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;

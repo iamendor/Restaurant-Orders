@@ -10,14 +10,14 @@ import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { VictualGuard } from "../guard/victual.guard";
 import { GetVictual } from "../decorators/victual.decorator";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Victual,
   CreateVictual,
   UpdateVictual,
   WhereVictual,
 } from "../../../models/victual.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 export interface VerifyCategory {
   restaurantId: number;

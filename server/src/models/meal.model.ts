@@ -4,15 +4,16 @@ import { Order } from "./order.model";
 import { Restaurant } from "./restaurant.model";
 import { Table } from "./table.model";
 import { Waiter } from "./waiter.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Meal {
   @Field()
   id: number;
-  @Field()
-  start: string;
-  @Field()
-  end: string;
+  @Field(() => DateScalar)
+  start: Date;
+  @Field(() => DateScalar)
+  end: Date;
   @Field()
   total: number;
   @Field(() => Waiter)

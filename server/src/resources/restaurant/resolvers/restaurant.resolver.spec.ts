@@ -7,7 +7,7 @@ import { RestaurantGuardModule } from "../guard/restaurant.guard.module";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { Restaurant } from "@prisma/client";
 import { RestaurantServiceMock } from "../services/mock/restaurant.service.mock";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 
 describe("Restaurant Resolver", () => {
   const SUCCESS = "success";

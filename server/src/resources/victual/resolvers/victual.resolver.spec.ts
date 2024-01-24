@@ -8,7 +8,7 @@ import { VictualServiceMock } from "../services/mock/victual.service.mock";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceMock } from "../../category/services/mock/category.service.mock";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;

@@ -17,6 +17,7 @@ datasource db {
 
 model Restaurant{
   id Int @unique @id @default(autoincrement())
+  createdAt DateTime @default(now())
   name String
   email String @unique
   password String
@@ -50,6 +51,7 @@ model Address{
 
 model Waiter{
   id Int @unique @id @default(autoincrement())
+  createdAt DateTime @default(now())
   email String @unique
   name String
   gender String
@@ -63,8 +65,8 @@ model Waiter{
 
 model Order{
   id Int @unique @id @default(autoincrement())
-  description String @default("")
-  createdAt String
+  description String? @default("")
+  createdAt DateTime @default(now())
   isReady Boolean @default(false)
   waiter Waiter @relation(fields: [waiterId], references: [id])
   table Table? @relation(fields: [tableId], references: [id])
@@ -106,8 +108,9 @@ model Table{
 
 model Meal{
   id Int @unique @id @default(autoincrement())
-  start String
-  end String
+  createdAt DateTime @default(now())
+  start DateTime
+  end DateTime
   total Float
   orders Order[]
   waiter Waiter? @relation(fields: [waiterId], references: [id], onDelete: SetNull)

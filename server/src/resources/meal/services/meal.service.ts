@@ -4,8 +4,9 @@ import {
   NotFoundResourceException,
   SomethingWentWrongException,
 } from "../../../error/errors";
-import { CreateMealData, Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 import { Meal, WhereMeal } from "../../../models/meal.model";
+import { CreateMealData } from "../../../interfaces/meal.interface";
 
 @Injectable()
 export class MealService {

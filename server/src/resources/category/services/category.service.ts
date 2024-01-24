@@ -11,7 +11,7 @@ import {
   UpdateCategory,
   WhereCategory,
 } from "../../../models/category.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Injectable()
 export class CategoryService {

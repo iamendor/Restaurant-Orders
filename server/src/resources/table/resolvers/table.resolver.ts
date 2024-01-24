@@ -9,14 +9,14 @@ import { IdIntercept } from "../../../auth/guards/id.guard";
 import { GetTable } from "../decorators/table.decorator";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role/role";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Table,
   CreateTable,
   UpdateTable,
   WhereTable,
 } from "../../../models/table.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Resolver((of) => Table)
 export class TableResolver {

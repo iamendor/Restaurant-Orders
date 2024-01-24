@@ -11,14 +11,14 @@ import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";
 import { GetOrder } from "../decorators/order.decorator";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Order,
   CreateOrder,
   UpdateOrder,
   WhereOrder,
 } from "../../../models/order.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Resolver((of) => Order)
 export class OrderResolver {

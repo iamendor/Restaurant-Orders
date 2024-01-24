@@ -10,7 +10,7 @@ import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.moc
 import { SecurityModule } from "../../../security/security.module";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { SubscriptionServiceMock } from "../../../subscription/services/mock/subscription.service";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { CreateOrder } from "../../../models/order.model";
 
 describe("OrderResolver", () => {

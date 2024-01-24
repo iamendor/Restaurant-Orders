@@ -13,6 +13,7 @@ import { Victual } from "./victual.model";
 import { Category } from "./category.model";
 import { Order } from "./order.model";
 import { Meal } from "./meal.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Restaurant {
@@ -24,6 +25,9 @@ export class Restaurant {
 
   @Field()
   email: string;
+
+  @Field(() => DateScalar)
+  createdAt: Date;
 
   @Field(() => Address)
   address?: Address;

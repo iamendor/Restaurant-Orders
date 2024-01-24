@@ -4,6 +4,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { Config } from "../config";
 import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
+import { DateScalar } from "../models/date.model";
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { GraphQLModule } from "@nestjs/graphql";
       useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
   ],
+  providers: [DateScalar],
   exports: [JwtModule, GraphQLModule, ConfigModule],
 })
 export class CoreModule {}

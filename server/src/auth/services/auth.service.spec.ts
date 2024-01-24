@@ -9,7 +9,7 @@ import { PrismaModule } from "../../prisma/prisma.module";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
 import { getMocks } from "../../../test/helper/mocks";
-import { JwtPayload } from "../../models/jwt.model";
+import { JwtPayload } from "../../interfaces/jwt.interface";
 
 describe("AuthService", () => {
   let service: AuthService;

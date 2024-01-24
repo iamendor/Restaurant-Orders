@@ -11,7 +11,7 @@ import {
   WhereTable,
   Table,
 } from "../../../models/table.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Injectable()
 export class TableService {

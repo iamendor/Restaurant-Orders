@@ -2,7 +2,7 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../../src/prisma/services/prisma.service";
 import * as bcrypt from "bcrypt";
 import { RESTAURANT, WAITER } from "../../src/role/role";
-import { JwtPayload } from "../../src/models/jwt.model";
+import { JwtPayload } from "../../src/interfaces/jwt.interface";
 export const getMocks = () => ({
   restaurantPayload: (restaurant): JwtPayload => ({
     name: restaurant.name,
@@ -37,6 +37,7 @@ export const getMocks = () => ({
     email: "test@gmail.com",
     password: "mockRestaurant123",
     id: 1,
+    createdAt: new Date(),
   },
   waiter: {
     id: 1,
@@ -45,6 +46,7 @@ export const getMocks = () => ({
     profileIcon: null,
     email: "waiter@gmail.com",
     password: "mockWaiter123",
+    createdAt: new Date(),
   },
   waiterWithNoId: {
     name: "waiter1",
@@ -82,12 +84,12 @@ export const getMocks = () => ({
     ...data,
     description: "this is a mock order",
     isReady: false,
-    createdAt: new Date().toLocaleString(),
+    createdAt: new Date(),
   }),
   meal: () => ({
     id: 1,
-    start: new Date().toLocaleString(),
-    end: new Date().toLocaleString(),
+    start: new Date(),
+    end: new Date(),
     total: 100,
     orders: [],
     waiterId: 1,

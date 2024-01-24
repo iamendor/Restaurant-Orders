@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { OrderId } from "./order.interface";
 
 export interface CreateMealData {
   start: string;
@@ -9,14 +9,4 @@ export interface CreateMealData {
   orderIds: OrderId[];
   waiterId: number;
   currencyId: number;
-}
-
-export interface OrderId {
-  id: number;
-}
-
-@ObjectType()
-export class Success {
-  @Field()
-  message: string;
 }

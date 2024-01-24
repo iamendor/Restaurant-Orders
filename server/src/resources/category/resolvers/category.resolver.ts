@@ -15,8 +15,8 @@ import {
   UpdateCategory,
   WhereCategory,
 } from "../../../models/category.model";
-import { JwtPayload } from "../../../models/jwt.model";
-import { Success } from "../../../models/other.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
+import { Success } from "../../../models/success.model";
 
 @Resolver((of) => Category)
 export class CategoryResolver {

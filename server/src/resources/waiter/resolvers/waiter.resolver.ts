@@ -16,7 +16,7 @@ import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { SomethingWentWrongException } from "../../../error/errors";
 import { Waiter as PWaiter } from "@prisma/client";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Waiter,
   CreateWaiter,
@@ -24,7 +24,7 @@ import {
   WhereWaiter,
   UpdateWaiterPassword,
 } from "../../../models/waiter.model";
-import { Success } from "../../../models/other.model";
+import { Success } from "../../../models/success.model";
 
 @Resolver((of) => Waiter)
 export class WaiterResolver {

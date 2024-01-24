@@ -6,7 +6,7 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { getMocks } from "../../../../test/helper/mocks";
 import { SecurityModule } from "../../../security/security.module";
 import { WaiterServiceMock } from "../services/mock/waiter.service.mock";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 
 jest.mock("../services/waiter.service");
 describe("Waiter Resolver", () => {

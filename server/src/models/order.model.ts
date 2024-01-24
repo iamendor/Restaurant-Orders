@@ -9,6 +9,7 @@ import { Waiter } from "./waiter.model";
 import { Table } from "./table.model";
 import { Restaurant } from "./restaurant.model";
 import { Victual } from "./victual.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Order {
@@ -16,8 +17,8 @@ export class Order {
   id: number;
   @Field()
   description: string;
-  @Field()
-  createdAt: string;
+  @Field(() => DateScalar)
+  createdAt: Date;
   @Field()
   isReady: boolean;
   @Field(() => Waiter)

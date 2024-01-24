@@ -94,6 +94,8 @@ type Currency {
   restaurantId: Float!
 }
 
+scalar Date
+
 input LoginRestaurant {
   email: String!
   password: String!
@@ -106,12 +108,12 @@ input LoginWaiter {
 
 type Meal {
   currency: Currency!
-  end: String!
+  end: Date!
   id: Float!
   orders: [Order!]!
   restaurant: Restaurant!
   restaurantId: Float!
-  start: String!
+  start: Date!
   table: Table!
   total: Float!
   waiter: Waiter!
@@ -149,7 +151,7 @@ type Mutation {
 }
 
 type Order {
-  createdAt: String!
+  createdAt: Date!
   description: String!
   id: Float!
   isReady: Boolean!
@@ -178,6 +180,7 @@ type Query {
 type Restaurant {
   address: Address!
   categories: [Category!]!
+  createdAt: Date!
   currency: Currency!
   email: String!
   id: Float!
@@ -304,6 +307,7 @@ type Victual {
 }
 
 type Waiter {
+  createdAt: Date!
   email: String!
   gender: String!
   id: Float!

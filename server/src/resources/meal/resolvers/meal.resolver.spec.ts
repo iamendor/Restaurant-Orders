@@ -6,7 +6,7 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { getMocks } from "../../../../test/helper/mocks";
 import { MealGuardModule } from "../guard/meal.guard.module";
 import { MealServiceMock } from "../services/mock/meal.service.mock";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Meal } from "../../../models/meal.model";
 
 describe("MealResolver", () => {

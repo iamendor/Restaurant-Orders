@@ -6,7 +6,7 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { getMocks } from "../../../../test/helper/mocks";
 import { CategoryGuardModule } from "../guard/category.guard.module";
 import { CategoryServiceMock } from "../services/mock/category.service.mock";
-import { JwtPayload } from "../../../models/jwt.model";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Category } from "../../../models/category.model";
 
 describe("CategoryResolver", () => {

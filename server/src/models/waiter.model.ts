@@ -9,6 +9,7 @@ import {
 import { Restaurant } from "./restaurant.model";
 import { Order } from "./order.model";
 import { Meal } from "./meal.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Waiter {
@@ -20,6 +21,8 @@ export class Waiter {
   email: string;
   @Field()
   gender: string;
+  @Field(() => DateScalar)
+  createdAt: Date;
   @Field({ nullable: true })
   profileIcon?: string;
   @Field(() => [Order])
