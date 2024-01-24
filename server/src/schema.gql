@@ -31,6 +31,10 @@ type Category {
   victuals: [Victual!]!
 }
 
+input CategoryFilter {
+  name: String
+}
+
 input CreateAddress {
   address1: String!
   address2: String
@@ -96,6 +100,11 @@ type Currency {
 
 scalar Date
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 input LoginRestaurant {
   email: String!
   password: String!
@@ -117,6 +126,13 @@ type Meal {
   table: Table!
   total: Float!
   waiter: Waiter!
+}
+
+input MealFilter {
+  maxDate: DateTime
+  maxPrice: Float
+  minDate: DateTime
+  minPrice: Float
 }
 
 type Mutation {
@@ -161,20 +177,27 @@ type Order {
   waiter: Waiter!
 }
 
+input OrderFilter {
+  description: String
+  isReady: Boolean
+  max: DateTime
+  min: DateTime
+}
+
 type Query {
-  categories: [Category!]!
+  categories(filter: CategoryFilter): [Category!]!
   category(where: WhereCategory!): Category!
   meal(where: WhereMeal!): Meal!
-  meals: [Meal!]!
+  meals(filter: MealFilter): [Meal!]!
   order(where: WhereOrder!): Order!
-  orders: [Order!]!
+  orders(filter: OrderFilter): [Order!]!
   restaurantInfo: Restaurant!
   table(where: WhereTable!): Table!
-  tables: [Table!]!
+  tables(filter: TableFilter): [Table!]!
   victual(where: WhereVictual!): Victual!
-  victuals: [Victual!]!
+  victuals(filter: VictualFilter): [Victual!]!
   waiterInfo(where: WhereWaiter): Waiter!
-  waiters: [Waiter!]!
+  waiters(filter: WaiterFilter): [Waiter!]!
 }
 
 type Restaurant {
@@ -207,6 +230,10 @@ type Table {
   orders: [Order!]!
   restaurant: Restaurant!
   restaurantId: Float!
+}
+
+input TableFilter {
+  name: String
 }
 
 input UpdateAddress {
@@ -306,6 +333,12 @@ type Victual {
   restaurantId: Float!
 }
 
+input VictualFilter {
+  max: Float
+  min: Float
+  name: String
+}
+
 type Waiter {
   createdAt: Date!
   email: String!
@@ -317,6 +350,12 @@ type Waiter {
   profileIcon: String
   restaurant: Restaurant!
   restaurantId: Float!
+}
+
+input WaiterFilter {
+  email: String
+  gender: String
+  name: String
 }
 
 input WhereCategory {

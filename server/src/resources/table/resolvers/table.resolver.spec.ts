@@ -7,6 +7,7 @@ import { getMocks } from "../../../../test/helper/mocks";
 import { TableGuardModule } from "../guard/table.guard.module";
 import { TableServiceMock } from "../services/mock/table.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
+import { FilterModule } from "../../../filter/filter.module";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
@@ -23,7 +24,7 @@ describe("TableResolver", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, TableGuardModule],
+      imports: [PrismaModule, TableGuardModule, FilterModule],
       providers: [
         TableResolver,
         { provide: TableService, useClass: TableServiceMock },
@@ -72,6 +73,11 @@ describe("TableResolver", () => {
     const tables = await resolver.list(Wpayload.restaurantId);
 
     expect(tables.length).toEqual(3);
+  });
+  it("filters out all table", async () => {
+    const tables = await resolver.list(Rpayload.id, { name: "no match" });
+
+    expect(tables.length).toEqual(0);
   });
   it("returns table with specific id", async () => {
     const table = await resolver.find(

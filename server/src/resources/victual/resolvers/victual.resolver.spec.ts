@@ -9,6 +9,7 @@ import { PrismaModule } from "../../../prisma/prisma.module";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceMock } from "../../category/services/mock/category.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
+import { FilterModule } from "../../../filter/filter.module";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
@@ -26,7 +27,7 @@ describe("MealResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, VictualGuardModule],
+      imports: [PrismaModule, VictualGuardModule, FilterModule],
       providers: [
         VictualResolver,
         { provide: VictualService, useClass: VictualServiceMock },
@@ -82,6 +83,11 @@ describe("MealResolver", () => {
       const meal = await resolver.find(mockMeal, { id: mealId });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
+    });
+    it("should filter out all victual", async () => {
+      const meal = await resolver.list(Rpayload.id, { name: "no match" });
+
+      expect(meal.length).toEqual(0);
     });
   });
   describe("List and find as waiter", () => {

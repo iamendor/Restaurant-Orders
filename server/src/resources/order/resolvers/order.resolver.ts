@@ -19,12 +19,15 @@ import {
   WhereOrder,
 } from "../../../models/order.model";
 import { Success } from "../../../models/success.model";
+import { OrderFilter } from "../../../models/filter.model";
+import { FilterService } from "../../../filter/services/filter.service";
 
 @Resolver((of) => Order)
 export class OrderResolver {
   constructor(
     private readonly orderService: OrderService,
-    private subscriptionService: SubscriptionService
+    private readonly subscriptionService: SubscriptionService,
+    private readonly filterService: FilterService
   ) {}
 
   @Mutation(() => Order, { name: "createOrder" })
@@ -95,8 +98,14 @@ export class OrderResolver {
 
   @Query(() => [Order], { name: "orders" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
-  async list(@RID() restaurantId: number) {
-    return this.orderService.list(restaurantId);
+  async list(
+    @RID() restaurantId: number,
+    @Args("filter", { nullable: true, type: () => OrderFilter })
+    filters?: OrderFilter
+  ) {
+    const orders = await this.orderService.list(restaurantId);
+    if (filters) return this.filterService.orders({ data: orders, filters });
+    return orders;
   }
 
   @Query(() => Order, { name: "order" })

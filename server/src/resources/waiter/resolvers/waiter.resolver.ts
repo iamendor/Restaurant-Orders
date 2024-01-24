@@ -25,12 +25,15 @@ import {
   UpdateWaiterPassword,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
+import { FilterService } from "../../../filter/services/filter.service";
+import { WaiterFilter } from "../../../models/filter.model";
 
 @Resolver((of) => Waiter)
 export class WaiterResolver {
   constructor(
     private readonly waiterService: WaiterService,
-    private readonly securityService: SecurityService
+    private readonly securityService: SecurityService,
+    private readonly filterService: FilterService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
@@ -93,10 +96,17 @@ export class WaiterResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
   @Query(() => [Waiter])
-  async waiters(@RID() restaurantId: number) {
-    return this.waiterService.list({
+  async waiters(
+    @RID() restaurantId: number,
+    @Args("filter", { nullable: true, type: () => WaiterFilter })
+    filters?: WaiterFilter
+  ) {
+    const waiters = await this.waiterService.list({
       id: restaurantId,
     });
+
+    if (filters) return this.filterService.waiters({ data: waiters, filters });
+    return waiters;
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))

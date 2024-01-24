@@ -7,6 +7,7 @@ import { getMocks } from "../../../../test/helper/mocks";
 import { SecurityModule } from "../../../security/security.module";
 import { WaiterServiceMock } from "../services/mock/waiter.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
+import { FilterModule } from "../../../filter/filter.module";
 
 jest.mock("../services/waiter.service");
 describe("Waiter Resolver", () => {
@@ -25,7 +26,7 @@ describe("Waiter Resolver", () => {
   beforeAll(async () => {
     jest.clearAllMocks();
     const module = await Test.createTestingModule({
-      imports: [SecurityModule, PrismaModule],
+      imports: [SecurityModule, PrismaModule, FilterModule],
       providers: [
         { provide: WaiterService, useClass: WaiterServiceMock },
         WaiterResolver,
@@ -89,11 +90,16 @@ describe("Waiter Resolver", () => {
     ).rejects.toThrowError("old password is not provided");
   });
   it("lists waiters of restaurant", async () => {
-    service.list = jest.fn().mockReturnValue([{ id: 1 }]);
+    service.list = jest.fn().mockReturnValue([{ id: 1, name: "test" }]);
 
     const waiters = await resolver.waiters(restaurantId);
     expect(waiters.length).toEqual(1);
   });
+
+  it("should filter out all waiter", async () => {
+    const waiters = await resolver.waiters(restaurantId, { name: "no match" });
+  });
+
   it("returns info of waiter", async () => {
     const info = await resolver.info(waiterPayload);
     expect(info.name).toBe("updatedWaiter");

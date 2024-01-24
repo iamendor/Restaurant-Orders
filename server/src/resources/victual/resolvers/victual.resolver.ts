@@ -18,6 +18,8 @@ import {
   WhereVictual,
 } from "../../../models/victual.model";
 import { Success } from "../../../models/success.model";
+import { FilterService } from "../../../filter/services/filter.service";
+import { VictualFilter } from "../../../models/filter.model";
 
 export interface VerifyCategory {
   restaurantId: number;
@@ -28,7 +30,8 @@ export interface VerifyCategory {
 export class VictualResolver {
   constructor(
     private readonly victualService: VictualService,
-    private readonly categoryService: CategoryService
+    private readonly categoryService: CategoryService,
+    private readonly filterService: FilterService
   ) {}
 
   private async checkCategory({ restaurantId, categoryId }: VerifyCategory) {
@@ -81,8 +84,14 @@ export class VictualResolver {
 
   @Query(() => [Victual], { name: "victuals" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
-  async list(@RID() id: number) {
-    return this.victualService.list(id);
+  async list(
+    @RID() id: number,
+    @Args("filter", { nullable: true, type: () => VictualFilter })
+    filters?: VictualFilter
+  ) {
+    const victuals = await this.victualService.list(id);
+    if (filters) return this.filterService.victual({ data: victuals, filters });
+    return victuals;
   }
 
   @Query(() => Victual, { name: "victual" })

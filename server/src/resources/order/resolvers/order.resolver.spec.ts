@@ -12,6 +12,7 @@ import { SubscriptionService } from "../../../subscription/services/subscription
 import { SubscriptionServiceMock } from "../../../subscription/services/mock/subscription.service";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { CreateOrder } from "../../../models/order.model";
+import { FilterModule } from "../../../filter/filter.module";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -26,7 +27,7 @@ describe("OrderResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [OrderGuardModule, SecurityModule, PrismaModule],
+      imports: [OrderGuardModule, SecurityModule, PrismaModule, FilterModule],
       providers: [
         { provide: SubscriptionService, useClass: SubscriptionServiceMock },
         { provide: OrderService, useClass: OrderServiceMock },
@@ -82,5 +83,10 @@ describe("OrderResolver", () => {
     const orders = await resolver.list(restaurantId);
     expect(orders.length).toEqual(1);
     orderId = orders[0].id;
+  });
+  it("should filter out all order", async () => {
+    const orders = await resolver.list(restaurantId, {
+      description: "no match",
+    });
   });
 });

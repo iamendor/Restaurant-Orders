@@ -19,10 +19,15 @@ import { MealGuard } from "../guard/meal.guard";
 import { GetMeal } from "../decorators/meal.decorator";
 import { CreateMeal, Meal, WhereMeal } from "../../../models/meal.model";
 import { Success } from "../../../models/success.model";
+import { FilterService } from "../../../filter/services/filter.service";
+import { MealFilter } from "../../../models/filter.model";
 
 @Resolver((of) => Meal)
 export class MealResolver {
-  constructor(private readonly mealService: MealService) {}
+  constructor(
+    private readonly mealService: MealService,
+    private readonly filterService: FilterService
+  ) {}
 
   @Mutation(() => Meal, { name: "createMeal" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
@@ -58,8 +63,14 @@ export class MealResolver {
 
   @Query(() => [Meal], { name: "meals" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
-  async list(@RID() restaurantId: number) {
-    return this.mealService.list(restaurantId);
+  async list(
+    @RID() restaurantId: number,
+    @Args("filter", { nullable: true, type: () => MealFilter })
+    filters?: MealFilter
+  ) {
+    const meals = await this.mealService.list(restaurantId);
+    if (filters) return this.filterService.meal({ data: meals, filters });
+    return meals;
   }
 
   @Query(() => Meal, { name: "meal" })

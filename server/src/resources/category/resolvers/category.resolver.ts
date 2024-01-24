@@ -17,10 +17,15 @@ import {
 } from "../../../models/category.model";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Success } from "../../../models/success.model";
+import { FilterService } from "../../../filter/services/filter.service";
+import { CategoryFilter } from "../../../models/filter.model";
 
 @Resolver((of) => Category)
 export class CategoryResolver {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly filterService: FilterService
+  ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Category, { name: "createCategory" })
@@ -62,7 +67,17 @@ export class CategoryResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
   @Query(() => [Category], { name: "categories" })
-  async list(@RID() restaurantId: number) {
-    return this.categoryService.list(restaurantId);
+  async list(
+    @RID() restaurantId: number,
+    @Args("filter", { nullable: true, type: () => CategoryFilter })
+    filters?: CategoryFilter
+  ) {
+    const categories = await this.categoryService.list(restaurantId);
+    if (filters)
+      return this.filterService.categories({
+        data: categories,
+        filters,
+      });
+    return categories;
   }
 }

@@ -8,6 +8,7 @@ import { CategoryGuardModule } from "../guard/category.guard.module";
 import { CategoryServiceMock } from "../services/mock/category.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Category } from "../../../models/category.model";
+import { FilterModule } from "../../../filter/filter.module";
 
 describe("CategoryResolver", () => {
   let resolver: CategoryResolver;
@@ -21,7 +22,7 @@ describe("CategoryResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, CategoryGuardModule],
+      imports: [PrismaModule, CategoryGuardModule, FilterModule],
       providers: [
         CategoryResolver,
         { provide: CategoryService, useClass: CategoryServiceMock },
@@ -79,6 +80,10 @@ describe("CategoryResolver", () => {
     it("list as waiter", async () => {
       const categories = await resolver.list(Rpayload.id);
       expect(categories.length).toEqual(2);
+    });
+    it("should filter out all category", async () => {
+      const categories = await resolver.list(Rpayload.id, { name: "nomatch" });
+      expect(categories.length).toEqual(0);
     });
   });
   describe("Find", () => {

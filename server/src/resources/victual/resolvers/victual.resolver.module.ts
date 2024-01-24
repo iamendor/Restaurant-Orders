@@ -4,9 +4,15 @@ import { VictualResolver } from "./victual.resolver";
 import { VictualServiceModule } from "../services/victual.service.module";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
 import { VictualGuardModule } from "../guard/victual.guard.module";
+import { FilterModule } from "../../../filter/filter.module";
 
 @Module({
-  imports: [VictualServiceModule, CategoryServiceModule, VictualGuardModule],
+  imports: [
+    VictualServiceModule,
+    CategoryServiceModule,
+    VictualGuardModule,
+    FilterModule,
+  ],
   providers: [FieldResolver, VictualResolver],
 })
 export class VictualResolverModule {}

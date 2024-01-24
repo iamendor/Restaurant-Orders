@@ -17,10 +17,15 @@ import {
   WhereTable,
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
+import { TableFilter } from "../../../models/filter.model";
+import { FilterService } from "../../../filter/services/filter.service";
 
 @Resolver((of) => Table)
 export class TableResolver {
-  constructor(private readonly tableService: TableService) {}
+  constructor(
+    private readonly tableService: TableService,
+    private readonly filterService: FilterService
+  ) {}
 
   @Mutation(() => Table, { name: "createTable" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
@@ -55,8 +60,15 @@ export class TableResolver {
 
   @Query(() => [Table], { name: "tables" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
-  async list(@RID() restaurantId: number) {
-    return this.tableService.list(restaurantId);
+  async list(
+    @RID() restaurantId: number,
+    @Args("filter", { nullable: true, type: () => TableFilter })
+    filters?: TableFilter
+  ) {
+    const tables = await this.tableService.list(restaurantId);
+
+    if (filters) return this.filterService.tables({ data: tables, filters });
+    return tables;
   }
 
   @Query(() => Table, { name: "table" })

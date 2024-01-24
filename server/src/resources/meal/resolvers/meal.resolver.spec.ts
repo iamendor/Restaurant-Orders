@@ -8,6 +8,7 @@ import { MealGuardModule } from "../guard/meal.guard.module";
 import { MealServiceMock } from "../services/mock/meal.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Meal } from "../../../models/meal.model";
+import { FilterModule } from "../../../filter/filter.module";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
@@ -23,7 +24,7 @@ describe("MealResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, MealGuardModule],
+      imports: [PrismaModule, MealGuardModule, FilterModule],
       providers: [
         MealResolver,
         { provide: MealService, useClass: MealServiceMock },
@@ -51,6 +52,10 @@ describe("MealResolver", () => {
   it("list meal", async () => {
     const meals = await resolver.list(restaurantPayload.id);
     expect(meals.length).toEqual(1);
+  });
+  it("should filter out all meal", async () => {
+    const meals = await resolver.list(restaurantPayload.id, { minPrice: 500 });
+    expect(meals.length).toEqual(0);
   });
   it("return by id", async () => {
     const meal = await resolver.find(mockMeal, { id: mealId });

@@ -13,6 +13,7 @@ import { MealModule } from "./resources/meal/meal.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { CurrencyModule } from "./resources/currency/currency.module";
 import { SecurityModule } from "./security/security.module";
+import { FilterModule } from './filter/filter.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SecurityModule } from "./security/security.module";
     MealModule,
     CurrencyModule,
     SecurityModule,
+    FilterModule,
   ],
 })
 export class AppModule {}
