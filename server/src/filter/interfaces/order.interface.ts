@@ -1,3 +1,4 @@
+import { MaxLength } from "../rules/max.rule";
 import {
   IsReady,
   MaxDate,
@@ -10,4 +11,5 @@ export interface IOrderFilter {
   min: MinDate;
   max: MaxDate;
   isReady: IsReady;
+  maxLength: MaxLength;
 }

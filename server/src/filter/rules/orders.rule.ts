@@ -1,6 +1,7 @@
 import { Order } from "../../models/order.model";
 import { IOrderFilter } from "../interfaces/order.interface";
 import { Rule } from "../interfaces/rule.interface";
+import { MaxLength } from "./max.rule";
 import { RuleBuilder } from "./rule";
 
 export class SearchDescription
@@ -48,4 +49,5 @@ export const OrderRules = (): IOrderFilter => ({
   min: new MinDate(),
   max: new MaxDate(),
   isReady: new IsReady(),
+  maxLength: new MaxLength()
 });

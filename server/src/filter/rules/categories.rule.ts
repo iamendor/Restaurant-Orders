@@ -1,6 +1,7 @@
 import { Category } from "../../models/category.model";
 import { ICategoryFilter } from "../interfaces/category.interface";
 import { Rule } from "../interfaces/rule.interface";
+import { MaxLength } from "./max.rule";
 import { RuleBuilder } from "./rule";
 
 export class SearchName extends RuleBuilder implements Rule<Category, string> {
@@ -11,4 +12,5 @@ export class SearchName extends RuleBuilder implements Rule<Category, string> {
 
 export const CategoryRules = (): ICategoryFilter => ({
   name: new SearchName(),
+  maxLength: new MaxLength(),
 });

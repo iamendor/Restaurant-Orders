@@ -1,6 +1,7 @@
 import { Victual } from "../../models/victual.model";
 import { Rule } from "../interfaces/rule.interface";
 import { IVictualFilter } from "../interfaces/victual.interface";
+import { MaxLength } from "./max.rule";
 import { RuleBuilder } from "./rule";
 
 export class SearchName extends RuleBuilder implements Rule<Victual, string> {
@@ -36,4 +37,5 @@ export const VictualRules = (): IVictualFilter => ({
   name: new SearchName(),
   min: new MinPrice(),
   max: new MaxPrice(),
+  maxLength: new MaxLength(),
 });

@@ -1,5 +1,7 @@
 import { Waiter } from "../../models/waiter.model";
 import { Rule } from "../interfaces/rule.interface";
+import { IWaiterFilter } from "../interfaces/waiter.interface";
+import { MaxLength } from "./max.rule";
 import { RuleBuilder } from "./rule";
 
 export class SearchName extends RuleBuilder implements Rule<Waiter, string> {
@@ -32,8 +34,9 @@ export class Gender extends RuleBuilder implements Rule<Waiter, string> {
   }
 }
 
-export const WaiterRules = () => ({
+export const WaiterRules = (): IWaiterFilter => ({
   name: new SearchName(),
   email: new Email(),
   gender: new Gender(),
+  maxLength: new MaxLength(),
 });

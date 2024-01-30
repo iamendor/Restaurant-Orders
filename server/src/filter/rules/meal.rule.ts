@@ -1,5 +1,7 @@
 import { Meal } from "../../models/meal.model";
+import { IMealFilter } from "../interfaces/meal.interface";
 import { Rule } from "../interfaces/rule.interface";
+import { MaxLength } from "./max.rule";
 import { RuleBuilder } from "./rule";
 
 export class MinDate extends RuleBuilder implements Rule<Meal, Date> {
@@ -43,9 +45,10 @@ export class MaxPrice extends RuleBuilder implements Rule<Meal, number> {
   }
 }
 
-export const MealRules = () => ({
+export const MealRules = (): IMealFilter => ({
   minDate: new MinDate(),
   maxDate: new MaxDate(),
   minPrice: new MinPrice(),
   maxPrice: new MaxPrice(),
+  maxLength: new MaxLength(),
 });

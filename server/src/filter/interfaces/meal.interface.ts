@@ -1,3 +1,4 @@
+import { MaxLength } from "../rules/max.rule";
 import { MaxDate, MaxPrice, MinDate, MinPrice } from "../rules/meal.rule";
 
 export interface IMealFilter {
@@ -5,4 +6,5 @@ export interface IMealFilter {
   maxDate: MaxDate;
   minPrice: MinPrice;
   maxPrice: MaxPrice;
+  maxLength: MaxLength;
 }
