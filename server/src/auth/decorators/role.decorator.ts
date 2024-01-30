@@ -1,6 +1,6 @@
 import { createParamDecorator } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { RESTAURANT } from "../../role/role";
+import { RESTAURANT } from "../../role";
 
 export const Role = createParamDecorator((data, ctx) => {
   const context = GqlExecutionContext.create(ctx).getContext();

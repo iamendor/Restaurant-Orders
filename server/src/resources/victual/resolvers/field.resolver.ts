@@ -1,5 +1,5 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
-import { RESTAURANT } from "../../../role/role";
+import { RESTAURANT } from "../../../role";
 import { FieldService } from "../services/field.service";
 import { Category } from "../../../models/category.model";
 import { Order } from "../../../models/order.model";

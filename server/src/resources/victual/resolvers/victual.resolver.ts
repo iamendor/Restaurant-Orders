@@ -4,7 +4,7 @@ import { User } from "../../../auth/decorators/user.decorator";
 import { ForbiddenException, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 import { CategoryService } from "../../category/services/category.service";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";

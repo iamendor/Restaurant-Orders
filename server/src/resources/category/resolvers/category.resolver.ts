@@ -8,7 +8,7 @@ import { CategoryGuard } from "../guard/category.guard";
 import { GetCategory } from "../decorators/category.decorator";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 import {
   Category,
   CreateCategory,

@@ -1,6 +1,6 @@
 import { Injectable, ExecutionContext, CanActivate } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { RESTAURANT } from "../../role/role";
+import { RESTAURANT } from "../../role";
 import { getReq } from "../../guard/helper";
 
 @Injectable()

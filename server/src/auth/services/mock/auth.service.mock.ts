@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { getMocks } from "../../../../test/helper/mocks";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 
 @Injectable()
 export class AuthServiceMock {

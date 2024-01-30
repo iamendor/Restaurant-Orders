@@ -9,7 +9,9 @@ import { DateScalar } from "../models/date.model";
 @Global()
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: Config.getJwtConfig,

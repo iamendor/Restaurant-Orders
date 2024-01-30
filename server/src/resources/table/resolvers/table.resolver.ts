@@ -8,7 +8,7 @@ import { TableGuard } from "../guard/table.guard";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { GetTable } from "../decorators/table.decorator";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Table,

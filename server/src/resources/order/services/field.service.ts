@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { NotFoundResourceException } from "../../../error/errors";
 
 @Injectable()
 export class FieldService {
   constructor(private readonly prismaService: PrismaService) {}
   async getRestaurant(id: number) {
-    const order = await this.prismaService.order.findFirst({
+    const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
         id,
       },
@@ -14,12 +13,11 @@ export class FieldService {
         restaurant: true,
       },
     });
-    if (!order) throw new NotFoundResourceException("order");
     return order.restaurant;
   }
 
   async getTable(id: number) {
-    const order = await this.prismaService.order.findFirst({
+    const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
         id,
       },
@@ -27,11 +25,10 @@ export class FieldService {
         table: true,
       },
     });
-    if (!order) throw new NotFoundResourceException("order");
     return order.table;
   }
   async getVictual(id: number) {
-    const order = await this.prismaService.order.findFirst({
+    const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
         id,
       },
@@ -39,11 +36,10 @@ export class FieldService {
         victual: true,
       },
     });
-    if (!order) throw new NotFoundResourceException("order");
     return order.victual;
   }
   async getWaiter(id: number) {
-    const order = await this.prismaService.order.findFirst({
+    const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
         id,
       },
@@ -51,7 +47,6 @@ export class FieldService {
         waiter: true,
       },
     });
-    if (!order) throw new NotFoundResourceException("order");
     return order.waiter;
   }
 }

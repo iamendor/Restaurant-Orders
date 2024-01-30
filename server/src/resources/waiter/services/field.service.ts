@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { NotFoundResourceException } from "../../../error/errors";
 
 @Injectable()
 export class FieldService {
@@ -12,7 +11,6 @@ export class FieldService {
         restaurant: true,
       },
     });
-    if (!waiter) throw new NotFoundResourceException("waiter");
     return waiter.restaurant;
   }
 
@@ -23,7 +21,6 @@ export class FieldService {
         orders: true,
       },
     });
-    if (!waiter) throw new NotFoundResourceException("waiter");
     return waiter.orders;
   }
 

@@ -5,7 +5,7 @@ import { JwtService } from "@nestjs/jwt";
 import { WaiterService } from "../../resources/waiter/services/waiter.service";
 import { SecurityService } from "../../security/services/security.service";
 import { Waiter as PWaiter } from "@prisma/client";
-import { RESTAURANT, WAITER } from "../../role/role";
+import { RESTAURANT, WAITER } from "../../role";
 import {
   LoginRestaurant,
   AuthRestaurant,

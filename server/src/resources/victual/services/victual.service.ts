@@ -1,10 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/services/prisma.service";
 import {
-  NotFoundResourceException,
-  SomethingWentWrongException,
-} from "../../../error/errors";
-import {
   CreateVictualData,
   UpdateVictual,
   WhereVictual,
@@ -18,26 +14,22 @@ export class VictualService {
 
   async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;
-    try {
-      const meal = await this.prismaService.victual.create({
-        data: {
-          ...rest,
-          restaurant: {
-            connect: {
-              id: restaurantId,
-            },
-          },
-          category: {
-            connect: {
-              id: categoryId,
-            },
+    const meal = await this.prismaService.victual.create({
+      data: {
+        ...rest,
+        restaurant: {
+          connect: {
+            id: restaurantId,
           },
         },
-      });
-      return meal;
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+        category: {
+          connect: {
+            id: categoryId,
+          },
+        },
+      },
+    });
+    return meal;
   }
 
   async createMany(data: CreateVictualData[]): Promise<Success> {
@@ -50,69 +42,50 @@ export class VictualService {
       };
     });
 
-    try {
-      await this.prismaService.victual.createMany({
-        data: checked,
-        skipDuplicates: true,
-      });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    await this.prismaService.victual.createMany({
+      data: checked,
+      skipDuplicates: true,
+    });
+    return { message: "success" };
   }
 
   async update(data: UpdateVictual): Promise<Victual> {
     const { where, update } = data;
-    try {
-      const updated = await this.prismaService.victual.update({
-        where: {
-          id: where.id,
-        },
-        data: {
-          ...update,
-        },
-      });
-      return updated;
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    const updated = await this.prismaService.victual.update({
+      where: {
+        id: where.id,
+      },
+      data: {
+        ...update,
+      },
+    });
+    return updated;
   }
 
   async delete(where: WhereVictual): Promise<Success> {
-    try {
-      await this.prismaService.victual.delete({
-        where: {
-          id: where.id,
-        },
-      });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    await this.prismaService.victual.delete({
+      where: {
+        id: where.id,
+      },
+    });
+    return { message: "success" };
   }
 
   async list(restaurantId: number): Promise<Victual[]> {
-    const restaurant = await this.prismaService.restaurant.findFirstOrThrow({
+    const victuals = await this.prismaService.victual.findMany({
       where: {
-        id: restaurantId,
-      },
-      select: {
-        victuals: true,
+        restaurantId: restaurantId,
       },
     });
-    return restaurant.victuals;
+    return victuals;
   }
 
   async find(where: WhereVictual): Promise<Victual> {
-    try {
-      const meal = await this.prismaService.victual.findFirstOrThrow({
-        where: {
-          id: where.id,
-        },
-      });
-      return meal;
-    } catch (e) {
-      throw new NotFoundResourceException("meal");
-    }
+    const meal = await this.prismaService.victual.findUniqueOrThrow({
+      where: {
+        id: where.id,
+      },
+    });
+    return meal;
   }
 }

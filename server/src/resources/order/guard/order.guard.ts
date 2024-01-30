@@ -8,7 +8,7 @@ import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { OrderService } from "../services/order.service";
 import { IdIntercept } from "../../../auth/guards/id.guard";
-import { WAITER } from "../../../role/role";
+import { WAITER } from "../../../role";
 
 @Injectable()
 export class OrderBaseGuard implements ModelGuard {

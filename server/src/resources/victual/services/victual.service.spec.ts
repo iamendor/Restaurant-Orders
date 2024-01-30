@@ -73,9 +73,11 @@ describe("MealService", () => {
     expect(deleted.message).toBe(SUCCESS);
   });
   it("list victuals", async () => {
-    prisma.restaurant.findFirstOrThrow = jest.fn().mockImplementation(() => ({
-      victuals: [1, 2].map(() => ({ ...mocks.victual.withCategoryId(2) })),
-    }));
+    prisma.victual.findMany = jest
+      .fn()
+      .mockImplementation(() =>
+        [1, 2].map(() => ({ ...mocks.victual.withCategoryId(2) }))
+      );
 
     const victuals = await service.list(2);
     expect(victuals.length).toEqual(2);

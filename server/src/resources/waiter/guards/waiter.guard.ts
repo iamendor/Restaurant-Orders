@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { Observable } from "rxjs";
-import { RESTAURANT } from "../../../role/role";
+import { RESTAURANT } from "../../../role";
 import { getReq } from "../../../guard/helper";
 
 @Injectable()

@@ -46,7 +46,7 @@ describe("CategoryService", () => {
     expect(categories.message).toBe("success");
   });
   it("find by id", async () => {
-    prisma.category.findFirstOrThrow = jest
+    prisma.category.findUniqueOrThrow = jest
       .fn()
       .mockImplementation(({ where }) => ({
         ...mocks.category,

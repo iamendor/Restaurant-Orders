@@ -6,7 +6,7 @@ import {
   UpdateOpenHour,
   WhereOpenHour,
 } from "../../../models/openhour.model";
-import { SomethingWentWrongException } from "../../../error/errors";
+import { SomethingWentWrongException } from "../../../error";
 import { Success } from "../../../models/success.model";
 
 @Injectable()
@@ -14,36 +14,28 @@ export class OpenHourService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateOpenHour, restaurantId: number): Promise<OpenHour> {
-    try {
-      const openHour = await this.prismaService.openingHour.create({
-        data: {
-          ...data,
-          restaurant: {
-            connect: {
-              id: restaurantId,
-            },
+    const openHour = await this.prismaService.openingHour.create({
+      data: {
+        ...data,
+        restaurant: {
+          connect: {
+            id: restaurantId,
           },
         },
-      });
-      return openHour;
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+      },
+    });
+    return openHour;
   }
 
   async createMany(
     data: CreateOpenHour[],
     restaurantId: number
   ): Promise<Success> {
-    try {
-      await this.prismaService.openingHour.createMany({
-        data: data.map((oh) => ({ ...oh, restaurantId })),
-        skipDuplicates: true,
-      });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    await this.prismaService.openingHour.createMany({
+      data: data.map((oh) => ({ ...oh, restaurantId })),
+      skipDuplicates: true,
+    });
+    return { message: "success" };
   }
 
   list(restaurantId: number) {
@@ -55,36 +47,24 @@ export class OpenHourService {
   }
 
   async update({ where, update }: UpdateOpenHour): Promise<OpenHour> {
-    try {
-      const updated = await this.prismaService.openingHour.update({
-        where,
-        data: update,
-      });
-      return updated;
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    const updated = await this.prismaService.openingHour.update({
+      where,
+      data: update,
+    });
+    return updated;
   }
 
   async delete(where: WhereOpenHour): Promise<Success> {
-    try {
-      await this.prismaService.openingHour.delete({
-        where,
-      });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    await this.prismaService.openingHour.delete({
+      where,
+    });
+    return { message: "success" };
   }
 
   async find(where: WhereOpenHour): Promise<OpenHour> {
-    try {
-      const openHour = await this.prismaService.openingHour.findUniqueOrThrow({
-        where,
-      });
-      return openHour;
-    } catch (e) {
-      throw new SomethingWentWrongException();
-    }
+    const openHour = await this.prismaService.openingHour.findUniqueOrThrow({
+      where,
+    });
+    return openHour;
   }
 }

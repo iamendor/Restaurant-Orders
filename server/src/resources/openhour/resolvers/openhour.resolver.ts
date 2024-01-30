@@ -9,7 +9,7 @@ import { OpenHourService } from "../services/openhour.service";
 import { ForbiddenException, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";

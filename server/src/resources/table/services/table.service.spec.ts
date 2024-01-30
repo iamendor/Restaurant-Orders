@@ -82,9 +82,9 @@ describe("TableService", () => {
   });
 
   it("should list all table", async () => {
-    prisma.restaurant.findUnique = jest.fn().mockReturnValue({
-      tables: [1, 2, 3].map(() => mocks.table()),
-    });
+    prisma.table.findMany = jest
+      .fn()
+      .mockReturnValue([1, 2, 3].map(() => mocks.table()));
 
     const tables = await service.list(restaurant.id);
     expect(tables.length).toEqual(3);

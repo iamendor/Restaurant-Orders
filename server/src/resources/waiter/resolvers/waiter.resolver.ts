@@ -10,11 +10,11 @@ import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { WaiterService } from "../services/waiter.service";
 import { SecurityService } from "../../../security/services/security.service";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 import { UpdateWaiterGuard } from "../guards/waiter.guard";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { SomethingWentWrongException } from "../../../error/errors";
+import { SomethingWentWrongException } from "../../../error";
 import { Waiter as PWaiter } from "@prisma/client";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {

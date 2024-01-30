@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { extractRIdFromContext } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { OpenHourService } from "../services/openhour.service";
-import { SomethingWentWrongException } from "../../../error/errors";
+import { SomethingWentWrongException } from "../../../error";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 
 @Injectable()

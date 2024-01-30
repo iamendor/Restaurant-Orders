@@ -69,15 +69,13 @@ describe("OrderService", () => {
     expect(deleted.message).toBe(SUCCESS);
   });
   it("list all order", async () => {
-    prisma.restaurant.findFirst = jest
-      .fn()
-      .mockReturnValue({ orders: [mockOrder, mockOrder] });
+    prisma.order.findMany = jest.fn().mockReturnValue([mockOrder, mockOrder]);
 
     const orders = await service.list(1);
     expect(orders.length).toEqual(2);
   });
   it("find by id", async () => {
-    prisma.order.findUnique = jest
+    prisma.order.findUniqueOrThrow = jest
       .fn()
       .mockImplementation(({ where }) => ({ ...mockOrder, where }));
 

@@ -1,9 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import {
-  NotFoundResourceException,
-  SomethingWentWrongException,
-} from "../../../error/errors";
 import { Success } from "../../../models/success.model";
 import { Meal, WhereMeal } from "../../../models/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
@@ -51,83 +47,68 @@ export class MealService {
   }
 
   async create(data: CreateMealData): Promise<Meal> {
-    try {
-      const {
+    const {
+      start,
+      end,
+      total,
+      tableId,
+      restaurantId,
+      currencyId,
+      orderIds,
+      waiterId,
+    } = data;
+    const meal = await this.prismaService.meal.create({
+      data: {
         start,
         end,
         total,
-        tableId,
-        restaurantId,
-        currencyId,
-        orderIds,
-        waiterId,
-      } = data;
-      const meal = await this.prismaService.meal.create({
-        data: {
-          start,
-          end,
-          total,
-          table: {
-            connect: { id: tableId },
-          },
-          currency: {
-            connect: {
-              id: currencyId,
-            },
-          },
-          restaurant: {
-            connect: {
-              id: restaurantId,
-            },
-          },
-          orders: {
-            connect: orderIds,
-          },
-          waiter: {
-            connect: {
-              id: waiterId,
-            },
+        table: {
+          connect: { id: tableId },
+        },
+        currency: {
+          connect: {
+            id: currencyId,
           },
         },
-      });
+        restaurant: {
+          connect: {
+            id: restaurantId,
+          },
+        },
+        orders: {
+          connect: orderIds,
+        },
+        waiter: {
+          connect: {
+            id: waiterId,
+          },
+        },
+      },
+    });
 
-      return meal;
-    } catch (e) {
-      throw new SomethingWentWrongException();
-    }
+    return meal;
   }
 
   async list(restaurantId: number): Promise<Meal[]> {
-    const restaurant = await this.prismaService.restaurant.findFirst({
+    const meals = await this.prismaService.meal.findMany({
       where: {
-        id: restaurantId,
-      },
-      select: {
-        meals: true,
+        restaurantId,
       },
     });
-    return restaurant.meals;
+    return meals;
   }
 
   async find(where: WhereMeal): Promise<Meal> {
-    try {
-      const meal = await this.prismaService.meal.findUniqueOrThrow({
-        where: {
-          id: where.id,
-        },
-      });
-      return meal;
-    } catch (e) {
-      throw new NotFoundResourceException("meal");
-    }
+    const meal = await this.prismaService.meal.findUniqueOrThrow({
+      where: {
+        id: where.id,
+      },
+    });
+    return meal;
   }
 
   async delete(where: WhereMeal): Promise<Success> {
-    try {
-      await this.prismaService.meal.delete({ where: { id: where.id } });
-      return { message: "success" };
-    } catch (e) {
-      throw new SomethingWentWrongException(e.message);
-    }
+    await this.prismaService.meal.delete({ where: { id: where.id } });
+    return { message: "success" };
   }
 }

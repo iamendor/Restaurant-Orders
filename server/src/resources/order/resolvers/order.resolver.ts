@@ -6,7 +6,7 @@ import { RoleGuard } from "../../../auth/guards/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
 import { pubSub } from "../../../config";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { RESTAURANT, WAITER } from "../../../role";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";

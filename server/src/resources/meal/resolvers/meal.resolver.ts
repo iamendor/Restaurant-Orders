@@ -8,11 +8,8 @@ import {
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
-import {
-  NotFoundResourceException,
-  SomethingWentWrongException,
-} from "../../../error/errors";
-import { RESTAURANT, WAITER } from "../../../role/role";
+import { SomethingWentWrongException } from "../../../error";
+import { RESTAURANT, WAITER } from "../../../role";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { MealGuard } from "../guard/meal.guard";
@@ -36,7 +33,6 @@ export class MealResolver {
     @Args("data") { tableId }: CreateMeal
   ) {
     const tableWithOrders = await this.mealService.getOrdersOfTable(tableId);
-    if (!tableWithOrders) throw new NotFoundResourceException("table");
     if (tableWithOrders.restaurantId != restaurantId)
       throw new ForbiddenException();
     if (tableWithOrders.orders.length == 0)
