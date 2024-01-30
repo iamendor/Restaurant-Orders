@@ -55,6 +55,12 @@ input CreateMeal {
   tableId: Float!
 }
 
+input CreateOpenHour {
+  end: String!
+  name: String!
+  start: String!
+}
+
 input CreateOrder {
   description: String
   isReady: Boolean
@@ -139,6 +145,8 @@ type Mutation {
   createCategories(data: [CreateCategory!]!): Success!
   createCategory(data: CreateCategory!): Category!
   createMeal(data: CreateMeal!): Meal!
+  createOpenHour(data: CreateOpenHour!): OpenHour!
+  createOpenHours(data: [CreateOpenHour!]!): Success!
   createOrder(data: CreateOrder!): Order!
   createOrders(data: [CreateOrder!]!): Success!
   createTable(data: CreateTable!): Table!
@@ -148,6 +156,7 @@ type Mutation {
   createWaiter(data: CreateWaiter!): Waiter!
   deleteCategory(where: WhereCategory!): Success!
   deleteMeal(where: WhereMeal!): Success!
+  deleteOpenHour(where: WhereOpenHour!): Success!
   deleteOrder(where: WhereOrder!): Success!
   deleteRestaurant: Success!
   deleteTable(where: WhereTable!): Success!
@@ -157,6 +166,7 @@ type Mutation {
   loginWaiter(credentials: LoginWaiter!): AuthWaiter!
   signup(data: CreateRestaurant!): Restaurant!
   updateCategory(data: UpdateCategory!): Category!
+  updateOpenHour(data: UpdateOpenHour!): OpenHour!
   updateOrder(data: UpdateOrder!): Order!
   updateRestaurant(update: UpdateRestaurant!): Restaurant!
   updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
@@ -164,6 +174,15 @@ type Mutation {
   updateVictual(data: UpdateVictual!): Victual!
   updateWaiter(data: UpdateWaiter!): Waiter!
   updateWaiterPassword(data: UpdateWaiterPassword!): Success!
+}
+
+type OpenHour {
+  end: String!
+  id: Float!
+  name: String!
+  restaurant: Restaurant
+  restaurantId: Float!
+  start: String!
 }
 
 type Order {
@@ -189,6 +208,7 @@ type Query {
   category(where: WhereCategory!): Category!
   meal(where: WhereMeal!): Meal!
   meals(filter: MealFilter): [Meal!]!
+  openHours: [OpenHour!]!
   order(where: WhereOrder!): Order!
   orders(filter: OrderFilter): [Order!]!
   restaurantInfo: Restaurant!
@@ -209,6 +229,7 @@ type Restaurant {
   id: Float!
   meals: [Meal!]!
   name: String!
+  open: Boolean!
   orders: [Order!]!
   tables: [Table!]!
   victuals: [Victual!]!
@@ -255,6 +276,17 @@ input UpdateCategoryData {
 
 input UpdateCurrency {
   currency: String!
+}
+
+input UpdateOpenHour {
+  update: UpdateOpenHourData!
+  where: WhereOpenHour!
+}
+
+input UpdateOpenHourData {
+  end: String
+  name: String
+  start: String
 }
 
 input UpdateOrder {
@@ -365,6 +397,10 @@ input WhereCategory {
 input WhereMeal {
   id: Float!
   restaurantId: Float
+}
+
+input WhereOpenHour {
+  id: Float!
 }
 
 input WhereOrder {

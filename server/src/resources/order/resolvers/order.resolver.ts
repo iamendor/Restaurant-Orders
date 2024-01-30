@@ -21,6 +21,7 @@ import {
 import { Success } from "../../../models/success.model";
 import { OrderFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
+import { OpenGuard } from "../../openhour/guard/open.guard";
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -31,7 +32,7 @@ export class OrderResolver {
   ) {}
 
   @Mutation(() => Order, { name: "createOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
   async create(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
@@ -47,7 +48,7 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "createOrders" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
   async createMany(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
@@ -69,7 +70,7 @@ export class OrderResolver {
   }
 
   @Mutation(() => Order, { name: "updateOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard, OpenGuard)
   async update(@RID() restaurantId: number, @Args("data") data: UpdateOrder) {
     const updatedOrder = await this.orderService.update(data);
 
@@ -82,7 +83,7 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "deleteOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), OrderGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), OrderGuard, OpenGuard)
   async delete(@RID() restaurantId: number, @Args("where") where: WhereOrder) {
     const deleted = await this.orderService.delete({
       ...where,

@@ -24,7 +24,7 @@ export class RestaurantResolver {
     private readonly securityService: SecurityService
   ) {}
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"), RestaurantGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), RestaurantGuard)
   @Mutation(() => Restaurant, { name: "updateRestaurant" })
   update(
     @GetRestaurant() { id }: Restaurant,

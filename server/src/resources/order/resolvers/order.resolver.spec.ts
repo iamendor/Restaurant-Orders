@@ -13,6 +13,7 @@ import { SubscriptionServiceMock } from "../../../subscription/services/mock/sub
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { CreateOrder } from "../../../models/order.model";
 import { FilterModule } from "../../../filter/filter.module";
+import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -27,7 +28,13 @@ describe("OrderResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [OrderGuardModule, SecurityModule, PrismaModule, FilterModule],
+      imports: [
+        OrderGuardModule,
+        SecurityModule,
+        PrismaModule,
+        FilterModule,
+        OpenGuardModule,
+      ],
       providers: [
         { provide: SubscriptionService, useClass: SubscriptionServiceMock },
         { provide: OrderService, useClass: OrderServiceMock },

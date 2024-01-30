@@ -52,6 +52,9 @@ export class Restaurant {
 
   @Field(() => [Meal])
   meals?: Meal[];
+
+  @Field(() => Boolean, { nullable: true })
+  open?: boolean;
 }
 
 @ObjectType()

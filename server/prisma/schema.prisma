@@ -23,6 +23,7 @@ model Restaurant{
   password String
   address Address?
   currency Currency?
+  openingHours OpeningHour[]
   waiters Waiter[]
   orders Order[]
   victuals Victual[]
@@ -121,4 +122,13 @@ model Meal{
   restaurantId Int
   waiterId Int?
   tableId Int?
+}
+
+model OpeningHour{
+  id Int @unique @id @default(autoincrement())
+  name String 
+  start String
+  end String
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int
 }

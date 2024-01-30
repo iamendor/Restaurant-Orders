@@ -97,6 +97,27 @@ export const getMocks = () => ({
     currencyId: 1,
     restaurantId: 1,
   }),
+  openingHour: () => ({
+    id: 1,
+    restaurantId: 1,
+    start: "08:00:00",
+    end: "21:00:00",
+    name: "Monday",
+  }),
+  openings: () => {
+    const base = { start: "00:00:00", end: "23:59:59" };
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    return days.map((day) => ({ ...base, name: day }));
+  },
 });
 
 export const createRestaurantWithWaiter = async ({
@@ -128,6 +149,11 @@ export const createRestaurantWithWaiter = async ({
       currency: {
         create: {
           ...mocks.restaurant.currency,
+        },
+      },
+      openingHours: {
+        createMany: {
+          data: mocks.openings(),
         },
       },
     },

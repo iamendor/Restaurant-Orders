@@ -16,7 +16,6 @@ import { JwtService } from "@nestjs/jwt";
 import { CoreModule } from "../src/core/core.module";
 import { ConfigService } from "@nestjs/config";
 
-//TODO: fix e2e
 describe("Orders API", () => {
   let app: INestApplication;
   const mutations = getMutations();
@@ -975,6 +974,7 @@ describe("Orders API", () => {
           },
         },
       }).set("Authorization", waiterToken);
+      console.log(body);
       const {
         data: { createMeal },
       } = body;

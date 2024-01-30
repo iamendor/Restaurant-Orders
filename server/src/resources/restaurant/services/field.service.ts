@@ -70,4 +70,27 @@ export class FieldService {
       })
     ).currency;
   }
+
+  async isOpen(restaurantId: number) {
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    const date = new Date();
+
+    const openHour = await this.prismaService.openingHour.findFirst({
+      where: { restaurantId, name: days[date.getDay() - 1] },
+    });
+    if (!openHour) return false;
+    const { start, end } = openHour;
+    const startDate = new Date(`1970-01-01T${start}`);
+    const endDate = new Date(`1970-01-01T${end}`);
+    const checkDate = new Date(`1970-01-01T${date.toLocaleTimeString()}`);
+    return checkDate >= startDate && checkDate <= endDate;
+  }
 }

@@ -52,4 +52,9 @@ export class FieldResolver {
   getCurrency(@Parent() { id }: Restaurant) {
     return this.fieldService.getCurrency(id);
   }
+
+  @ResolveField(() => Boolean, { name: "open" })
+  isOpen(@Parent() { id }: Restaurant) {
+    return this.fieldService.isOpen(id);
+  }
 }

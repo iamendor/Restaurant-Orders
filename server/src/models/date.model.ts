@@ -12,7 +12,6 @@ export class DateScalar implements CustomScalar<number, Date> {
   }
 
   parseLiteral(ast: ASTNode): Date {
-    console.log(ast);
     if (ast.kind) return new Date();
     return null;
   }
