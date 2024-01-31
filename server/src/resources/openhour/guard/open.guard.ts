@@ -2,7 +2,10 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { extractRIdFromContext } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { OpenHourService } from "../services/openhour.service";
-import { SomethingWentWrongException } from "../../../error";
+import {
+  RestaurantClosedException,
+  SomethingWentWrongException,
+} from "../../../error";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 
 @Injectable()
@@ -39,15 +42,13 @@ export class OpenGuardBase implements CanActivate {
     const openHour = (await this.openHourService.list(id)).find(
       (oh) => oh.name == day
     );
-    if (!openHour)
-      throw new SomethingWentWrongException("restaurant is closed");
+    if (!openHour) throw new RestaurantClosedException();
     const isBetween = this.checkBetween(
       this.formatTime(currentDate),
       openHour.start,
       openHour.end
     );
-    if (!isBetween)
-      throw new SomethingWentWrongException("restaurant is closed");
+    if (!isBetween) throw new RestaurantClosedException();
     return true;
   }
 }

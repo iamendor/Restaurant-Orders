@@ -8,6 +8,7 @@ import { GqlExecutionContext } from "@nestjs/graphql";
 import { TableService } from "../services/table.service";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { IdIntercept } from "../../../auth/guards/id.guard";
+import { PermissionDeniedException } from "../../../error";
 
 @Injectable()
 export class TableBaseGuard implements ModelGuard {
@@ -26,7 +27,7 @@ export class TableBaseGuard implements ModelGuard {
       where = args.where;
     }
     const table = await this.tableService.find(where);
-    if (table.restaurantId != id) throw new ForbiddenException();
+    if (table.restaurantId != id) throw new PermissionDeniedException();
     req.table = table;
     return true;
   }

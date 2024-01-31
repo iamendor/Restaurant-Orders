@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  UnauthorizedException,
-  UseGuards,
-} from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
@@ -14,7 +9,11 @@ import { RESTAURANT, WAITER } from "../../../role";
 import { UpdateWaiterGuard } from "../guards/waiter.guard";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { SomethingWentWrongException } from "../../../error";
+import {
+  AuthException,
+  NotSpecifiedException,
+  PermissionDeniedException,
+} from "../../../error";
 import { Waiter as PWaiter } from "@prisma/client";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
@@ -36,7 +35,7 @@ export class WaiterResolver {
     private readonly filterService: FilterService
   ) {}
 
-  @UseGuards(JwtAuthGuard, RoleGuard("restaurant"))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Waiter, { name: "createWaiter" })
   create(@User() restaurant: JwtPayload, @Args("data") data: CreateWaiter) {
     return this.waiterService.create({
@@ -67,15 +66,13 @@ export class WaiterResolver {
   ) {
     const { role, id } = user;
     if (role === RESTAURANT) {
-      if (!data.where)
-        throw new SomethingWentWrongException("no waiter specified");
+      if (!data.where) throw new NotSpecifiedException("waiter");
       return this.waiterService.updatePassword({ ...data });
     }
     const { password } = (await this.waiterService.find({ id })) as PWaiter;
-    if (!data.update.old)
-      throw new HttpException("old password is not provided", 400);
+    if (!data.update.old) throw new NotSpecifiedException("old password");
     if (!this.securityService.compare({ str: data.update.old, hash: password }))
-      throw new UnauthorizedException();
+      throw new AuthException();
 
     return this.waiterService.updatePassword({
       ...data,
@@ -90,7 +87,7 @@ export class WaiterResolver {
     @Args("where") where: WhereWaiter
   ) {
     const { restaurantId } = await this.waiterService.find({ id: where.id });
-    if (restaurantId != restaurant.id) throw new ForbiddenException();
+    if (restaurantId != restaurant.id) throw new PermissionDeniedException();
     return this.waiterService.delete(where);
   }
 
@@ -119,12 +116,12 @@ export class WaiterResolver {
       if (!where) return this.waiterService.find({ id: user.id });
       const waiter = await this.waiterService.find({ ...where });
       if (waiter.restaurantId != user.restaurantId)
-        throw new ForbiddenException();
+        throw new PermissionDeniedException();
       return waiter;
     }
-    if (!where) throw new SomethingWentWrongException("no waiter specified");
+    if (!where) throw new NotSpecifiedException("waiter");
     const waiter = await this.waiterService.find({ ...where });
-    if (waiter.restaurantId != user.id) throw new ForbiddenException();
+    if (waiter.restaurantId != user.id) throw new PermissionDeniedException();
     return waiter;
   }
 }

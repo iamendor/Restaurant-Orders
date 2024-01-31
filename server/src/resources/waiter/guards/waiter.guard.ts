@@ -1,18 +1,12 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  HttpException,
-  Injectable,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { Observable } from "rxjs";
 import { RESTAURANT } from "../../../role";
 import { getReq } from "../../../guard/helper";
+import { NotSpecifiedException } from "../../../error";
 
 @Injectable()
 export class UpdateWaiterGuard implements CanActivate {
-  private WAITER_NOT_PROVIDED = "no waiter specified";
-
   canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -20,8 +14,7 @@ export class UpdateWaiterGuard implements CanActivate {
     const args = ctx.getArgs();
     const { role } = getReq(ctx);
     if (role === RESTAURANT) {
-      if (!args.data.where)
-        throw new HttpException(this.WAITER_NOT_PROVIDED, 400);
+      if (!args.data.where) throw new NotSpecifiedException("waiter");
       return true;
     }
     return true;

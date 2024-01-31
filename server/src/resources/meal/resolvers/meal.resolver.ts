@@ -8,7 +8,11 @@ import {
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
-import { SomethingWentWrongException } from "../../../error";
+import {
+  EmptyTableException,
+  PermissionDeniedException,
+  SomethingWentWrongException,
+} from "../../../error";
 import { RESTAURANT, WAITER } from "../../../role";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
@@ -34,9 +38,8 @@ export class MealResolver {
   ) {
     const tableWithOrders = await this.mealService.getOrdersOfTable(tableId);
     if (tableWithOrders.restaurantId != restaurantId)
-      throw new ForbiddenException();
-    if (tableWithOrders.orders.length == 0)
-      throw new HttpException("no order on table", HttpStatus.BAD_REQUEST);
+      throw new EmptyTableException();
+    if (tableWithOrders.orders.length == 0) throw new EmptyTableException();
     const { sorted, ...formatTable } =
       this.mealService.formatTable(tableWithOrders);
     const meal = this.mealService.create({
@@ -46,7 +49,6 @@ export class MealResolver {
       currencyId: tableWithOrders.restaurant.currency.id,
       orderIds: sorted.map((ord) => ({ id: ord.id })),
     });
-    if (!meal) throw new SomethingWentWrongException();
     await this.mealService.clearTable(tableId);
     return meal;
   }

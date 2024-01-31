@@ -87,7 +87,7 @@ describe("Waiter Resolver", () => {
         await resolver.updatePassword(waiterPayload, {
           update: { password: "error" },
         })
-    ).rejects.toThrowError("old password is not provided");
+    ).rejects.toThrowError("no old password specified");
   });
   it("lists waiters of restaurant", async () => {
     service.list = jest.fn().mockReturnValue([{ id: 1, name: "test" }]);

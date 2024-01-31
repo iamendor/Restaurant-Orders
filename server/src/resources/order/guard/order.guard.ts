@@ -9,6 +9,7 @@ import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { OrderService } from "../services/order.service";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { WAITER } from "../../../role";
+import { PermissionDeniedException } from "../../../error";
 
 @Injectable()
 export class OrderBaseGuard implements ModelGuard {
@@ -32,9 +33,9 @@ export class OrderBaseGuard implements ModelGuard {
       where = args.where;
     }
     const order = await this.orderService.find(where);
-    if (order.restaurantId != id) throw new ForbiddenException();
+    if (order.restaurantId != id) throw new PermissionDeniedException();
     if (role == WAITER && order.waiterId != req.user.id)
-      throw new ForbiddenException();
+      throw new PermissionDeniedException();
     req.order = order;
     return true;
   }

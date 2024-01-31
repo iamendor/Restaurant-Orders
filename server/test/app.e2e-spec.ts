@@ -97,12 +97,10 @@ describe("Orders API", () => {
           errors: [error],
         } = body;
         const {
-          extensions: {
-            response: { statusCode },
-          },
+          extensions: { code },
         } = error;
 
-        expect(statusCode).toEqual(401);
+        expect(code).toEqual(401);
         expect(body.data).toBeNull();
       });
     });
@@ -344,7 +342,7 @@ describe("Orders API", () => {
       }).set("Authorization", waiterToken);
       const { errors } = body;
       expect(errors.length).toEqual(1);
-      expect(errors[0].message).toBe("old password is not provided");
+      expect(errors[0].message).toBe("no old password specified");
     });
 
     it("updates waiter password as restaurant", async () => {
@@ -396,7 +394,7 @@ describe("Orders API", () => {
       const {
         errors: [error],
       } = body;
-      expect(error.message).toBe("something went wrong");
+      expect(error.message).toBe("no waiter specified");
     });
 
     it("returns waiter info", async () => {
@@ -974,7 +972,6 @@ describe("Orders API", () => {
           },
         },
       }).set("Authorization", waiterToken);
-      console.log(body);
       const {
         data: { createMeal },
       } = body;

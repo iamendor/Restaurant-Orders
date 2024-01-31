@@ -20,6 +20,7 @@ import {
 import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { VictualFilter } from "../../../models/filter.model";
+import { PermissionDeniedException } from "../../../error";
 
 export interface VerifyCategory {
   restaurantId: number;
@@ -36,7 +37,8 @@ export class VictualResolver {
 
   private async checkCategory({ restaurantId, categoryId }: VerifyCategory) {
     const category = await this.categoryService.find({ id: categoryId });
-    if (category.restaurantId != restaurantId) throw new ForbiddenException();
+    if (category.restaurantId != restaurantId)
+      throw new PermissionDeniedException();
     return true;
   }
 

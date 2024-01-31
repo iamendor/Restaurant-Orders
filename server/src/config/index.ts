@@ -11,13 +11,8 @@ export class Config {
       sortSchema: true,
       playground: config.get("GRAPHQL_PLAYGROUND") || false,
       installSubscriptionHandlers: true,
-      formatError: (err) => {
-        console.log(err);
-        return {
-          message: err.message,
-          status: err.extensions.exception.code,
-        };
-      },
+      includeStacktraceInErrorResponses: false,
+
       subscriptions: {
         "graphql-ws": true,
         "subscriptions-transport-ws": {

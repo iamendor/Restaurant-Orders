@@ -49,9 +49,7 @@ describe("WaiterService", () => {
   });
 
   it("should list all waiter of restaurant", async () => {
-    prisma.restaurant.findUniqueOrThrow = jest
-      .fn()
-      .mockReturnValue({ waiters: [mockWaiter] });
+    prisma.waiter.findMany = jest.fn().mockReturnValue([mockWaiter]);
 
     const waiters = await service.list({ id: 1 });
     expect(waiters.length).toEqual(1);

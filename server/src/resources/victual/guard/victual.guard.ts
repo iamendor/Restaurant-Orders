@@ -8,6 +8,7 @@ import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { VictualService } from "../services/victual.service";
 import { IdIntercept } from "../../../auth/guards/id.guard";
+import { PermissionDeniedException } from "../../../error";
 
 @Injectable()
 export class VictualBaseGuard implements ModelGuard {
@@ -26,7 +27,7 @@ export class VictualBaseGuard implements ModelGuard {
       where = args.where;
     }
     const victual = await this.victualService.find(where);
-    if (victual.restaurantId != id) throw new ForbiddenException();
+    if (victual.restaurantId != id) throw new PermissionDeniedException();
     req.victual = victual;
     return true;
   }

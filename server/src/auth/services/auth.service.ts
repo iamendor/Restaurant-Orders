@@ -12,6 +12,7 @@ import {
   Restaurant,
 } from "../../models/restaurant.model";
 import { LoginWaiter, AuthWaiter, Waiter } from "../../models/waiter.model";
+import { AuthException } from "../../error";
 
 @Injectable()
 export class AuthService {
@@ -68,7 +69,7 @@ export class AuthService {
 
   async loginWaiter(credentials: LoginWaiter): Promise<AuthWaiter> {
     const waiterValid = await this.validateWaiter(credentials);
-    if (!waiterValid) throw new UnauthorizedException();
+    if (!waiterValid) throw new AuthException();
     return {
       waiter: waiterValid,
       access_token: this.generateWaiterJwt(waiterValid),
@@ -78,7 +79,7 @@ export class AuthService {
   async loginRestaurant(credentials: LoginRestaurant): Promise<AuthRestaurant> {
     const restaurantValid = await this.validateRestaurant(credentials);
     if (!restaurantValid) {
-      throw new UnauthorizedException();
+      throw new AuthException();
     }
     return {
       restaurant: restaurantValid,

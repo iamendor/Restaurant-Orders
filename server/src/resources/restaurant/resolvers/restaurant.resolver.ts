@@ -16,7 +16,6 @@ import {
   UpdateRestaurantPassword,
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
-import { SomethingWentWrongException } from "../../../error";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {

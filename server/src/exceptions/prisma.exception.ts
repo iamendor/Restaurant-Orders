@@ -1,14 +1,14 @@
-import { ArgumentsHost, Catch, NotFoundException } from "@nestjs/common";
+import { ArgumentsHost, Catch } from "@nestjs/common";
 import { GqlExceptionFilter } from "@nestjs/graphql";
 import { Prisma } from "@prisma/client";
-import { SomethingWentWrongException } from "../error";
+import { NotFoundException, UniqueFieldFailedException } from "../error";
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientException implements GqlExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     switch (exception.code) {
       case "P2002":
-        throw new SomethingWentWrongException("unique field failed");
+        throw new UniqueFieldFailedException();
       case "P2001":
       case "P2015":
       case "P2018":

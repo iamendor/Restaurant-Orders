@@ -62,7 +62,7 @@ export class OrderResolver {
       isReady: order.isReady || false,
     }));
 
-    const orders = await this.orderService.createMany(ordersData);
+    await this.orderService.createMany(ordersData);
 
     this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
 

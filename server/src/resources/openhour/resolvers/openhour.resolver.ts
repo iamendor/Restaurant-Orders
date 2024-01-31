@@ -15,6 +15,7 @@ import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IdIntercept } from "../../../auth/guards/id.guard";
+import { PermissionDeniedException } from "../../../error";
 
 @Resolver((of) => OpenHour)
 export class OpenHourResolver {
@@ -43,7 +44,7 @@ export class OpenHourResolver {
     @User() { id }: JwtPayload
   ) {
     const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new ForbiddenException();
+    if (openHour.restaurantId != id) throw new PermissionDeniedException();
 
     const updated = await this.openHourService.update({ where, update });
     return updated;
