@@ -95,8 +95,12 @@ model Category{
   id Int @unique @id @default(autoincrement())
   name String
   victuals Victual[]
+  parent Category? @relation("ParentToCategory", fields: [parentId], references: [id], onDelete: SetNull)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
+  parentId Int?
+  root Boolean @default(true)
+  subCategories Category[] @relation("ParentToCategory")
 }
 model Table{
   id Int @unique @id @default(autoincrement())

@@ -401,7 +401,6 @@ describe("Orders API", () => {
       const { body } = await req(server, {
         query: queries.waiter.info(),
       }).set("Authorization", waiterToken);
-
       const {
         data: { waiterInfo },
       } = body;

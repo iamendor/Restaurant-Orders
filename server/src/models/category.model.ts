@@ -14,10 +14,18 @@ export class Category {
   id: number;
   @Field()
   name: string;
+  @Field()
+  root: boolean;
   @Field(() => [Victual])
   victuals?: Victual[];
   @Field(() => Restaurant)
   restaurant?: Restaurant;
+  @Field(() => [Category], { nullable: true })
+  subs?: Category[];
+  @Field(() => Category, { nullable: true })
+  parent?: Category;
+  @Field({ nullable: true })
+  parentId?: number;
   @Field()
   restaurantId: number;
 }
@@ -26,6 +34,8 @@ export class Category {
 export class CreateCategory {
   @Field()
   name: string;
+  @Field({ nullable: true })
+  parentId?: number;
 }
 @InputType()
 export class CreateCategoryData extends CreateCategory {
@@ -38,7 +48,10 @@ export class WhereCategory extends PickType(
   Category,
   ["id"] as const,
   InputType
-) {}
+) {
+  @Field({ nullable: true })
+  root?: boolean;
+}
 
 @InputType()
 export class UpdateCategoryData extends PartialType(CreateCategory) {}

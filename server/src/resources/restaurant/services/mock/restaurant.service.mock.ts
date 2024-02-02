@@ -28,6 +28,14 @@ export class RestaurantServiceMock {
       password: this.securityService.hash(this.restaurant.password),
     };
   }
+
+  findByEmail(where) {
+    return {
+      ...mockRestaurant,
+      ...where,
+      password: this.securityService.hash(this.restaurant.password),
+    };
+  }
   delete() {
     return { message: this.SUCCESS };
   }

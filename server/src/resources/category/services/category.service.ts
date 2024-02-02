@@ -13,7 +13,7 @@ export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateCategoryData): Promise<Category> {
-    const { restaurantId, ...rest } = data;
+    const { restaurantId, parentId, ...rest } = data;
     const category = await this.prismaService.category.create({
       data: {
         ...rest,
@@ -22,6 +22,10 @@ export class CategoryService {
             id: restaurantId,
           },
         },
+        parent: parentId && {
+          connect: { id: parentId },
+        },
+        root: !parentId,
       },
     });
     return category;
@@ -65,7 +69,7 @@ export class CategoryService {
     });
     return category;
   }
-
+  //TODO: add implementation for recursive tree
   async list(restaurantId: number): Promise<Category[]> {
     const categories = await this.prismaService.category.findMany({
       where: {

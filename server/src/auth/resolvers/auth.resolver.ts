@@ -8,7 +8,6 @@ import {
   LoginRestaurant,
 } from "../../models/restaurant.model";
 import { AuthWaiter, LoginWaiter } from "../../models/waiter.model";
-import { InternalServerErrorException } from "@nestjs/common";
 
 @Resolver("Auth")
 export class AuthResolver {
@@ -22,7 +21,6 @@ export class AuthResolver {
     @Args("data", { type: () => CreateRestaurant })
     data: CreateRestaurant
   ) {
-    throw new Error("ok");
     return this.restaurantService.create({
       ...data,
     });

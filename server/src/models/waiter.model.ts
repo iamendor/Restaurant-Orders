@@ -78,14 +78,28 @@ export class WhereWaiter extends PartialType(
 ) {}
 
 @InputType()
+export class WhereWaiterId extends PickType(
+  Waiter,
+  ["id"] as const,
+  InputType
+) {}
+
+@InputType()
+export class WhereWaiterEmail extends PickType(
+  Waiter,
+  ["email"] as const,
+  InputType
+) {}
+
+@InputType()
 export class UpdateWaiterData extends PartialType(
   OmitType(CreateWaiter, ["password"] as const)
 ) {}
 
 @InputType()
 export class UpdateWaiter {
-  @Field(() => WhereWaiter, { nullable: true })
-  where?: WhereWaiter;
+  @Field(() => WhereWaiterId, { nullable: true })
+  where?: WhereWaiterId;
   @Field(() => UpdateWaiterData)
   update: UpdateWaiterData;
 }
@@ -100,8 +114,8 @@ export class UpdateWaiterPasswordData {
 
 @InputType()
 export class UpdateWaiterPassword {
-  @Field(() => WhereWaiter, { nullable: true })
-  where?: WhereWaiter;
+  @Field(() => WhereWaiterId, { nullable: true })
+  where?: WhereWaiterId;
   @Field(() => UpdateWaiterPasswordData)
   update: UpdateWaiterPasswordData;
 }

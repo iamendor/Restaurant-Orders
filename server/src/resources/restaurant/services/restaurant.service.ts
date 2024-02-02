@@ -7,8 +7,9 @@ import {
   CreateRestaurant,
   UpdateRestaurantPasswordData,
   UpdateRestaurantData,
-  WhereRestaurant,
   Restaurant,
+  WhereRestaurantId,
+  WhereRestaurantEmail,
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
 
@@ -66,7 +67,7 @@ export class RestaurantService {
     return restaurant;
   }
 
-  async delete(where: WhereRestaurant): Promise<Success> {
+  async delete(where: WhereRestaurantId): Promise<Success> {
     await this.prismaService.restaurant.delete({
       where,
     });
@@ -75,7 +76,14 @@ export class RestaurantService {
     };
   }
 
-  async find(where: WhereRestaurant): Promise<PRestaurant> {
+  async find(where: WhereRestaurantId): Promise<PRestaurant> {
+    const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
+      where,
+    });
+    return restaurant;
+  }
+
+  async findByEmail(where: WhereRestaurantEmail): Promise<PRestaurant> {
     const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
       where,
     });

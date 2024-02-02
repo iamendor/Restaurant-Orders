@@ -4,6 +4,10 @@ import { Field, InputType } from "@nestjs/graphql";
 export class CategoryFilter {
   @Field({ nullable: true })
   name?: string;
+  @Field({ nullable: true })
+  maxLength?: number;
+  @Field({ nullable: true })
+  root?: boolean;
 }
 @InputType()
 export class MealFilter {
@@ -15,6 +19,8 @@ export class MealFilter {
   minPrice?: number;
   @Field({ nullable: true })
   maxPrice?: number;
+  @Field({ nullable: true })
+  maxLength?: number;
 }
 
 @InputType()
@@ -27,6 +33,8 @@ export class OrderFilter {
   max?: Date;
   @Field({ nullable: true })
   isReady?: boolean;
+  @Field({ nullable: true })
+  maxLength?: number;
 }
 
 @InputType()
@@ -37,6 +45,8 @@ export class VictualFilter {
   min?: number;
   @Field({ nullable: true })
   max?: number;
+  @Field({ nullable: true })
+  maxLength?: number;
 }
 
 @InputType()
@@ -47,10 +57,14 @@ export class WaiterFilter {
   email?: string;
   @Field({ nullable: true })
   gender?: string;
+  @Field({ nullable: true })
+  maxLength?: number;
 }
 
 @InputType()
 export class TableFilter {
   @Field({ nullable: true })
   name?: string;
+  @Field({ nullable: true })
+  maxLength?: number;
 }

@@ -35,15 +35,6 @@ interface IFilter<T> {
     | MealFilter;
 }
 
-type IFilterData = IFilter<Waiter | Victual | Category | Order | Meal>;
-type IFilterRules =
-  | IWaiterFilter
-  | IVictualFilter
-  | ICategoryFilter
-  | IOrderFilter
-  | IMealFilter
-  | ITableFilter;
-
 @Injectable()
 export class FilterService {
   private wRules: IWaiterFilter;
@@ -61,7 +52,7 @@ export class FilterService {
     this.mRules = MealRules();
     this.tRules = TableRules();
   }
-  private filter({ data, filters }: IFilterData, rules: IFilterRules) {
+  private filter({ data, filters }, rules) {
     let filtered = data;
     const filterKeys = Object.keys(filters);
     for (let i = 0; i < filterKeys.length; i++) {

@@ -22,6 +22,7 @@ import {
   UpdateWaiter,
   WhereWaiter,
   UpdateWaiterPassword,
+  WhereWaiterId,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
@@ -48,10 +49,8 @@ export class WaiterResolver {
   @Mutation(() => Waiter, { name: "updateWaiter" })
   update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
-    const where: WhereWaiter =
-      role === WAITER
-        ? { id: user.id }
-        : { ...data.where, restaurantId: user.id };
+    const where: WhereWaiterId =
+      role === WAITER ? { id: user.id } : { ...data.where };
     return this.waiterService.update({
       ...data,
       where,
@@ -110,7 +109,7 @@ export class WaiterResolver {
   @Query(() => Waiter, { name: "waiterInfo" })
   async info(
     @User() user: JwtPayload,
-    @Args("where", { nullable: true }) where?: WhereWaiter
+    @Args("where", { nullable: true }) where?: WhereWaiterId
   ) {
     if (user.role === WAITER) {
       if (!where) return this.waiterService.find({ id: user.id });

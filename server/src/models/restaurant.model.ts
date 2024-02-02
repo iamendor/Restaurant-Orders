@@ -91,6 +91,20 @@ export class WhereRestaurant extends PartialType(
 ) {}
 
 @InputType()
+export class WhereRestaurantId extends PickType(
+  Restaurant,
+  ["id"] as const,
+  InputType
+) {}
+
+@InputType()
+export class WhereRestaurantEmail extends PickType(
+  Restaurant,
+  ["email"] as const,
+  InputType
+) {}
+
+@InputType()
 export class UpdateRestaurant extends PartialType(
   PickType(Restaurant, ["name", "email"] as const, InputType)
 ) {
@@ -102,8 +116,8 @@ export class UpdateRestaurant extends PartialType(
 
 @InputType()
 export class UpdateRestaurantData {
-  @Field(() => WhereRestaurant)
-  where: WhereRestaurant;
+  @Field(() => WhereRestaurantId)
+  where: WhereRestaurantId;
   @Field(() => UpdateRestaurant)
   update: UpdateRestaurant;
 }
@@ -118,8 +132,8 @@ export class UpdateRestaurantPassword {
 
 @InputType()
 export class UpdateRestaurantPasswordData {
-  @Field(() => WhereRestaurant)
-  where: WhereRestaurant;
+  @Field(() => WhereRestaurantId)
+  where: WhereRestaurantId;
   @Field(() => UpdateRestaurantPassword)
   update: UpdateRestaurantPassword;
 }

@@ -24,7 +24,7 @@ export class AuthService {
   ) {}
 
   async validateRestaurant(credentials: LoginRestaurant) {
-    const restaurant = await this.restaurantService.find({
+    const restaurant = await this.restaurantService.findByEmail({
       email: credentials.email,
     });
     return this.securityService.compare({
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async validateWaiter(credentials: LoginWaiter) {
-    const waiter = (await this.waiterService.find({
+    const waiter = (await this.waiterService.findByEmail({
       email: credentials.email,
     })) as PWaiter;
 

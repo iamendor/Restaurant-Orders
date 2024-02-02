@@ -9,6 +9,8 @@ import {
   UpdateWaiter,
   WhereWaiter,
   Waiter,
+  WhereWaiterId,
+  WhereWaiterEmail,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
 
@@ -69,7 +71,14 @@ export class WaiterService {
     };
   }
 
-  async find(where: WhereWaiter): Promise<Waiter> {
+  async find(where: WhereWaiterId): Promise<Waiter> {
+    const waiter = await this.prismaService.waiter.findUniqueOrThrow({
+      where,
+    });
+    return waiter;
+  }
+
+  async findByEmail(where: WhereWaiterEmail) {
     const waiter = await this.prismaService.waiter.findUniqueOrThrow({
       where,
     });

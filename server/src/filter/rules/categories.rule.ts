@@ -10,7 +10,17 @@ export class SearchName extends RuleBuilder implements Rule<Category, string> {
   }
 }
 
+export class Root extends RuleBuilder implements Rule<Category, boolean> {
+  filterFn(check: boolean) {
+    return (category: Category) => {
+      if (check) return category.root;
+      return true;
+    };
+  }
+}
+
 export const CategoryRules = (): ICategoryFilter => ({
   name: new SearchName(),
   maxLength: new MaxLength(),
+  root: new Root(),
 });

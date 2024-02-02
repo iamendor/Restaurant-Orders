@@ -30,6 +30,12 @@ export class WaiterServiceMock {
       ...where,
     };
   }
+  findByEmail(where) {
+    return {
+      ...this.waiter,
+      ...where,
+    };
+  }
   list() {
     return [this.waiter];
   }
