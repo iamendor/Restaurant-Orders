@@ -14,6 +14,8 @@ import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { CreateOrder } from "../../../models/order.model";
 import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -39,6 +41,7 @@ describe("OrderResolver", () => {
         { provide: SubscriptionService, useClass: SubscriptionServiceMock },
         { provide: OrderService, useClass: OrderServiceMock },
         { provide: WaiterService, useClass: WaiterServiceMock },
+        {provide: CacheService, useClass: CacheServiceMock},
         OrderResolver,
       ],
     }).compile();

@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { OrderService } from "../services/order.service";
-import { UseGuards } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
@@ -22,14 +22,21 @@ import { Success } from "../../../models/success.model";
 import { OrderFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
+import { CacheService } from "../../../cache/services/cache.service";
 
 @Resolver((of) => Order)
 export class OrderResolver {
+  logger: Logger = new Logger()
   constructor(
     private readonly orderService: OrderService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly filterService: FilterService
+    private readonly filterService: FilterService,
+    private readonly cacheService: CacheService
   ) {}
+
+  private cachePrefix(restaurantId: number){
+    return `orders:${restaurantId}`
+  }
 
   @Mutation(() => Order, { name: "createOrder" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
@@ -43,7 +50,11 @@ export class OrderResolver {
       restaurantId,
       waiterId: id,
     });
+
+    this.cacheService.del(this.cachePrefix(restaurantId))
+
     this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
+
     return order;
   }
 
@@ -64,6 +75,8 @@ export class OrderResolver {
 
     await this.orderService.createMany(ordersData);
 
+    this.cacheService.del(this.cachePrefix(restaurantId))
+
     this.subscriptionService.invalidateOrders({ restaurantId }, pubSub);
 
     return { message: "success" };
@@ -73,6 +86,8 @@ export class OrderResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard, OpenGuard)
   async update(@RID() restaurantId: number, @Args("data") data: UpdateOrder) {
     const updatedOrder = await this.orderService.update(data);
+
+    this.cacheService.del(this.cachePrefix(restaurantId))
 
     this.subscriptionService.invalidateOrders(
       { restaurantId, orderId: updatedOrder.id },
@@ -88,6 +103,8 @@ export class OrderResolver {
     const deleted = await this.orderService.delete({
       ...where,
     });
+    
+    this.cacheService.del(this.cachePrefix(restaurantId))
 
     this.subscriptionService.invalidateOrders(
       { restaurantId, orderId: where.id },
@@ -104,7 +121,13 @@ export class OrderResolver {
     @Args("filter", { nullable: true, type: () => OrderFilter })
     filters?: OrderFilter
   ) {
+    const cached = await this.cacheService.get({key: this.cachePrefix(restaurantId), json: true})
+    if(cached) return cached;
+    
     const orders = await this.orderService.list(restaurantId);
+
+    this.cacheService.set({key: this.cachePrefix(restaurantId), value: JSON.stringify(orders)})
+
     if (filters) return this.filterService.orders({ data: orders, filters });
     return orders;
   }

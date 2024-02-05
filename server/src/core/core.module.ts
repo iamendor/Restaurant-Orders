@@ -6,6 +6,8 @@ import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { DateScalar } from "../models/date.model";
 import { PrismaModule } from "../prisma/prisma.module";
+import { CacheModule as CachingModule } from "@nestjs/cache-manager";
+import {CacheModule} from "../cache/cache.module"
 
 @Global()
 @Module({
@@ -13,6 +15,7 @@ import { PrismaModule } from "../prisma/prisma.module";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    CachingModule.register({isGlobal: true}),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: Config.getJwtConfig,
@@ -22,7 +25,7 @@ import { PrismaModule } from "../prisma/prisma.module";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
-    PrismaModule
+    PrismaModule,
   ],
   providers: [DateScalar],
   exports: [JwtModule, GraphQLModule, ConfigModule],

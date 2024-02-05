@@ -6,6 +6,7 @@ import { FieldResolver } from "./field.resolver";
 import { SubscriptionModule } from "../../../subscription/subscription.module";
 import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
+import { CacheModule } from "../../../cache/cache.module";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
     OrderGuardModule,
     FilterModule,
     OpenGuardModule,
+    CacheModule
   ],
   providers: [OrderResolver, FieldResolver],
 })
