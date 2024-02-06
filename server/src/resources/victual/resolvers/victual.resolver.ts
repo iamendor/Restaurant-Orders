@@ -21,6 +21,7 @@ import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { VictualFilter } from "../../../models/filter.model";
 import { PermissionDeniedException } from "../../../error";
+import { CacheService } from "../../../cache/services/cache.service";
 
 export interface VerifyCategory {
   restaurantId: number;
@@ -32,7 +33,8 @@ export class VictualResolver {
   constructor(
     private readonly victualService: VictualService,
     private readonly categoryService: CategoryService,
-    private readonly filterService: FilterService
+    private readonly filterService: FilterService,
+    private readonly cacheService: CacheService
   ) {}
 
   private async checkCategory({ restaurantId, categoryId }: VerifyCategory) {
@@ -42,15 +44,28 @@ export class VictualResolver {
     return true;
   }
 
+  private cachePrefix(restaurantId) {
+    return `victuals:${restaurantId}`;
+  }
+
+  private clearCache(restaurantId: number) {
+    this.cacheService.del(this.cachePrefix(restaurantId));
+  }
+
   @Mutation(() => Victual, { name: "createVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@User() { id }: JwtPayload, @Args("data") data: CreateVictual) {
     const { categoryId } = data;
     await this.checkCategory({ restaurantId: id, categoryId });
-    return this.victualService.create({
+
+    const victual = await this.victualService.create({
       ...data,
       restaurantId: id,
     });
+
+    this.clearCache(id);
+
+    return victual;
   }
 
   @Mutation(() => Success, { name: "createVictuals" })
@@ -60,6 +75,7 @@ export class VictualResolver {
     @Args("data", { type: () => [CreateVictual] }) data: CreateVictual[]
   ) {
     const categories = [...new Set(data.map((v) => v.categoryId))];
+
     for (let i = 0; i < categories.length; i++) {
       const catId = categories[i];
       await this.checkCategory({
@@ -67,21 +83,34 @@ export class VictualResolver {
         restaurantId: id,
       });
     }
-    return this.victualService.createMany(
+
+    const victuals = await this.victualService.createMany(
       data.map((meal) => ({ ...meal, restaurantId: id }))
     );
+
+    this.clearCache(id);
+
+    return victuals;
   }
   //Victual Guard
   @Mutation(() => Victual, { name: "updateVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
-  update(@Args("data") data: UpdateVictual) {
-    return this.victualService.update(data);
+  async update(@Args("data") data: UpdateVictual, @User() { id }: JwtPayload) {
+    const updated = await this.victualService.update(data);
+
+    this.cacheService.del(this.cachePrefix(id));
+
+    return updated;
   }
 
   @Mutation(() => Success, { name: "deleteVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
-  delete(@Args("where") where: WhereVictual) {
-    return this.victualService.delete(where);
+  async delete(@Args("where") where: WhereVictual, @User() { id }: JwtPayload) {
+    const deleted = await this.victualService.delete(where);
+
+    this.clearCache(id);
+
+    return deleted;
   }
 
   @Query(() => [Victual], { name: "victuals" })
@@ -91,7 +120,24 @@ export class VictualResolver {
     @Args("filter", { nullable: true, type: () => VictualFilter })
     filters?: VictualFilter
   ) {
+    const cached = await this.cacheService.get({
+      key: this.cachePrefix(id),
+      json: true,
+    });
+
+    if (cached) {
+      if (filters) return this.filterService.victual({ data: cached, filters });
+      return cached;
+    }
+
     const victuals = await this.victualService.list(id);
+
+    this.cacheService.set({
+      key: this.cachePrefix(id),
+      value: JSON.stringify(victuals),
+      ttl: 120_000,
+    });
+
     if (filters) return this.filterService.victual({ data: victuals, filters });
     return victuals;
   }

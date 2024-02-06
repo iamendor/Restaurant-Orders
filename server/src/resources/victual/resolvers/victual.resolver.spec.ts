@@ -10,6 +10,8 @@ import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceMock } from "../../category/services/mock/category.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
@@ -30,6 +32,7 @@ describe("MealResolver", () => {
       imports: [PrismaModule, VictualGuardModule, FilterModule],
       providers: [
         VictualResolver,
+        { provide: CacheService, useClass: CacheServiceMock },
         { provide: VictualService, useClass: VictualServiceMock },
         { provide: CategoryService, useClass: CategoryServiceMock },
       ],
@@ -59,18 +62,21 @@ describe("MealResolver", () => {
     expect(meals.message).toBe(SUCCESS);
   });
   it("updates the meal's price", async () => {
-    const updatedMeal = await resolver.update({
-      where: {
-        id: mealId,
+    const updatedMeal = await resolver.update(
+      {
+        where: {
+          id: mealId,
+        },
+        update: {
+          price: 2.0,
+        },
       },
-      update: {
-        price: 2.0,
-      },
-    });
+      Rpayload
+    );
     expect(updatedMeal.price).toEqual(2.0);
   });
   it("deletes the meal", async () => {
-    const deleted = await resolver.delete({ id: mealId });
+    const deleted = await resolver.delete({ id: mealId }, Rpayload);
     expect(deleted.message).toBe(SUCCESS);
   });
   describe("List and find as restaurant", () => {

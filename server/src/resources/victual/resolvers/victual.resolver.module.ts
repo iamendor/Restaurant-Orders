@@ -5,6 +5,7 @@ import { VictualServiceModule } from "../services/victual.service.module";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
 import { VictualGuardModule } from "../guard/victual.guard.module";
 import { FilterModule } from "../../../filter/filter.module";
+import { CacheModule } from "../../../cache/cache.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { FilterModule } from "../../../filter/filter.module";
     CategoryServiceModule,
     VictualGuardModule,
     FilterModule,
+    CacheModule,
   ],
   providers: [FieldResolver, VictualResolver],
 })

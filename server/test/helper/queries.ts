@@ -39,7 +39,7 @@ export const getQueries = () => ({
   },
   waiter: {
     info: () => `
-      query info($where: WhereWaiterId){
+      query info($where: WhereWaiter){
         waiterInfo(where: $where){
           id
           name

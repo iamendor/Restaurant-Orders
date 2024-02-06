@@ -37,6 +37,9 @@ export class OrderResolver {
   private cachePrefix(restaurantId: number) {
     return `orders:${restaurantId}`;
   }
+  private clearCache(restaurantId: number) {
+    this.cacheService.del(this.cachePrefix(restaurantId));
+  }
   private UPDATE = "UPDATE";
   private CREATE = "CREATE";
   private DELETE = "DELETE";
@@ -54,7 +57,7 @@ export class OrderResolver {
       waiterId: id,
     });
 
-    this.cacheService.del(this.cachePrefix(restaurantId));
+    this.clearCache(restaurantId);
 
     this.logger.log(order);
     this.subscriptionService.invalidateOrders(restaurantId, {
@@ -80,7 +83,7 @@ export class OrderResolver {
 
     await this.orderService.createMany(ordersData);
 
-    this.cacheService.del(this.cachePrefix(restaurantId));
+    this.clearCache(restaurantId);
 
     const orders = await this.orderService.listLatest({
       restaurantId,
@@ -99,7 +102,7 @@ export class OrderResolver {
   async update(@RID() restaurantId: number, @Args("data") data: UpdateOrder) {
     const updatedOrder = await this.orderService.update(data);
 
-    this.cacheService.del(this.cachePrefix(restaurantId));
+    this.clearCache(restaurantId);
 
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...updatedOrder,
@@ -120,7 +123,7 @@ export class OrderResolver {
       ...where,
     });
 
-    this.cacheService.del(this.cachePrefix(restaurantId));
+    this.clearCache(restaurantId);
 
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
@@ -141,7 +144,11 @@ export class OrderResolver {
       key: this.cachePrefix(restaurantId),
       json: true,
     });
-    if (cached) return cached;
+
+    if (cached) {
+      if (filters) return this.filterService.orders({ data: cached, filters });
+      return cached;
+    }
 
     const orders = await this.orderService.list(restaurantId);
 
