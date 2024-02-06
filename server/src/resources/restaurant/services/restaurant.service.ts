@@ -1,15 +1,14 @@
 import { Injectable } from "@nestjs/common";
 
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { Restaurant as PRestaurant } from "@prisma/client";
+import { Restaurant as PRestaurant, Prisma } from "@prisma/client";
 import { SecurityService } from "../../../security/services/security.service";
 import {
   CreateRestaurant,
   UpdateRestaurantPasswordData,
   UpdateRestaurantData,
   Restaurant,
-  WhereRestaurantId,
-  WhereRestaurantEmail,
+  WhereRestaurant,
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
 
@@ -41,7 +40,7 @@ export class RestaurantService {
   }: UpdateRestaurantPasswordData): Promise<Success> {
     const encrypted = this.securityService.hash(update.password);
     await this.prismaService.restaurant.update({
-      where,
+      where: where as Prisma.RestaurantWhereUniqueInput,
       data: {
         password: encrypted,
       },
@@ -51,41 +50,34 @@ export class RestaurantService {
     };
   }
 
-  async update(data: UpdateRestaurantData): Promise<Restaurant> {
+  async update({ where, update }: UpdateRestaurantData): Promise<Restaurant> {
     const restaurant = await this.prismaService.restaurant.update({
-      where: data.where,
+      where: where as Prisma.RestaurantWhereUniqueInput,
       data: {
-        ...data.update,
+        ...update,
         address: {
-          update: data.update.address && data.update.address,
+          update: update.address && update.address,
         },
         currency: {
-          update: data.update.currency && data.update.currency,
+          update: update.currency && update.currency,
         },
       },
     });
     return restaurant;
   }
 
-  async delete(where: WhereRestaurantId): Promise<Success> {
+  async delete(where: WhereRestaurant): Promise<Success> {
     await this.prismaService.restaurant.delete({
-      where,
+      where: where as Prisma.RestaurantWhereUniqueInput,
     });
     return {
       message: "success",
     };
   }
 
-  async find(where: WhereRestaurantId): Promise<PRestaurant> {
+  async find(where: WhereRestaurant): Promise<PRestaurant> {
     const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
-      where,
-    });
-    return restaurant;
-  }
-
-  async findByEmail(where: WhereRestaurantEmail): Promise<PRestaurant> {
-    const restaurant = await this.prismaService.restaurant.findUniqueOrThrow({
-      where,
+      where: where as Prisma.RestaurantWhereUniqueInput,
     });
     return restaurant;
   }

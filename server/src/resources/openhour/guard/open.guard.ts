@@ -2,10 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { extractRIdFromContext } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { OpenHourService } from "../services/openhour.service";
-import {
-  RestaurantClosedException,
-  SomethingWentWrongException,
-} from "../../../error";
+import { RestaurantClosedException } from "../../../error";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 
 @Injectable()
@@ -24,7 +21,7 @@ export class OpenGuardBase implements CanActivate {
     return days[num - 1];
   }
   private formatTime(date: Date) {
-    return date.toLocaleTimeString();
+    return date.toTimeString().slice(0, 8);
   }
 
   private checkBetween(check, start, end) {

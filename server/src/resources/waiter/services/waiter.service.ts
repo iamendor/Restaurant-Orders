@@ -9,10 +9,9 @@ import {
   UpdateWaiter,
   WhereWaiter,
   Waiter,
-  WhereWaiterId,
-  WhereWaiterEmail,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class WaiterService {
@@ -21,17 +20,17 @@ export class WaiterService {
     private readonly securityService: SecurityService
   ) {}
 
-  async create(data: CreateWaiterData): Promise<Waiter> {
-    const waiter = await this.prismaService.waiter.create({
+  async create(waiter: CreateWaiterData): Promise<Waiter> {
+    const waiterCreated = await this.prismaService.waiter.create({
       data: {
-        ...data.data,
-        password: this.securityService.hash(data.data.password),
+        ...waiter.data,
+        password: this.securityService.hash(waiter.data.password),
         restaurant: {
-          connect: { id: data.restaurantId },
+          connect: { id: waiter.restaurantId },
         },
       },
     });
-    return waiter;
+    return waiterCreated;
   }
 
   async updatePassword({
@@ -39,7 +38,7 @@ export class WaiterService {
     update,
   }: UpdateWaiterPassword): Promise<Success> {
     await this.prismaService.waiter.update({
-      where,
+      where: where as Prisma.WaiterWhereUniqueInput,
       data: {
         password: this.securityService.hash(update.password),
       },
@@ -71,16 +70,9 @@ export class WaiterService {
     };
   }
 
-  async find(where: WhereWaiterId): Promise<Waiter> {
+  async find(where: WhereWaiter): Promise<Waiter> {
     const waiter = await this.prismaService.waiter.findUniqueOrThrow({
-      where,
-    });
-    return waiter;
-  }
-
-  async findByEmail(where: WhereWaiterEmail) {
-    const waiter = await this.prismaService.waiter.findUniqueOrThrow({
-      where,
+      where: where as Prisma.WaiterWhereUniqueInput,
     });
     return waiter;
   }

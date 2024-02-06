@@ -118,6 +118,18 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type ListenOrder {
+  action: String
+  createdAt: Date!
+  description: String
+  id: Float!
+  isReady: Boolean!
+  restaurant: Restaurant!
+  table: Table!
+  victual: Victual!
+  waiter: Waiter!
+}
+
 input LoginRestaurant {
   email: String!
   password: String!
@@ -195,7 +207,7 @@ type OpenHour {
 
 type Order {
   createdAt: Date!
-  description: String!
+  description: String
   id: Float!
   isReady: Boolean!
   restaurant: Restaurant!
@@ -225,7 +237,7 @@ type Query {
   tables(filter: TableFilter): [Table!]!
   victual(where: WhereVictual!): Victual!
   victuals(filter: VictualFilter): [Victual!]!
-  waiterInfo(where: WhereWaiterId): Waiter!
+  waiterInfo(where: WhereWaiter): Waiter!
   waiters(filter: WaiterFilter): [Waiter!]!
 }
 
@@ -246,8 +258,7 @@ type Restaurant {
 }
 
 type Subscription {
-  listenOrder(where: WhereOrder!): Order!
-  listenOrders: [Order!]!
+  listenOrders: [ListenOrder!]!
 }
 
 type Success {
@@ -346,7 +357,7 @@ input UpdateVictualData {
 
 input UpdateWaiter {
   update: UpdateWaiterData!
-  where: WhereWaiterId
+  where: WhereWaiter
 }
 
 input UpdateWaiterData {
@@ -358,7 +369,7 @@ input UpdateWaiterData {
 
 input UpdateWaiterPassword {
   update: UpdateWaiterPasswordData!
-  where: WhereWaiterId
+  where: WhereWaiter
 }
 
 input UpdateWaiterPasswordData {
@@ -433,8 +444,4 @@ input WhereWaiter {
   email: String
   id: Float
   restaurantId: Float
-}
-
-input WhereWaiterId {
-  id: Float!
 }

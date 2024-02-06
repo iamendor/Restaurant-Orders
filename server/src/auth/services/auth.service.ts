@@ -24,7 +24,7 @@ export class AuthService {
   ) {}
 
   async validateRestaurant(credentials: LoginRestaurant) {
-    const restaurant = await this.restaurantService.findByEmail({
+    const restaurant = await this.restaurantService.find({
       email: credentials.email,
     });
     return this.securityService.compare({
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async validateWaiter(credentials: LoginWaiter) {
-    const waiter = (await this.waiterService.findByEmail({
+    const waiter = (await this.waiterService.find({
       email: credentials.email,
     })) as PWaiter;
 
@@ -78,9 +78,8 @@ export class AuthService {
 
   async loginRestaurant(credentials: LoginRestaurant): Promise<AuthRestaurant> {
     const restaurantValid = await this.validateRestaurant(credentials);
-    if (!restaurantValid) {
-      throw new AuthException();
-    }
+    if (!restaurantValid) throw new AuthException();
+
     return {
       restaurant: restaurantValid,
       access_token: this.generateRestaurantJwt(restaurantValid),

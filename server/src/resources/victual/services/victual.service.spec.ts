@@ -83,7 +83,7 @@ describe("MealService", () => {
     expect(victuals.length).toEqual(2);
   });
   it("find by id", async () => {
-    prisma.victual.findFirstOrThrow = jest
+    prisma.victual.findUniqueOrThrow = jest
       .fn()
       .mockImplementation(({ where }) => ({ ...mockMeal, ...where }));
 

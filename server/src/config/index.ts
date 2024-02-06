@@ -39,5 +39,3 @@ export class Config {
     };
   }
 }
-
-export const pubSub = new PubSub();

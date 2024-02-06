@@ -6,7 +6,15 @@ export class OrderServiceMock {
   order;
   SUCCESS = "success";
   constructor() {
-    this.order = { ...getMocks().order, id: 1 };
+    this.order = {
+      ...getMocks().order({
+        restaurantId: 1,
+        victualId: 1,
+        waiterId: 1,
+        tableId: 1,
+      }),
+      id: 1,
+    };
   }
 
   create(data) {
@@ -26,6 +34,10 @@ export class OrderServiceMock {
   }
 
   list() {
+    return [this.order];
+  }
+
+  listLatest() {
     return [this.order];
   }
 

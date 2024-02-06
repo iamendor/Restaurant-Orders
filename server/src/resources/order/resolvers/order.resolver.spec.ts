@@ -41,7 +41,7 @@ describe("OrderResolver", () => {
         { provide: SubscriptionService, useClass: SubscriptionServiceMock },
         { provide: OrderService, useClass: OrderServiceMock },
         { provide: WaiterService, useClass: WaiterServiceMock },
-        {provide: CacheService, useClass: CacheServiceMock},
+        { provide: CacheService, useClass: CacheServiceMock },
         OrderResolver,
       ],
     }).compile();
@@ -86,7 +86,11 @@ describe("OrderResolver", () => {
     expect(updated.isReady).toBeTruthy();
   });
   it("deletes the order", async () => {
-    const deleted = await resolver.delete(restaurantId, { id: orderId });
+    const deleted = await resolver.delete(
+      restaurantId,
+      { id: orderId },
+      { ...mockOrder, id: orderId, createdAt: new Date(), isReady: false }
+    );
     expect(deleted.message).toBe(SUCCESS);
   });
   it("list all order", async () => {
@@ -95,8 +99,10 @@ describe("OrderResolver", () => {
     orderId = orders[0].id;
   });
   it("should filter out all order", async () => {
+    
     const orders = await resolver.list(restaurantId, {
       description: "no match",
     });
+    expect(orders.length).toBe(0);
   });
 });

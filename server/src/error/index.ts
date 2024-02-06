@@ -60,3 +60,13 @@ export class UniqueFieldFailedException extends GraphQLError {
     });
   }
 }
+
+export const expectedExceptions = [
+  AuthException,
+  PermissionDeniedException,
+  NotSpecifiedException,
+  RestaurantClosedException,
+  EmptyTableException,
+  NotFoundException,
+  UniqueFieldFailedException,
+];

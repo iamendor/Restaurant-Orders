@@ -15,8 +15,8 @@ import { DateScalar } from "./date.model";
 export class Order {
   @Field()
   id: number;
-  @Field()
-  description: string;
+  @Field({ nullable: true })
+  description?: string;
   @Field(() => DateScalar)
   createdAt: Date;
   @Field()
@@ -66,4 +66,10 @@ export class UpdateOrder {
   where: WhereOrder;
   @Field(() => UpdateOrderData)
   update: UpdateOrderData;
+}
+
+@ObjectType()
+export class ListenOrder extends Order {
+  @Field({ nullable: true })
+  action?: string;
 }

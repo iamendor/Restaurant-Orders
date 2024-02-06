@@ -8,6 +8,8 @@ import {
   WhereOrder,
 } from "../../../models/order.model";
 import { Success } from "../../../models/success.model";
+import { SomethingWentWrongException } from "../../../error";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class OrderService {
@@ -43,9 +45,9 @@ export class OrderService {
     });
     return order;
   }
-  async createMany(data: Required<CreateOrder>[]): Promise<Success> {
+  async createMany(data: CreateOrder[]): Promise<Success> {
     await this.prismaService.order.createMany({
-      data,
+      data: data as Prisma.OrderCreateManyInput[],
       skipDuplicates: true,
     });
     return { message: "success" };
@@ -78,6 +80,19 @@ export class OrderService {
     });
     return orders;
   }
+  async listLatest({ restaurantId, count }) {
+    const orders = await this.prismaService.order.findMany({
+      where: {
+        restaurantId,
+      },
+      orderBy: {
+        id: "desc",
+      },
+      take: count,
+    });
+    return orders;
+  }
+
   async find(where: WhereOrder) {
     const order = await this.prismaService.order.findUniqueOrThrow({
       where: {

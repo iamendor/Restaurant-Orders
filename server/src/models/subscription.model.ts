@@ -12,7 +12,4 @@ export class ListenOrder {
   order: Order;
 }
 
-export class InvalidateQuery {
-  restaurantId: number;
-  orderId?: number;
-}
+

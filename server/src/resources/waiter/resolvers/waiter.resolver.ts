@@ -22,7 +22,6 @@ import {
   UpdateWaiter,
   WhereWaiter,
   UpdateWaiterPassword,
-  WhereWaiterId,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
@@ -49,8 +48,8 @@ export class WaiterResolver {
   @Mutation(() => Waiter, { name: "updateWaiter" })
   update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
-    const where: WhereWaiterId =
-      role === WAITER ? { id: user.id } : { ...data.where };
+    const where = role === WAITER ? { id: user.id } : { ...data.where };
+
     return this.waiterService.update({
       ...data,
       where,
@@ -68,8 +67,11 @@ export class WaiterResolver {
       if (!data.where) throw new NotSpecifiedException("waiter");
       return this.waiterService.updatePassword({ ...data });
     }
+
     const { password } = (await this.waiterService.find({ id })) as PWaiter;
+
     if (!data.update.old) throw new NotSpecifiedException("old password");
+
     if (!this.securityService.compare({ str: data.update.old, hash: password }))
       throw new AuthException();
 
@@ -86,7 +88,9 @@ export class WaiterResolver {
     @Args("where") where: WhereWaiter
   ) {
     const { restaurantId } = await this.waiterService.find({ id: where.id });
+
     if (restaurantId != restaurant.id) throw new PermissionDeniedException();
+
     return this.waiterService.delete(where);
   }
 
@@ -102,6 +106,7 @@ export class WaiterResolver {
     });
 
     if (filters) return this.filterService.waiters({ data: waiters, filters });
+
     return waiters;
   }
 
@@ -109,18 +114,24 @@ export class WaiterResolver {
   @Query(() => Waiter, { name: "waiterInfo" })
   async info(
     @User() user: JwtPayload,
-    @Args("where", { nullable: true }) where?: WhereWaiterId
+    @Args("where", { nullable: true }) where?: WhereWaiter
   ) {
     if (user.role === WAITER) {
       if (!where) return this.waiterService.find({ id: user.id });
+
       const waiter = await this.waiterService.find({ ...where });
+
       if (waiter.restaurantId != user.restaurantId)
         throw new PermissionDeniedException();
+
       return waiter;
     }
     if (!where) throw new NotSpecifiedException("waiter");
+
     const waiter = await this.waiterService.find({ ...where });
+
     if (waiter.restaurantId != user.id) throw new PermissionDeniedException();
+
     return waiter;
   }
 }
