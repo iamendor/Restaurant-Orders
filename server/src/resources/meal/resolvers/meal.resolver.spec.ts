@@ -9,6 +9,8 @@ import { MealServiceMock } from "../services/mock/meal.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Meal } from "../../../models/meal.model";
 import { FilterModule } from "../../../filter/filter.module";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
@@ -28,6 +30,7 @@ describe("MealResolver", () => {
       providers: [
         MealResolver,
         { provide: MealService, useClass: MealServiceMock },
+        { provide: CacheService, useClass: CacheServiceMock },
       ],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);
