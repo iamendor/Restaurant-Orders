@@ -26,34 +26,56 @@ import {
 import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { WaiterFilter } from "../../../models/filter.model";
+import { CacheService } from "../../../cache/services/cache.service";
 
 @Resolver((of) => Waiter)
 export class WaiterResolver {
   constructor(
     private readonly waiterService: WaiterService,
     private readonly securityService: SecurityService,
-    private readonly filterService: FilterService
+    private readonly filterService: FilterService,
+    private readonly cacheService: CacheService
   ) {}
+
+  private cachePrefix(restaurantId: number) {
+    return `waiters:${restaurantId}`;
+  }
+
+  private clearCache(restaurantId: number) {
+    this.cacheService.del(this.cachePrefix(restaurantId));
+  }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Waiter, { name: "createWaiter" })
-  create(@User() restaurant: JwtPayload, @Args("data") data: CreateWaiter) {
-    return this.waiterService.create({
+  async create(@User() { id }: JwtPayload, @Args("data") data: CreateWaiter) {
+    const waiter = await this.waiterService.create({
       data,
-      restaurantId: restaurant.id,
+      restaurantId: id,
     });
+
+    this.clearCache(id);
+
+    return waiter;
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @Mutation(() => Waiter, { name: "updateWaiter" })
-  update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
+  async update(
+    @User() user: JwtPayload,
+    @Args("data") data: UpdateWaiter,
+    @RID() restaurantId: number
+  ) {
     const { role } = user;
     const where = role === WAITER ? { id: user.id } : { ...data.where };
 
-    return this.waiterService.update({
+    const updated = await this.waiterService.update({
       ...data,
       where,
     });
+
+    this.clearCache(restaurantId);
+
+    return updated;
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
@@ -83,15 +105,16 @@ export class WaiterResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Success, { name: "deleteWaiter" })
-  async delete(
-    @User() restaurant: JwtPayload,
-    @Args("where") where: WhereWaiter
-  ) {
+  async delete(@User() { id }: JwtPayload, @Args("where") where: WhereWaiter) {
     const { restaurantId } = await this.waiterService.find({ id: where.id });
 
-    if (restaurantId != restaurant.id) throw new PermissionDeniedException();
+    if (restaurantId != id) throw new PermissionDeniedException();
 
-    return this.waiterService.delete(where);
+    const deleted = await this.waiterService.delete(where);
+
+    this.clearCache(id);
+
+    return deleted;
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
@@ -101,6 +124,16 @@ export class WaiterResolver {
     @Args("filter", { nullable: true, type: () => WaiterFilter })
     filters?: WaiterFilter
   ) {
+    const cached = await this.cacheService.get({
+      key: this.cachePrefix(restaurantId),
+      json: true,
+    });
+
+    if (cached) {
+      if (filters) return this.filterService.waiters({ data: cached, filters });
+      return cached;
+    }
+
     const waiters = await this.waiterService.list({
       id: restaurantId,
     });

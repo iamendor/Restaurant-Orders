@@ -146,8 +146,13 @@ export class OrderResolver {
     });
 
     if (cached) {
-      if (filters) return this.filterService.orders({ data: cached, filters });
-      return cached;
+      const remap = cached.map((ord) => ({
+        ...ord,
+        createdAt: new Date(ord.createdAt),
+      }));
+
+      if (filters) return this.filterService.orders({ data: remap, filters });
+      return remap;
     }
 
     const orders = await this.orderService.list(restaurantId);

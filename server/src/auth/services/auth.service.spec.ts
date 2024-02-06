@@ -10,6 +10,8 @@ import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/
 import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
 import { getMocks } from "../../../test/helper/mocks";
 import { JwtPayload } from "../../interfaces/jwt.interface";
+import { CacheService } from "../../cache/services/cache.service";
+import { CacheServiceMock } from "../../cache/services/mock/cache.service.mock";
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -37,7 +39,6 @@ describe("AuthService", () => {
           secret: "test",
         }),
         SecurityModule,
-        WaiterModule,
         PrismaModule,
       ],
       providers: [
@@ -65,9 +66,8 @@ describe("AuthService", () => {
   });
 
   it("should return null 'cause credentials invalid", async () => {
-    const invalidRestaurant = await service.validateRestaurant(
-      invalidCredentials
-    );
+    const invalidRestaurant =
+      await service.validateRestaurant(invalidCredentials);
     const invalidWaiter = await service.validateWaiter(invalidCredentials);
     expect(invalidRestaurant).toBeNull();
     expect(invalidWaiter).toBeNull();

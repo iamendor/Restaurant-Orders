@@ -8,6 +8,8 @@ import { SecurityModule } from "../../../security/security.module";
 import { WaiterServiceMock } from "../services/mock/waiter.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 jest.mock("../services/waiter.service");
 describe("Waiter Resolver", () => {
@@ -29,6 +31,7 @@ describe("Waiter Resolver", () => {
       imports: [SecurityModule, PrismaModule, FilterModule],
       providers: [
         { provide: WaiterService, useClass: WaiterServiceMock },
+        { provide: CacheService, useClass: CacheServiceMock },
         WaiterResolver,
       ],
     }).compile();
@@ -50,12 +53,16 @@ describe("Waiter Resolver", () => {
 
   it("updates the waiter", async () => {
     const update = { name: "updatedWaiter" };
-    const updatedWaiter = await resolver.update(payload, {
-      update,
-      where: {
-        id: waiterPayload.id,
+    const updatedWaiter = await resolver.update(
+      payload,
+      {
+        update,
+        where: {
+          id: waiterPayload.id,
+        },
       },
-    });
+      payload.id
+    );
     expect(updatedWaiter.name).toBe(update.name);
   });
   it("updates waiter password", async () => {
