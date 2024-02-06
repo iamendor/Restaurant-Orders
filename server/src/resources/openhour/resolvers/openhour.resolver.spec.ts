@@ -4,6 +4,8 @@ import { OpenHourService } from "../services/openhour.service";
 import { OpenHourServiceMock } from "../services/mock/openhour.service.mock";
 import { getMocks } from "../../../../test/helper/mocks";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 describe("OpenHourResolver", () => {
   let resolver: OpenHourResolver;
@@ -15,6 +17,7 @@ describe("OpenHourResolver", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: OpenHourService, useClass: OpenHourServiceMock },
+        { provide: CacheService, useClass: CacheServiceMock },
         OpenHourResolver,
       ],
     }).compile();
@@ -50,7 +53,7 @@ describe("OpenHourResolver", () => {
     expect(ls.length).toEqual(2);
   });
   it("deletes open hour", async () => {
-    const deleted = await resolver.delete({ id: 1 });
+    const deleted = await resolver.delete({ id: 1 }, { id: 1 } as JwtPayload);
     expect(deleted.message).toBe("success");
   });
 });
