@@ -8,6 +8,8 @@ import { TableGuardModule } from "../guard/table.guard.module";
 import { TableServiceMock } from "../services/mock/table.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
@@ -28,6 +30,7 @@ describe("TableResolver", () => {
       providers: [
         TableResolver,
         { provide: TableService, useClass: TableServiceMock },
+        { provide: CacheService, useClass: CacheServiceMock },
       ],
     }).compile();
 
@@ -55,12 +58,15 @@ describe("TableResolver", () => {
   });
   it("update table", async () => {
     const update = "updatedTableName";
-    const updatedTable = await resolver.update({
-      where: { id: mockTable.id },
-      update: {
-        name: update,
+    const updatedTable = await resolver.update(
+      {
+        where: { id: mockTable.id },
+        update: {
+          name: update,
+        },
       },
-    });
+      Rpayload
+    );
     expect(updatedTable.name).toBe(update);
 
     mockTable = updatedTable;
@@ -91,7 +97,7 @@ describe("TableResolver", () => {
   });
 
   it("deletes table", async () => {
-    const deletedTable = await resolver.delete({ id: mockTable.id });
+    const deletedTable = await resolver.delete({ id: mockTable.id }, Rpayload);
     expect(deletedTable.message).toBe(SUCCESS);
   });
 });
