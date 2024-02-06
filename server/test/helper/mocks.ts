@@ -116,7 +116,7 @@ export const getMocks = () => ({
       "Sunday",
     ];
 
-    return days.map((day) => ({ ...base, name: day }));
+    return days.map((day) => ({ ...base, name: day, createdAt: new Date() }));
   },
 });
 

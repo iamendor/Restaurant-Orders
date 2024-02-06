@@ -93,7 +93,8 @@ export class OpenHourResolver {
       json: true,
     });
 
-    if (cached) return cached;
+    if (cached)
+      return cached.map((oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }));
 
     const openHours = await this.openHourService.list(restaurantId);
 

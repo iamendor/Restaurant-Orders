@@ -126,8 +126,13 @@ export class VictualResolver {
     });
 
     if (cached) {
-      if (filters) return this.filterService.victual({ data: cached, filters });
-      return cached;
+      const remap = cached.map((vict) => ({
+        ...vict,
+        createdAt: new Date(vict.createdAt),
+      }));
+
+      if (filters) return this.filterService.victual({ data: remap, filters });
+      return remap;
     }
 
     const victuals = await this.victualService.list(id);

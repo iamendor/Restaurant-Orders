@@ -7,11 +7,14 @@ import {
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";
 import { Victual } from "./victual.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Category {
   @Field()
   id: number;
+  @Field(() => DateScalar)
+  createdAt: Date;
   @Field()
   name: string;
   @Field()
@@ -21,7 +24,7 @@ export class Category {
   @Field(() => Restaurant)
   restaurant?: Restaurant;
   @Field(() => [Category], { nullable: true })
-  subs?: Category[];
+  subCategories?: Category[];
   @Field(() => Category, { nullable: true })
   parent?: Category;
   @Field({ nullable: true })

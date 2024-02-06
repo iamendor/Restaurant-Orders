@@ -23,7 +23,7 @@ export class FieldResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
-  @ResolveField(() => [Category], { name: "subs" })
+  @ResolveField(() => [Category], { name: "subCategories" })
   getSubCategories(@Parent() category: Category) {
     return this.fieldService.getSubCategories(category.id);
   }

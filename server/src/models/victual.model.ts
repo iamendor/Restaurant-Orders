@@ -8,11 +8,14 @@ import {
 import { Restaurant } from "./restaurant.model";
 import { Category } from "./category.model";
 import { Order } from "./order.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Victual {
   @Field()
   id: number;
+  @Field(() => DateScalar)
+  createdAt: Date;
   @Field()
   name: string;
   @Field()

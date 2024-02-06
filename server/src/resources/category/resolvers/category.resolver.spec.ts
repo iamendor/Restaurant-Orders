@@ -9,6 +9,8 @@ import { CategoryServiceMock } from "../services/mock/category.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Category } from "../../../models/category.model";
 import { FilterModule } from "../../../filter/filter.module";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 
 describe("CategoryResolver", () => {
   let resolver: CategoryResolver;
@@ -26,6 +28,7 @@ describe("CategoryResolver", () => {
       providers: [
         CategoryResolver,
         { provide: CategoryService, useClass: CategoryServiceMock },
+        { provide: CacheService, useClass: CacheServiceMock },
       ],
     }).compile();
 
@@ -55,20 +58,26 @@ describe("CategoryResolver", () => {
   });
   it("update the category", async () => {
     const update = "updatedCategory";
-    const updated = await resolver.update({
-      where: {
-        id: categoryId,
+    const updated = await resolver.update(
+      {
+        where: {
+          id: categoryId,
+        },
+        update: {
+          name: update,
+        },
       },
-      update: {
-        name: update,
-      },
-    });
+      Rpayload
+    );
     expect(updated.name).toBe(update);
   });
   it("delete category", async () => {
-    const deleted = await resolver.delete({
-      id: categoryId,
-    });
+    const deleted = await resolver.delete(
+      {
+        id: categoryId,
+      },
+      Rpayload
+    );
     expect(deleted.message).toBe(SUCCESS);
   });
   describe("List", () => {

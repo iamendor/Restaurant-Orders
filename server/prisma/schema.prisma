@@ -83,6 +83,7 @@ model Order{
 
 model Victual{
   id Int @unique @id @default(autoincrement())
+  createdAt DateTime @default(now())
   name String
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -93,6 +94,7 @@ model Victual{
 }
 model Category{
   id Int @unique @id @default(autoincrement())
+  createdAt DateTime @default(now())
   name String
   victuals Victual[]
   parent Category? @relation("ParentToCategory", fields: [parentId], references: [id], onDelete: SetNull)
@@ -104,6 +106,7 @@ model Category{
 }
 model Table{
   id Int @unique @id @default(autoincrement())
+  createdAt DateTime @default(now())
   name String
   orders Order[]
   restaurantId Int
@@ -130,6 +133,7 @@ model Meal{
 
 model OpeningHour{
   id Int @unique @id @default(autoincrement())
+  createdAt DateTime @default(now())
   name String 
   start String
   end String

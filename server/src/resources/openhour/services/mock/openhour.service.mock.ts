@@ -12,11 +12,11 @@ import { Success } from "../../../../models/success.model";
 export class OpenHourServiceMock {
   openHour: OpenHour;
   constructor() {
-    this.openHour = getMocks().openingHour();
+    this.openHour = { ...getMocks().openingHour(), createdAt: new Date() };
   }
 
   create(data: CreateOpenHour): OpenHour {
-    return { ...data, restaurantId: 1, id: 1 };
+    return { ...this.openHour, ...data, restaurantId: 1, id: 1 };
   }
 
   createMany(data: CreateOpenHour[]): Success {

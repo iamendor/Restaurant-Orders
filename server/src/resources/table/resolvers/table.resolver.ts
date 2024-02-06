@@ -101,8 +101,13 @@ export class TableResolver {
     });
 
     if (cached) {
-      if (filters) return this.filterService.tables({ data: cached, filters });
-      return cached;
+      const remap = cached.map((table) => ({
+        ...table,
+        createdAt: new Date(table.createdAt),
+      }));
+
+      if (filters) return this.filterService.tables({ data: remap, filters });
+      return remap;
     }
 
     const tables = await this.tableService.list(restaurantId);

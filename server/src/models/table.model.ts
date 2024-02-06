@@ -7,11 +7,14 @@ import {
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";
 import { Order } from "./order.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class Table {
   @Field()
   id: number;
+  @Field(() => DateScalar)
+  createdAt: Date;
   @Field()
   name: string;
   @Field(() => [Order])

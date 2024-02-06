@@ -24,6 +24,7 @@ type AuthWaiter {
 }
 
 type Category {
+  createdAt: Date!
   id: Float!
   name: String!
   parent: Category
@@ -31,7 +32,7 @@ type Category {
   restaurant: Restaurant!
   restaurantId: Float!
   root: Boolean!
-  subs: [Category!]!
+  subCategories: [Category!]!
   victuals: [Victual!]!
 }
 
@@ -197,6 +198,7 @@ type Mutation {
 }
 
 type OpenHour {
+  createdAt: Date!
   end: String!
   id: Float!
   name: String!
@@ -266,6 +268,7 @@ type Success {
 }
 
 type Table {
+  createdAt: Date!
   id: Float!
   name: String!
   orders: [Order!]!
@@ -379,6 +382,7 @@ input UpdateWaiterPasswordData {
 
 type Victual {
   category: Category!
+  createdAt: Date!
   id: Float!
   name: String!
   orders: [Order!]!

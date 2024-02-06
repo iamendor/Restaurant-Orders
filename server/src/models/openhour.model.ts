@@ -6,11 +6,14 @@ import {
   PickType,
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";
+import { DateScalar } from "./date.model";
 
 @ObjectType()
 export class OpenHour {
   @Field()
   id: number;
+  @Field(() => DateScalar)
+  createdAt: Date;
   @Field()
   name: string;
   @Field()

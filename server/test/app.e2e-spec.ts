@@ -594,6 +594,7 @@ describe("Orders API", () => {
             dataMultiple: [2, 3].map((i) => ({ name: rest.name + i })),
           },
         }).set("Authorization", restaurantToken);
+        console.log(body);
         create = body.data.createCategory;
         createMultiple = body.data.createCategories;
       });
