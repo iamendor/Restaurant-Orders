@@ -88,6 +88,7 @@ export const getMocks = () => ({
     ...data,
     description: "this is a mock order",
     isReady: false,
+    quantity: 1,
     createdAt: new Date(),
   }),
   meal: () => ({

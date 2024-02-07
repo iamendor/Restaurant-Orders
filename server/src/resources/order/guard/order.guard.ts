@@ -1,15 +1,14 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { OrderService } from "../services/order.service";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { WAITER } from "../../../role";
-import { PermissionDeniedException } from "../../../error";
+import {
+  OrderClosedException,
+  PermissionDeniedException,
+  OrderReadyException,
+} from "../../../error";
 
 @Injectable()
 export class OrderBaseGuard implements ModelGuard {
@@ -34,6 +33,10 @@ export class OrderBaseGuard implements ModelGuard {
     }
     const order = await this.orderService.find(where);
     if (order.restaurantId != id) throw new PermissionDeniedException();
+    if (mutation == this.UPDATE) {
+      if (order.closed) throw new OrderClosedException();
+      if (order.isReady) throw new OrderReadyException();
+    }
     if (role == WAITER && order.waiterId != req.user.id)
       throw new PermissionDeniedException();
     req.order = order;

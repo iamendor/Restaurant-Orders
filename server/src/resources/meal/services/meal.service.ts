@@ -31,26 +31,20 @@ export class MealService {
     });
   }
   formatTable(table: any) {
-    const sorted = table.orders.sort(
-      (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt)
-    );
+    const sorted = table.orders.sort((a, b) => a.createdAt - b.createdAt);
     const start = sorted[0].createdAt;
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;
-    const total = sorted.reduce((acc, c) => acc + c.victual.price, 0);
+    const total = sorted.reduce(
+      (acc, c) => acc + c.victual.price * c.quantity,
+      0
+    );
     return { sorted, start, end, waiterId, total };
   }
 
   async create(data: CreateMealData): Promise<Meal> {
-    const {
-      start,
-      end,
-      total,
-      tableId,
-      restaurantId,
-      orderIds,
-      waiterId,
-    } = data;
+    const { start, end, total, tableId, restaurantId, orderIds, waiterId } =
+      data;
     const meal = await this.prismaService.meal.create({
       data: {
         start,

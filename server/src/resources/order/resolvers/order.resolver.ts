@@ -99,8 +99,14 @@ export class OrderResolver {
 
   @Mutation(() => Order, { name: "updateOrder" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard, OpenGuard)
-  async update(@RID() restaurantId: number, @Args("data") data: UpdateOrder) {
-    const updatedOrder = await this.orderService.update(data);
+  async update(
+    @RID() restaurantId: number,
+    @Args("data") { where, update }: UpdateOrder
+  ) {
+    const updatedOrder = await this.orderService.update({
+      where,
+      update: { ...update, isReady: update.isReady || false },
+    });
 
     this.clearCache(restaurantId);
 

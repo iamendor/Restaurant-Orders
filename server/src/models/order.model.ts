@@ -20,6 +20,8 @@ export class Order {
   @Field(() => DateScalar)
   createdAt: Date;
   @Field()
+  quantity: number;
+  @Field()
   isReady: boolean;
   @Field()
   closed: boolean;
@@ -47,6 +49,8 @@ export class CreateOrder {
   restaurantId?: number;
   @Field({ nullable: true })
   isReady?: boolean;
+  @Field({ nullable: true })
+  quantity?: number;
 }
 
 @InputType()
@@ -54,7 +58,7 @@ export class WhereOrder extends PickType(Order, ["id"] as const, InputType) {}
 
 @InputType()
 export class UpdateOrderData extends PartialType(
-  PickType(Order, ["description", "isReady"] as const, InputType)
+  PickType(Order, ["description", "isReady", "quantity"] as const, InputType)
 ) {
   @Field({ nullable: true })
   tableId?: number;

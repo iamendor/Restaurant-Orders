@@ -56,7 +56,23 @@ export class NotFoundException extends GraphQLError {
 export class UniqueFieldFailedException extends GraphQLError {
   constructor() {
     super("unique field failed", {
-      extensions: { code: 400 },
+      extensions: { code: HttpStatus.BAD_REQUEST },
+    });
+  }
+}
+
+export class OrderClosedException extends GraphQLError {
+  constructor() {
+    super("order is closed", {
+      extensions: { code: HttpStatus.BAD_REQUEST },
+    });
+  }
+}
+
+export class OrderReadyException extends GraphQLError {
+  constructor() {
+    super("order is ready", {
+      extensions: { code: HttpStatus.BAD_REQUEST },
     });
   }
 }
@@ -69,4 +85,6 @@ export const expectedExceptions = [
   EmptyTableException,
   NotFoundException,
   UniqueFieldFailedException,
+  OrderClosedException,
+  OrderReadyException,
 ];

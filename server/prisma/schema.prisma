@@ -70,6 +70,7 @@ model Order{
   createdAt DateTime @default(now())
   isReady Boolean @default(false)
   closed Boolean @default(false)
+  quantity Int @default(1)
   waiter Waiter @relation(fields: [waiterId], references: [id])
   table Table? @relation(fields: [tableId], references: [id])
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)

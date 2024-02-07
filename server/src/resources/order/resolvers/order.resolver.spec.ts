@@ -95,6 +95,7 @@ describe("OrderResolver", () => {
         createdAt: new Date(),
         isReady: false,
         closed: false,
+        quantity: 1,
       }
     );
     expect(deleted.message).toBe(SUCCESS);
