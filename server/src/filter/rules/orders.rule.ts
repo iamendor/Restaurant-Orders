@@ -44,10 +44,30 @@ export class IsReady extends RuleBuilder implements Rule<Order, boolean> {
   }
 }
 
+export class IsClosed extends RuleBuilder implements Rule<Order, string> {
+  constructor() {
+    super();
+  }
+
+  filterFn(isClosed: string) {
+    switch (isClosed) {
+      case "true":
+        return (order: Order) => order.closed;
+      case "false":
+        return (order: Order) => !order.closed;
+      case "all":
+        return (order: Order) => true;
+      default:
+        return () => true;
+    }
+  }
+}
+
 export const OrderRules = (): IOrderFilter => ({
   description: new SearchDescription(),
   min: new MinDate(),
   max: new MaxDate(),
   isReady: new IsReady(),
-  maxLength: new MaxLength()
+  isClosed: new IsClosed(),
+  maxLength: new MaxLength(),
 });

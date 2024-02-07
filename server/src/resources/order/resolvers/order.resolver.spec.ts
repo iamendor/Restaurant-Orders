@@ -89,7 +89,13 @@ describe("OrderResolver", () => {
     const deleted = await resolver.delete(
       restaurantId,
       { id: orderId },
-      { ...mockOrder, id: orderId, createdAt: new Date(), isReady: false }
+      {
+        ...mockOrder,
+        id: orderId,
+        createdAt: new Date(),
+        isReady: false,
+        closed: false,
+      }
     );
     expect(deleted.message).toBe(SUCCESS);
   });
@@ -99,7 +105,6 @@ describe("OrderResolver", () => {
     orderId = orders[0].id;
   });
   it("should filter out all order", async () => {
-    
     const orders = await resolver.list(restaurantId, {
       description: "no match",
     });

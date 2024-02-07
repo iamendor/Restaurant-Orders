@@ -27,6 +27,8 @@ export class MealFilter {
 export class OrderFilter {
   @Field({ nullable: true })
   description?: string;
+  @Field({ nullable: true, defaultValue: "false" })
+  isClosed?: "true" | "false" | "all";
   @Field({ nullable: true })
   min?: Date;
   @Field({ nullable: true })

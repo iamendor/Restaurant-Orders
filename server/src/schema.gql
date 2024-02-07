@@ -121,6 +121,7 @@ scalar DateTime
 
 type ListenOrder {
   action: String
+  closed: Boolean!
   createdAt: Date!
   description: String
   id: Float!
@@ -208,6 +209,7 @@ type OpenHour {
 }
 
 type Order {
+  closed: Boolean!
   createdAt: Date!
   description: String
   id: Float!
@@ -220,6 +222,7 @@ type Order {
 
 input OrderFilter {
   description: String
+  isClosed: String = "false"
   isReady: Boolean
   max: DateTime
   maxLength: Float
@@ -233,7 +236,7 @@ type Query {
   meals(filter: MealFilter): [Meal!]!
   openHours: [OpenHour!]!
   order(where: WhereOrder!): Order!
-  orders(filter: OrderFilter): [Order!]!
+  orders(filter: OrderFilter = {isClosed: "false"}): [Order!]!
   restaurantInfo: Restaurant!
   table(where: WhereTable!): Table!
   tables(filter: TableFilter): [Table!]!

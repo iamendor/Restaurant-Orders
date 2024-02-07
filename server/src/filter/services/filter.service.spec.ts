@@ -143,12 +143,14 @@ describe("FilterService", () => {
         ...base,
         id: 1,
         createdAt: new Date(current.setDate(current.getDate() + 2)),
+        closed: true,
       },
       {
         ...base,
         id: 2,
         description: "this is a test",
         createdAt: new Date(current.setDate(current.getDate() - 4)),
+        closed: false,
       },
     ] as Order[];
     const cr = new Date();
@@ -175,6 +177,24 @@ describe("FilterService", () => {
       });
       expect(filtered.length).toEqual(1);
       expect(filtered[0].id).toBe(2);
+    });
+    it("should filter with isClosed", () => {
+      const filtered = service.orders({
+        filters: { isClosed: "true" },
+        data: orders,
+      });
+      const filtered2 = service.orders({
+        filters: { isClosed: "false" },
+        data: orders,
+      });
+      const filtered3 = service.orders({
+        filters: { isClosed: "all" },
+        data: orders,
+      });
+
+      expect(filtered.length).toBe(1);
+      expect(filtered2.length).toBe(1);
+      expect(filtered3.length).toBe(2);
     });
   });
   describe("Table", () => {

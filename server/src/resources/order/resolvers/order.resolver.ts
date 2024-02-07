@@ -137,7 +137,11 @@ export class OrderResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
   async list(
     @RID() restaurantId: number,
-    @Args("filter", { nullable: true, type: () => OrderFilter })
+    @Args("filter", {
+      nullable: true,
+      type: () => OrderFilter,
+      defaultValue: { isClosed: false },
+    })
     filters?: OrderFilter
   ) {
     const cached = await this.cacheService.get({
@@ -151,7 +155,11 @@ export class OrderResolver {
         createdAt: new Date(ord.createdAt),
       }));
 
-      if (filters) return this.filterService.orders({ data: remap, filters });
+      if (filters)
+        return this.filterService.orders({
+          data: remap,
+          filters: { ...filters, isClosed: filters.isClosed || "false" },
+        });
       return remap;
     }
 
@@ -162,7 +170,11 @@ export class OrderResolver {
       value: JSON.stringify(orders),
     });
 
-    if (filters) return this.filterService.orders({ data: orders, filters });
+    if (filters)
+      return this.filterService.orders({
+        data: orders,
+        filters: { ...filters, isClosed: filters.isClosed || "false" },
+      });
     return orders;
   }
 

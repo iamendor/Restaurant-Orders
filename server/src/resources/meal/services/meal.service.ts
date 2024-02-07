@@ -32,6 +32,7 @@ export class MealService {
       },
       data: {
         tableId: null,
+        closed: true,
       },
     });
   }
