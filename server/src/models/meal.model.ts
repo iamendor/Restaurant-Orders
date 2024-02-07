@@ -22,8 +22,6 @@ export class Meal {
   table?: Table;
   @Field(() => [Order])
   orders?: Order[];
-  @Field(() => Currency)
-  currency?: Currency;
   @Field(() => Restaurant)
   restaurant?: Restaurant;
   @Field()

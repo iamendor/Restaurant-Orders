@@ -22,7 +22,8 @@ model Restaurant{
   email String @unique
   password String
   address Address?
-  currency Currency?
+  currency Currency? @relation(fields: [currencyId], references: [id], onDelete: SetNull)
+  currencyId Int?
   openingHours OpeningHour[]
   waiters Waiter[]
   orders Order[]
@@ -34,10 +35,9 @@ model Restaurant{
 
 model Currency{
   id Int @unique @id @default(autoincrement())
-  currency String
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  restaurantId Int @unique
-  meals Meal[]
+  name String @unique
+  symbol String
+  restaurants Restaurant[]
 }
 model Address{
   id Int @unique @id @default(autoincrement())
@@ -125,8 +125,6 @@ model Meal{
   waiter Waiter? @relation(fields: [waiterId], references: [id], onDelete: SetNull)
   table Table? @relation(fields: [tableId], references: [id], onDelete: SetNull)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  currency Currency? @relation(fields: [currencyId], references: [id], onDelete: SetNull)
-  currencyId Int?
   restaurantId Int
   waiterId Int?
   tableId Int?

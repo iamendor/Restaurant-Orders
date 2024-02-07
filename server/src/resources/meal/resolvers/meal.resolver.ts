@@ -52,7 +52,6 @@ export class MealResolver {
       ...formatTable,
       restaurantId,
       tableId,
-      currencyId: tableWithOrders.restaurant.currency.id,
       orderIds: sorted.map((ord) => ({ id: ord.id })),
     });
 

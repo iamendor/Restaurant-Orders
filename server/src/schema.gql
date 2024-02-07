@@ -55,10 +55,6 @@ input CreateCategory {
   parentId: Float
 }
 
-input CreateCurrency {
-  currency: String!
-}
-
 input CreateMeal {
   tableId: Float!
 }
@@ -80,7 +76,7 @@ input CreateOrder {
 
 input CreateRestaurant {
   address: CreateAddress!
-  currency: CreateCurrency!
+  currency: WhereCurrency!
   email: String!
   name: String!
   password: String!
@@ -105,11 +101,10 @@ input CreateWaiter {
 }
 
 type Currency {
-  currency: String!
   id: Float!
-  meals: [Meal!]!
-  restaurant: Restaurant!
+  name: String!
   restaurantId: Float!
+  symbol: String!
 }
 
 scalar Date
@@ -143,7 +138,6 @@ input LoginWaiter {
 }
 
 type Meal {
-  currency: Currency!
   end: Date!
   id: Float!
   orders: [Order!]!
@@ -232,6 +226,7 @@ input OrderFilter {
 type Query {
   categories(filter: CategoryFilter): [Category!]!
   category(where: WhereCategory!): Category!
+  listCurrencies: [Currency!]!
   meal(where: WhereMeal!): Meal!
   meals(filter: MealFilter): [Meal!]!
   openHours: [OpenHour!]!
@@ -302,10 +297,6 @@ input UpdateCategoryData {
   parentId: Float
 }
 
-input UpdateCurrency {
-  currency: String!
-}
-
 input UpdateOpenHour {
   update: UpdateOpenHourData!
   where: WhereOpenHour!
@@ -331,7 +322,7 @@ input UpdateOrderData {
 
 input UpdateRestaurant {
   address: UpdateAddress
-  currency: UpdateCurrency
+  currency: WhereCurrency
   email: String
   name: String
 }
@@ -424,6 +415,10 @@ input WaiterFilter {
 input WhereCategory {
   id: Float!
   root: Boolean
+}
+
+input WhereCurrency {
+  name: String!
 }
 
 input WhereMeal {

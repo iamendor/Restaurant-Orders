@@ -6,7 +6,7 @@ import {
   PickType,
 } from "@nestjs/graphql";
 import { Address, CreateAddress, UpdateAddress } from "./address.model";
-import { CreateCurrency, Currency, UpdateCurrency } from "./currency.model";
+import { Currency, WhereCurrency } from "./currency.model";
 import { Waiter } from "./waiter.model";
 import { Table } from "./table.model";
 import { Victual } from "./victual.model";
@@ -75,8 +75,8 @@ export class CreateRestaurant {
   password: string;
   @Field(() => CreateAddress)
   address: CreateAddress;
-  @Field(() => CreateCurrency)
-  currency: CreateCurrency;
+  @Field(() => WhereCurrency)
+  currency: WhereCurrency;
 }
 
 @InputType()
@@ -96,8 +96,8 @@ export class UpdateRestaurant extends PartialType(
 ) {
   @Field(() => UpdateAddress, { nullable: true })
   address?: UpdateAddress;
-  @Field(() => UpdateCurrency, { nullable: true })
-  currency?: UpdateCurrency;
+  @Field(() => WhereCurrency, { nullable: true })
+  currency?: WhereCurrency;
 }
 
 @InputType()

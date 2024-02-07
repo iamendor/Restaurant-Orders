@@ -16,7 +16,11 @@ describe("Restaurant Resolver", () => {
   let payload: JwtPayload;
   let prisma: PrismaService;
   const mocks = getMocks();
-  const rst: Restaurant = { ...mocks.restaurantModel, id: 1 };
+  const rst: Restaurant = {
+    ...mocks.restaurantModel,
+    id: 1,
+    currencyId: undefined,
+  };
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({

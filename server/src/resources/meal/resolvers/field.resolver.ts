@@ -26,9 +26,4 @@ export class FieldResolver {
   getRestaurant(@Parent() meal: Meal) {
     return this.fieldService.getRestaurant(meal.id);
   }
-
-  @ResolveField(() => Currency, { name: "currency" })
-  getCurrency(@Parent() meal: Meal) {
-    return this.fieldService.getCurrency(meal.id);
-  }
 }

@@ -35,14 +35,4 @@ export class FieldService {
     });
     return meal.orders;
   }
-
-  async getCurrency(id: number): Promise<Currency> {
-    const meal = await this.prismaService.meal.findFirst({
-      where: {
-        id,
-      },
-      include: { currency: true },
-    });
-    return meal.currency;
-  }
 }

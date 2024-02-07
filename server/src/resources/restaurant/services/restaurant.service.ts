@@ -27,7 +27,7 @@ export class RestaurantService {
           create: data.address,
         },
         currency: {
-          create: data.currency,
+          connect: data.currency,
         },
       },
     });
@@ -59,7 +59,7 @@ export class RestaurantService {
           update: update.address && update.address,
         },
         currency: {
-          update: update.currency && update.currency,
+          connect: update.currency && update.currency,
         },
       },
     });

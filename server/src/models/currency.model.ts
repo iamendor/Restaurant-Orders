@@ -5,37 +5,22 @@ import {
   PartialType,
   PickType,
 } from "@nestjs/graphql";
-import { Restaurant } from "./restaurant.model";
-import { Meal } from "./meal.model";
 
 @ObjectType()
 export class Currency {
   @Field()
   id: number;
   @Field()
-  currency: string;
-  @Field(() => Restaurant)
-  restaurant?: Restaurant;
-  @Field(() => [Meal])
-  meals?: Meal[];
+  name: string;
+  @Field()
+  symbol: string;
   @Field()
   restaurantId: number;
 }
 
 @InputType()
-export class CreateCurrency extends PickType(
+export class WhereCurrency extends PickType(
   Currency,
-  ["currency"] as const,
+  ["name"] as const,
   InputType
 ) {}
-
-@InputType()
-export class WhereCurrency extends PartialType(
-  PickType(Currency, ["restaurantId", "id"] as const, InputType)
-) {}
-
-@InputType()
-export class UpdateCurrency {
-  @Field()
-  currency: string;
-}

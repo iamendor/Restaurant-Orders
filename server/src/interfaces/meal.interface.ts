@@ -8,5 +8,4 @@ export interface CreateMealData {
   restaurantId: number;
   orderIds: OrderId[];
   waiterId: number;
-  currencyId: number;
 }

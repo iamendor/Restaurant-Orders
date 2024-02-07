@@ -11,12 +11,6 @@ export class MealService {
     return this.prismaService.table.findFirst({
       where: { id: tableId },
       include: {
-        restaurant: {
-          select: {
-            currency: true,
-            id: true,
-          },
-        },
         orders: {
           include: {
             victual: true,
@@ -54,7 +48,6 @@ export class MealService {
       total,
       tableId,
       restaurantId,
-      currencyId,
       orderIds,
       waiterId,
     } = data;
@@ -65,11 +58,6 @@ export class MealService {
         total,
         table: {
           connect: { id: tableId },
-        },
-        currency: {
-          connect: {
-            id: currencyId,
-          },
         },
         restaurant: {
           connect: {

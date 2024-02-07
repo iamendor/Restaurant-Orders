@@ -28,9 +28,13 @@ export const getMocks = () => ({
       country: "HU",
     },
     currency: {
-      currency: "HUF",
+      name: "HUF",
     },
     password: "mockRestaurant123",
+  },
+  currency: {
+    name: "HUF_MOCK",
+    symbol: "SemmitSemÉrAFt",
   },
   restaurantModel: {
     name: "Test Kft.",
@@ -94,7 +98,6 @@ export const getMocks = () => ({
     orders: [],
     waiterId: 1,
     tableId: 1,
-    currencyId: 1,
     restaurantId: 1,
   }),
   openingHour: () => ({
@@ -147,8 +150,9 @@ export const createRestaurantWithWaiter = async ({
         },
       },
       currency: {
-        create: {
-          ...mocks.restaurant.currency,
+        connectOrCreate: {
+          create: { ...mocks.currency },
+          where: { name: mocks.currency.name },
         },
       },
       openingHours: {
@@ -209,6 +213,11 @@ export const clearMocks = async ({
         email: mocks.restaurant.email,
       },
     });
+    await prisma.currency.delete({
+      where: {
+        name: mocks.currency.name,
+      },
+    });
   }
   if (createRestaurant)
     return await prisma.restaurant.create({
@@ -221,7 +230,10 @@ export const clearMocks = async ({
           },
         },
         currency: {
-          create: { ...mocks.restaurant.currency },
+          connectOrCreate: {
+            create: { ...mocks.currency },
+            where: { name: mocks.currency.name },
+          },
         },
       },
     });
