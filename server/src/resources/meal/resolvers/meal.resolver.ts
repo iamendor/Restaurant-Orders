@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { MealService } from "../services/meal.service";
-import { UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { EmptyTableException, PermissionDeniedException } from "../../../error";
 import { RESTAURANT, WAITER } from "../../../role";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { MealGuard } from "../guard/meal.guard";
 import { GetMeal } from "../decorators/meal.decorator";
@@ -16,6 +16,10 @@ import { MealFilter } from "../../../models/filter.model";
 import { CacheService } from "../../../cache/services/cache.service";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
+import {
+  CREATE_MEAL_ACTION,
+  TaskInterceptor,
+} from "../../task/interceptors/task.inteceptor";
 
 @Resolver((of) => Meal)
 export class MealResolver {
@@ -34,6 +38,7 @@ export class MealResolver {
   }
 
   @Mutation(() => Meal, { name: "createMeal" })
+  @UseInterceptors(TaskInterceptor(CREATE_MEAL_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard)
   async create(
     @RID() restaurantId: number,

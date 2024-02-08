@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { TaskServiceModule } from "../services/task.service.module";
 import { TaskResolver } from "./task.resolver";
 import { FieldResolver } from "./field.resolver";
+import { FilterModule } from "../../../filter/filter.module";
 
 @Module({
-  imports: [TaskServiceModule],
+  imports: [TaskServiceModule, FilterModule],
   providers: [TaskResolver, FieldResolver],
 })
 export class TaskResolverModule {}

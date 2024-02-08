@@ -6,6 +6,8 @@ import { getMocks } from "../../../../test/helper/mocks";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { TaskService } from "../../task/services/task.service";
 
 describe("OpenHourResolver", () => {
   let resolver: OpenHourResolver;
@@ -18,6 +20,7 @@ describe("OpenHourResolver", () => {
       providers: [
         { provide: OpenHourService, useClass: OpenHourServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
         OpenHourResolver,
       ],
     }).compile();

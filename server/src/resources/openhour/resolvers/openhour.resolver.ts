@@ -6,17 +6,21 @@ import {
   WhereOpenHour,
 } from "../../../models/openhour.model";
 import { OpenHourService } from "../services/openhour.service";
-import { UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { PermissionDeniedException } from "../../../error";
 import { CacheService } from "../../../cache/services/cache.service";
+import {
+  CREATE_OPENHOUR_ACTION,
+  TaskInterceptor,
+} from "../../task/interceptors/task.inteceptor";
 
 @Resolver((of) => OpenHour)
 export class OpenHourResolver {
@@ -33,7 +37,9 @@ export class OpenHourResolver {
     this.cacheService.del(this.cachePrefix(restaurantId));
   }
 
+  //TODO: check if it has on that day
   @Mutation(() => OpenHour, { name: "createOpenHour" })
+  @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
     const openHour = await this.openHourService.create(data, id);
@@ -44,6 +50,7 @@ export class OpenHourResolver {
   }
 
   @Mutation(() => Success, { name: "createOpenHours" })
+  @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateOpenHour] }) data: CreateOpenHour[],

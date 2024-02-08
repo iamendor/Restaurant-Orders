@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { RestaurantService } from "../services/restaurant.service";
 import { getReq } from "../../../guard/helper";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 
 @Injectable()
 export class RestaurantBaseGuard implements CanActivate {

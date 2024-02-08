@@ -4,10 +4,16 @@ import { CategoryResolver } from "./category.resolver";
 import { FieldResolver } from "./field.resolver";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceModule } from "../../task/services/task.service.module";
 
 @Module({
-  imports: [CategoryServiceModule, FilterModule, CacheModule],
+  imports: [
+    CategoryServiceModule,
+    FilterModule,
+    CacheModule,
+    TaskServiceModule,
+  ],
   providers: [IdGuard, CategoryResolver, FieldResolver],
 })
 export class CategoryResolverModule {}

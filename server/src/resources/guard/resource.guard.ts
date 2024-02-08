@@ -5,7 +5,7 @@ import {
   mixin,
 } from "@nestjs/common";
 import { ModelGuard, initGuardProps } from "../../guard/helper";
-import { IdGuard } from "../../auth/guards/id.guard";
+import { IdGuard } from "../../auth/guard/id.guard";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import {
   PermissionDeniedException,

@@ -1,13 +1,13 @@
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { WaiterService } from "../services/waiter.service";
 import { SecurityService } from "../../../security/services/security.service";
 import { RESTAURANT, WAITER } from "../../../role";
 import { UpdateWaiterGuard } from "../guards/waiter.guard";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import {
   AuthException,

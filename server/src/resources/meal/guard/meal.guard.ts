@@ -7,7 +7,7 @@ import {
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { MealService } from "../services/meal.service";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { PermissionDeniedException } from "../../../error";
 
 @Injectable()

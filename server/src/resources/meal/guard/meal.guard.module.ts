@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MealService } from "../services/meal.service";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { MealBaseGuard, MealGuard } from "./meal.guard";
 
 @Module({

@@ -9,8 +9,15 @@ import {
 import { Observable, tap } from "rxjs";
 import { TaskService } from "../services/task.service";
 import { GqlExecutionContext } from "@nestjs/graphql";
+import { WAITER } from "../../../role";
 
 export const CREATE_WAITER_ACTION = "waiter.create";
+export const CREATE_ORDER_ACTION = "order.create";
+export const CREATE_TABLE_ACTION = "table.create";
+export const CREATE_VICTUAL_ACTION = "victual.create";
+export const CREATE_OPENHOUR_ACTION = "openhour.create";
+export const CREATE_MEAL_ACTION = "meal.create";
+export const CREATE_CATEGORY_ACTION = "category.create";
 
 export function TaskInterceptor(action: string) {
   @Injectable()
@@ -21,11 +28,12 @@ export function TaskInterceptor(action: string) {
       next: CallHandler<any>
     ): Observable<any> | Promise<Observable<any>> {
       const user = GqlExecutionContext.create(context).getContext().req.user;
+      const restaurantId = user.role == WAITER ? user.restaurantId : user.id;
 
       return next.handle().pipe(
         tap(async () => {
           const task = await this.taskService.findByAction({
-            restaurantId: user.id,
+            restaurantId: restaurantId,
             action: action,
           });
           if (!task) return;

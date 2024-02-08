@@ -11,7 +11,9 @@ import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { TaskService } from "../../task/services/task.service";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
@@ -35,6 +37,7 @@ describe("MealResolver", () => {
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: VictualService, useClass: VictualServiceMock },
         { provide: CategoryService, useClass: CategoryServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
         IdGuard,
       ],
     }).compile();

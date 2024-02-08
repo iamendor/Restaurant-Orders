@@ -15,7 +15,9 @@ import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { TaskService } from "../../task/services/task.service";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -36,6 +38,7 @@ describe("OrderResolver", () => {
         { provide: OrderService, useClass: OrderServiceMock },
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
         IdGuard,
         OrderResolver,
       ],

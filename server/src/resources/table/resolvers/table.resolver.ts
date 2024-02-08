@@ -1,11 +1,11 @@
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { TableService } from "../services/table.service";
 import { User } from "../../../auth/decorators/user.decorator";
-import { UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { TableGuard } from "../../guard";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
@@ -20,6 +20,10 @@ import { TableFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { CacheService } from "../../../cache/services/cache.service";
 import { GetTable } from "../../decorators";
+import {
+  CREATE_TABLE_ACTION,
+  TaskInterceptor,
+} from "../../task/interceptors/task.inteceptor";
 
 @Resolver((of) => Table)
 export class TableResolver {
@@ -38,6 +42,7 @@ export class TableResolver {
   }
 
   @Mutation(() => Table, { name: "createTable" })
+  @UseInterceptors(TaskInterceptor(CREATE_TABLE_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@User() { id }: JwtPayload, @Args("data") data: CreateTable) {
     const table = await this.tableService.create({
@@ -51,6 +56,7 @@ export class TableResolver {
   }
 
   @Mutation(() => Success, { name: "createTables" })
+  @UseInterceptors(TaskInterceptor(CREATE_TABLE_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @User() { id }: JwtPayload,

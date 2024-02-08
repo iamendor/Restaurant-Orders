@@ -5,7 +5,8 @@ import { VictualServiceModule } from "../services/victual.service.module";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceModule } from "../../task/services/task.service.module";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { IdGuard } from "../../../auth/guards/id.guard";
     CategoryServiceModule,
     FilterModule,
     CacheModule,
+    TaskServiceModule,
   ],
   providers: [IdGuard, FieldResolver, VictualResolver],
 })

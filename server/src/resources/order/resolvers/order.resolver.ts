@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { OrderService } from "../services/order.service";
-import { Logger, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { Logger, UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { RESTAURANT, WAITER } from "../../../role";
-import { IdGuard } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
@@ -23,6 +23,10 @@ import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
 import { CacheService } from "../../../cache/services/cache.service";
 import { GetOrder } from "../../decorators";
+import {
+  CREATE_ORDER_ACTION,
+  TaskInterceptor,
+} from "../../task/interceptors/task.inteceptor";
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -45,6 +49,7 @@ export class OrderResolver {
   private DELETE = "DELETE";
 
   @Mutation(() => Order, { name: "createOrder" })
+  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(
     @User() { id }: JwtPayload,
@@ -59,7 +64,6 @@ export class OrderResolver {
 
     this.clearCache(restaurantId);
 
-    this.logger.log(order);
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
       action: this.CREATE,
@@ -69,6 +73,7 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "createOrders" })
+  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
     @User() { id }: JwtPayload,

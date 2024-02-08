@@ -1,8 +1,8 @@
 import { UnauthorizedException, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RestaurantService } from "../services/restaurant.service";
 import { RestaurantGuard } from "../guard/restaurant.guard";
 import { RESTAURANT, WAITER } from "../../../role";
