@@ -10,11 +10,12 @@ import {
   getMocks,
 } from "./helper/mocks";
 import { PrismaModule } from "../src/prisma/prisma.module";
-import { PrismaService } from "../src/prisma/prisma.service";
+import { PrismaService } from "../src/prisma/services/prisma.service";
 import req from "./helper/graphql-request";
 import { JwtService } from "@nestjs/jwt";
 import { CoreModule } from "../src/core/core.module";
 import { ConfigService } from "@nestjs/config";
+
 describe("Orders API", () => {
   let app: INestApplication;
   const mutations = getMutations();
@@ -67,6 +68,7 @@ describe("Orders API", () => {
         });
         signup = body.data.signup;
         loginRestaurant = body.data.loginRestaurant;
+        restaurantId = body.data.signup.id;
       });
 
       it("should signup restaurant", () => {
@@ -95,13 +97,11 @@ describe("Orders API", () => {
           errors: [error],
         } = body;
         const {
-          extensions: {
-            response: { statusCode },
-          },
+          extensions: { code },
         } = error;
 
-        expect(statusCode).toEqual(401);
-        expect(body.data.loginRestaurant).toBeNull();
+        expect(code).toEqual(401);
+        expect(body.data).toBeNull();
       });
     });
 
@@ -112,7 +112,7 @@ describe("Orders API", () => {
         const { body } = await req(server, {
           query: mutations.waiter.create(),
           variables: {
-            data: mocks.waiter,
+            data: mocks.waiterWithNoId,
             credentials: {
               email: mocks.waiter.email,
               password: mocks.waiter.password,
@@ -132,7 +132,7 @@ describe("Orders API", () => {
         expect(loginWaiter).not.toBeNull();
         expect(loginWaiter.waiter.name).toBe(mocks.waiter.name);
         expect(loginWaiter.access_token).toBeDefined();
-        waiterToken = loginWaiter.access_token;
+        waiterToken = `Bearer ${loginWaiter.access_token}`;
       });
       it("return unauthorized on login because password is invalid", async () => {
         const invalidCredentials = {
@@ -145,10 +145,8 @@ describe("Orders API", () => {
             credentials: invalidCredentials,
           },
         });
-        const {
-          data: { loginWaiter },
-        } = body;
-        expect(loginWaiter).toBeNull();
+        const { data } = body;
+        expect(data).toBeNull();
       });
     });
   });
@@ -343,8 +341,8 @@ describe("Orders API", () => {
         },
       }).set("Authorization", waiterToken);
       const { errors } = body;
-      expect(errors.length).toEqual(2);
-      expect(errors[0].message).toBe("old password is not provided");
+      expect(errors.length).toEqual(1);
+      expect(errors[0].message).toBe("no old password specified");
     });
 
     it("updates waiter password as restaurant", async () => {
@@ -993,7 +991,6 @@ describe("Orders API", () => {
             },
           },
         }).set("Authorization", restaurantToken);
-        console.log(body);
         [list, find] = [body.data.meals, body.data.meal];
       });
 
@@ -1043,5 +1040,8 @@ describe("Orders API", () => {
     });
   });
 
-  afterAll(async () => await clearMocks({ prisma }));
+  afterAll(async () => {
+    await clearMocks({ prisma });
+    await prisma.$disconnect();
+  });
 });

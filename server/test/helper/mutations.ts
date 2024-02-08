@@ -53,6 +53,7 @@ export const getMutations = () => ({
     signupAndLogin: () => `
       mutation createWithWaiter($data: CreateRestaurant!, $credentials: LoginRestaurant!){
         signup(data: $data){
+          id
           name
           address{
             address1
@@ -126,7 +127,7 @@ export const getMutations = () => ({
   },
   table: {
     create: () => `
-      mutation createTables($data: CreateTable!, $dataMultiple: [CreateTable!]){
+      mutation createTables($data: CreateTable!, $dataMultiple: [CreateTable!]!){
         createTable(data: $data){
           id
           name
@@ -155,7 +156,7 @@ export const getMutations = () => ({
   },
   category: {
     create: () => `
-      mutation create($data: CreateCategory!, $dataMultiple: [CreateCategory!]){
+      mutation create($data: CreateCategory!, $dataMultiple: [CreateCategory!]!){
         createCategory(data: $data){
           id
           name
@@ -183,7 +184,7 @@ export const getMutations = () => ({
   },
   victual: {
     create: () => `
-      mutation create($data: CreateVictual!, $dataVictuals: [CreateVictuals!]){
+      mutation create($data: CreateVictual!, $dataVictuals: [CreateVictual!]!){
         createVictual(data: $data){
           id
           name
@@ -218,7 +219,7 @@ export const getMutations = () => ({
   },
   order: {
     create: () => `
-      mutation create($data: CreateOrder!, $dataMultiple: [CreateOrder!]){
+      mutation create($data: CreateOrder!, $dataMultiple: [CreateOrder!]!){
         createOrder(data: $data){
           id
           description

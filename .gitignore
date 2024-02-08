@@ -4,6 +4,9 @@
 dist
 node_modules
 
+migrations/
+.vscode
+
 # Logs
 logs
 *.log
@@ -35,3 +38,5 @@ coverage
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+server/src/models/model.ts

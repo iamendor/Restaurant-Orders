@@ -4,11 +4,26 @@ import { JwtModule } from "@nestjs/jwt";
 import { Config } from "../config";
 import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
+import { DateScalar } from "../models/date.model";
+import { PrismaModule } from "../prisma/prisma.module";
+import { CacheModule as CachingModule } from "@nestjs/cache-manager";
+import * as Joi from "joi";
 
 @Global()
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        JWT_SECRET: Joi.string().required(),
+        DATABASE_URL: Joi.string().required(),
+        API_PORT: Joi.number().required(),
+        NODE_ENV: Joi.string().default("test"),
+      }).options({
+        abortEarly: true,
+      }),
+    }),
+    CachingModule.register({ isGlobal: true }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: Config.getJwtConfig,
@@ -18,7 +33,9 @@ import { GraphQLModule } from "@nestjs/graphql";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
+    PrismaModule,
   ],
+  providers: [DateScalar],
   exports: [JwtModule, GraphQLModule, ConfigModule],
 })
 export class CoreModule {}
