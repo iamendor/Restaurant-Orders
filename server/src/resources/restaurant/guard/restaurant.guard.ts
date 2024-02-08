@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { RestaurantService } from "../services/restaurant.service";
 import { getReq } from "../../../guard/helper";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 
 @Injectable()
 export class RestaurantBaseGuard implements CanActivate {
@@ -21,7 +21,7 @@ export class RestaurantBaseGuard implements CanActivate {
 @Injectable()
 export class RestaurantGuard implements CanActivate {
   constructor(
-    private readonly idInterceptGuard: IdIntercept,
+    private readonly idInterceptGuard: IdGuard,
     private readonly restaurantBaseGuard: RestaurantBaseGuard
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {

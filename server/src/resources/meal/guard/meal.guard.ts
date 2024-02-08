@@ -7,7 +7,7 @@ import {
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { MealService } from "../services/meal.service";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { PermissionDeniedException } from "../../../error";
 
 @Injectable()
@@ -37,7 +37,7 @@ export class MealBaseGuard implements ModelGuard {
 export class MealGuard implements CanActivate {
   constructor(
     private readonly mealGuard: MealBaseGuard,
-    private readonly idIntercept: IdIntercept
+    private readonly idIntercept: IdGuard
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const IIG = this.idIntercept.canActivate(context);

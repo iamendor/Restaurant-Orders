@@ -1,12 +1,11 @@
 import { UnauthorizedException, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RestaurantService } from "../services/restaurant.service";
 import { RestaurantGuard } from "../guard/restaurant.guard";
 import { RESTAURANT, WAITER } from "../../../role";
-import { GetRestaurant } from "../decorators/restaurant.decorator";
 import { Restaurant as PRestaurant } from "@prisma/client";
 import { SecurityService } from "../../../security/services/security.service";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
@@ -16,6 +15,7 @@ import {
   UpdateRestaurantPassword,
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
+import { GetRestaurant } from "../../decorators";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {

@@ -8,22 +8,28 @@ import {
   LoginRestaurant,
 } from "../../models/restaurant.model";
 import { AuthWaiter, LoginWaiter } from "../../models/waiter.model";
+import { TaskService } from "../../resources/task/services/task.service";
 
 @Resolver("Auth")
 export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
-    private readonly restaurantService: RestaurantService
+    private readonly restaurantService: RestaurantService,
+    private readonly taskService: TaskService
   ) {}
 
   @Mutation(() => Restaurant)
-  signup(
+  async signup(
     @Args("data", { type: () => CreateRestaurant })
     data: CreateRestaurant
   ) {
-    return this.restaurantService.create({
+    const restaurant = await this.restaurantService.create({
       ...data,
     });
+
+    this.taskService.init(restaurant.id);
+
+    return restaurant;
   }
 
   @Mutation(() => AuthRestaurant)

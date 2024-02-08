@@ -4,13 +4,15 @@ import { CategoryService } from "../services/category.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
 import { getMocks } from "../../../../test/helper/mocks";
-import { CategoryGuardModule } from "../guard/category.guard.module";
 import { CategoryServiceMock } from "../services/mock/category.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Category } from "../../../models/category.model";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskService } from "../../task/services/task.service";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 
 describe("CategoryResolver", () => {
   let resolver: CategoryResolver;
@@ -24,11 +26,13 @@ describe("CategoryResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, CategoryGuardModule, FilterModule],
+      imports: [PrismaModule, FilterModule],
       providers: [
         CategoryResolver,
+        IdGuard,
         { provide: CategoryService, useClass: CategoryServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
       ],
     }).compile();
 

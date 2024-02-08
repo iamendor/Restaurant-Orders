@@ -3,7 +3,6 @@ import { OrderResolver } from "./order.resolver";
 import { OrderService } from "../services/order.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { getMocks } from "../../../../test/helper/mocks";
-import { OrderGuardModule } from "../guard/order.guard.module";
 import { OrderServiceMock } from "../services/mock/order.service.mock";
 import { WaiterService } from "../../waiter/services/waiter.service";
 import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.mock";
@@ -16,6 +15,9 @@ import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { TaskService } from "../../task/services/task.service";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -30,18 +32,14 @@ describe("OrderResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        OrderGuardModule,
-        SecurityModule,
-        PrismaModule,
-        FilterModule,
-        OpenGuardModule,
-      ],
+      imports: [SecurityModule, PrismaModule, FilterModule, OpenGuardModule],
       providers: [
         { provide: SubscriptionService, useClass: SubscriptionServiceMock },
         { provide: OrderService, useClass: OrderServiceMock },
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
+        IdGuard,
         OrderResolver,
       ],
     }).compile();

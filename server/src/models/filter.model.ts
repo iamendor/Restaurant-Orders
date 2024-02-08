@@ -70,3 +70,9 @@ export class TableFilter {
   @Field({ nullable: true })
   maxLength?: number;
 }
+
+@InputType()
+export class TaskFilter {
+  @Field({ nullable: true })
+  done?: "true" | "false" | "all";
+}

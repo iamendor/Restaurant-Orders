@@ -1,15 +1,14 @@
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { OrderService } from "../services/order.service";
-import { Logger, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { Logger, UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { RESTAURANT, WAITER } from "../../../role";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";
-import { GetOrder } from "../decorators/order.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Order,
@@ -23,6 +22,11 @@ import { OrderFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
 import { CacheService } from "../../../cache/services/cache.service";
+import { GetOrder } from "../../decorators";
+import {
+  CREATE_ORDER_ACTION,
+  TaskInterceptor,
+} from "../../task/interceptors/task.inteceptor";
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -45,7 +49,8 @@ export class OrderResolver {
   private DELETE = "DELETE";
 
   @Mutation(() => Order, { name: "createOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
+  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
@@ -59,7 +64,6 @@ export class OrderResolver {
 
     this.clearCache(restaurantId);
 
-    this.logger.log(order);
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
       action: this.CREATE,
@@ -69,7 +73,8 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "createOrders" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
+  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
@@ -98,7 +103,12 @@ export class OrderResolver {
   }
 
   @Mutation(() => Order, { name: "updateOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard, OpenGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    RoleGuard(WAITER, RESTAURANT),
+    OpenGuard,
+    ...OrderGuard
+  )
   async update(
     @RID() restaurantId: number,
     @Args("data") { where, update }: UpdateOrder
@@ -119,7 +129,12 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "deleteOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), OrderGuard, OpenGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    RoleGuard(RESTAURANT, WAITER),
+    OpenGuard,
+    ...OrderGuard
+  )
   async delete(
     @RID() restaurantId: number,
     @Args("where") where: WhereOrder,
@@ -140,7 +155,7 @@ export class OrderResolver {
   }
 
   @Query(() => [Order], { name: "orders" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
   async list(
     @RID() restaurantId: number,
     @Args("filter", {
@@ -185,13 +200,13 @@ export class OrderResolver {
   }
 
   @Query(() => Order, { name: "order" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), ...OrderGuard)
   async find(@GetOrder() order: Order, @Args("where") _: WhereOrder) {
     return order;
   }
 
   @Subscription(() => [ListenOrder], { resolve: (payload) => payload.orders })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
   async listenOrders(@RID() restaurantId: number) {
     return this.subscriptionService.listenOrders(restaurantId);
   }

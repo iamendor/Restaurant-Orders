@@ -14,6 +14,7 @@ import { Category } from "./category.model";
 import { Order } from "./order.model";
 import { Meal } from "./meal.model";
 import { DateScalar } from "./date.model";
+import { Task } from "./task.model";
 
 @ObjectType()
 export class Restaurant {
@@ -28,6 +29,9 @@ export class Restaurant {
 
   @Field(() => DateScalar)
   createdAt: Date;
+
+  @Field(() => [Task])
+  tasks?: Task;
 
   @Field(() => Address)
   address?: Address;

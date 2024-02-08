@@ -11,6 +11,8 @@ import { SecurityModule } from "../../security/security.module";
 import { AuthServiceMock } from "../services/mock/auth.service.mock";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
+import { TaskService } from "../../resources/task/services/task.service";
+import { TaskServiceMock } from "../../resources/task/services/mock/task.service.mock";
 
 describe("Auth Resolver", () => {
   let resolver: AuthResolver;
@@ -30,6 +32,7 @@ describe("Auth Resolver", () => {
         AuthResolver,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
         JwtStrategy,
       ],
     }).compile();

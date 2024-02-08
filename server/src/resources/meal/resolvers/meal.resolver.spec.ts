@@ -11,6 +11,8 @@ import { Meal } from "../../../models/meal.model";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { TaskService } from "../../task/services/task.service";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
@@ -31,6 +33,7 @@ describe("MealResolver", () => {
         MealResolver,
         { provide: MealService, useClass: MealServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
       ],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);

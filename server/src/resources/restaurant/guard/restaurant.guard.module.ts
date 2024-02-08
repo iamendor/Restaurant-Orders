@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { RestaurantBaseGuard, RestaurantGuard } from "./restaurant.guard";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RestaurantService } from "../services/restaurant.service";
 import { SecurityService } from "../../../security/services/security.service";
 
@@ -9,14 +9,14 @@ import { SecurityService } from "../../../security/services/security.service";
     SecurityService,
     RestaurantService,
     RestaurantBaseGuard,
-    IdIntercept,
+    IdGuard,
     RestaurantGuard,
   ],
   exports: [
     SecurityService,
     RestaurantService,
     RestaurantBaseGuard,
-    IdIntercept,
+    IdGuard,
     RestaurantGuard,
   ],
 })

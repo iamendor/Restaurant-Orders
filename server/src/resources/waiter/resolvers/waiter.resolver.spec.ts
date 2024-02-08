@@ -10,6 +10,8 @@ import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { TaskService } from "../../task/services/task.service";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 
 jest.mock("../services/waiter.service");
 describe("Waiter Resolver", () => {
@@ -32,6 +34,7 @@ describe("Waiter Resolver", () => {
       providers: [
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
         WaiterResolver,
       ],
     }).compile();

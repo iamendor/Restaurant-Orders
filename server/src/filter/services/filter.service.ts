@@ -18,12 +18,16 @@ import {
   CategoryFilter,
   MealFilter,
   OrderFilter,
+  TaskFilter,
   VictualFilter,
   WaiterFilter,
 } from "../../models/filter.model";
 import { Table } from "../../models/table.model";
 import { ITableFilter } from "../interfaces/table.interface";
 import { TableRules } from "../rules/tables.rule";
+import { ITaskFilter } from "../interfaces/task.interface";
+import { TaskRules } from "../rules/tasks.rule";
+import { Task } from "../../models/task.model";
 
 interface IFilter<T> {
   data: T[];
@@ -32,7 +36,8 @@ interface IFilter<T> {
     | CategoryFilter
     | OrderFilter
     | VictualFilter
-    | MealFilter;
+    | MealFilter
+    | TaskFilter;
 }
 
 @Injectable()
@@ -43,6 +48,7 @@ export class FilterService {
   private oRules: IOrderFilter;
   private mRules: IMealFilter;
   private tRules: ITableFilter;
+  private tkRules: ITaskFilter;
 
   constructor() {
     this.wRules = WaiterRules();
@@ -51,6 +57,7 @@ export class FilterService {
     this.oRules = OrderRules();
     this.mRules = MealRules();
     this.tRules = TableRules();
+    this.tkRules = TaskRules();
   }
   private filter({ data, filters }, rules) {
     let filtered = data;
@@ -79,5 +86,8 @@ export class FilterService {
   }
   tables(data: IFilter<Table>) {
     return this.filter(data, this.tRules) as Table[];
+  }
+  tasks(data: IFilter<Task>) {
+    return this.filter(data, this.tkRules) as Task[];
   }
 }

@@ -93,4 +93,16 @@ export class FieldService {
     const checkDate = new Date(`1970-01-01T${date.toLocaleTimeString()}`);
     return checkDate >= startDate && checkDate <= endDate;
   }
+
+  async getTasks(restaurantId: number) {
+    const tasks = await this.prismaService.task.findMany({
+      where: { restaurantId },
+      include: { base: true },
+    });
+    return tasks.map(({ id, base, done }) => ({
+      id,
+      name: base.name,
+      done,
+    }));
+  }
 }

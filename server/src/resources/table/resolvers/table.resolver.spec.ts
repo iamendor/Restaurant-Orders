@@ -4,12 +4,14 @@ import { TableService } from "../services/table.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
 import { getMocks } from "../../../../test/helper/mocks";
-import { TableGuardModule } from "../guard/table.guard.module";
 import { TableServiceMock } from "../services/mock/table.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { TaskService } from "../../task/services/task.service";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
@@ -26,11 +28,13 @@ describe("TableResolver", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, TableGuardModule, FilterModule],
+      imports: [PrismaModule, FilterModule],
       providers: [
         TableResolver,
         { provide: TableService, useClass: TableServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        { provide: TaskService, useClass: TaskServiceMock },
+        IdGuard,
       ],
     }).compile();
 
