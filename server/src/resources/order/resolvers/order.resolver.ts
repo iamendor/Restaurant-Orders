@@ -9,7 +9,6 @@ import { RESTAURANT, WAITER } from "../../../role";
 import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";
-import { GetOrder } from "../decorators/order.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Order,
@@ -23,6 +22,7 @@ import { OrderFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
 import { CacheService } from "../../../cache/services/cache.service";
+import { GetOrder } from "../../decorators";
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -98,7 +98,12 @@ export class OrderResolver {
   }
 
   @Mutation(() => Order, { name: "updateOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard, OpenGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    RoleGuard(WAITER, RESTAURANT),
+    OpenGuard,
+    ...OrderGuard
+  )
   async update(
     @RID() restaurantId: number,
     @Args("data") { where, update }: UpdateOrder
@@ -119,7 +124,12 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "deleteOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), OrderGuard, OpenGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    RoleGuard(RESTAURANT, WAITER),
+    OpenGuard,
+    ...OrderGuard
+  )
   async delete(
     @RID() restaurantId: number,
     @Args("where") where: WhereOrder,
@@ -185,7 +195,7 @@ export class OrderResolver {
   }
 
   @Query(() => Order, { name: "order" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), OrderGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), ...OrderGuard)
   async find(@GetOrder() order: Order, @Args("where") _: WhereOrder) {
     return order;
   }

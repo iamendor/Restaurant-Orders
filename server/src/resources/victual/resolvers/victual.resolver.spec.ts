@@ -3,7 +3,6 @@ import { getMocks } from "../../../../test/helper/mocks";
 import { PrismaService } from "../../../prisma/services/prisma.service";
 import { VictualResolver } from "./victual.resolver";
 import { VictualService } from "../services/victual.service";
-import { VictualGuardModule } from "../guard/victual.guard.module";
 import { VictualServiceMock } from "../services/mock/victual.service.mock";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { CategoryService } from "../../category/services/category.service";
@@ -12,6 +11,7 @@ import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { IdGuard } from "../../../auth/guards/id.guard";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
@@ -29,12 +29,13 @@ describe("MealResolver", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, VictualGuardModule, FilterModule],
+      imports: [PrismaModule, FilterModule],
       providers: [
         VictualResolver,
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: VictualService, useClass: VictualServiceMock },
         { provide: CategoryService, useClass: CategoryServiceMock },
+        IdGuard,
       ],
     }).compile();
     prisma = module.get<PrismaService>(PrismaService);

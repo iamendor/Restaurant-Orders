@@ -1,15 +1,13 @@
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { VictualService } from "../services/victual.service";
 import { User } from "../../../auth/decorators/user.decorator";
-import { ForbiddenException, UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { CategoryService } from "../../category/services/category.service";
 import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { VictualGuard } from "../guard/victual.guard";
-import { GetVictual } from "../decorators/victual.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Victual,
@@ -22,6 +20,8 @@ import { FilterService } from "../../../filter/services/filter.service";
 import { VictualFilter } from "../../../models/filter.model";
 import { PermissionDeniedException } from "../../../error";
 import { CacheService } from "../../../cache/services/cache.service";
+import { VictualGuard } from "../../guard";
+import { GetVictual } from "../../decorators";
 
 export interface VerifyCategory {
   restaurantId: number;

@@ -4,8 +4,7 @@ import { Logger, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
-import { CategoryGuard } from "../guard/category.guard";
-import { GetCategory } from "../decorators/category.decorator";
+import { CategoryGuard } from "../../guard";
 import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -20,6 +19,7 @@ import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { CategoryFilter } from "../../../models/filter.model";
 import { CacheService } from "../../../cache/services/cache.service";
+import { GetCategory } from "../../decorators";
 
 @Resolver((of) => Category)
 export class CategoryResolver {

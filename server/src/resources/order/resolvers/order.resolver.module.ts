@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { OrderServiceModule } from "../services/order.service.module";
-import { OrderGuardModule } from "../guard/order.guard.module";
 import { OrderResolver } from "./order.resolver";
 import { FieldResolver } from "./field.resolver";
 import { SubscriptionModule } from "../../../subscription/subscription.module";
@@ -12,10 +11,9 @@ import { CacheModule } from "../../../cache/cache.module";
   imports: [
     SubscriptionModule,
     OrderServiceModule,
-    OrderGuardModule,
     FilterModule,
     OpenGuardModule,
-    CacheModule
+    CacheModule,
   ],
   providers: [OrderResolver, FieldResolver],
 })

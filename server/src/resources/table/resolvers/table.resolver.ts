@@ -4,9 +4,8 @@ import { User } from "../../../auth/decorators/user.decorator";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
-import { TableGuard } from "../guard/table.guard";
+import { TableGuard } from "../../guard";
 import { IdGuard } from "../../../auth/guards/id.guard";
-import { GetTable } from "../decorators/table.decorator";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
@@ -20,6 +19,7 @@ import { Success } from "../../../models/success.model";
 import { TableFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { CacheService } from "../../../cache/services/cache.service";
+import { GetTable } from "../../decorators";
 
 @Resolver((of) => Table)
 export class TableResolver {
