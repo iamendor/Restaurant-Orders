@@ -1,4 +1,4 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus, UnauthorizedException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 
 export class SomethingWentWrongException extends GraphQLError {

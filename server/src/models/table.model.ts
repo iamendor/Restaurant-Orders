@@ -23,6 +23,8 @@ export class Table {
   restaurant?: Restaurant;
   @Field()
   restaurantId: number;
+  @Field({ nullable: true })
+  total?: number;
 }
 
 @InputType()

@@ -275,6 +275,7 @@ type Table {
   orders: [Order!]!
   restaurant: Restaurant!
   restaurantId: Float!
+  total: Float!
 }
 
 input TableFilter {

@@ -16,13 +16,17 @@ export class FieldService {
     return table.restaurant;
   }
 
-  async getOrders(id: number) {
+  async getOrders(id: number, forTotal = false) {
     const table = await this.prismaService.table.findFirst({
       where: {
         id,
       },
       include: {
-        orders: true,
+        orders: {
+          include: {
+            victual: forTotal,
+          },
+        },
       },
     });
     return table.orders;

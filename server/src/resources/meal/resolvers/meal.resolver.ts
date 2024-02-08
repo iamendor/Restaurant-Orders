@@ -3,7 +3,7 @@ import { MealService } from "../services/meal.service";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
-import { EmptyTableException } from "../../../error";
+import { EmptyTableException, PermissionDeniedException } from "../../../error";
 import { RESTAURANT, WAITER } from "../../../role";
 import { IdIntercept } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
@@ -42,7 +42,7 @@ export class MealResolver {
     const tableWithOrders = await this.mealService.getOrdersOfTable(tableId);
 
     if (tableWithOrders.restaurantId != restaurantId)
-      throw new EmptyTableException();
+      throw new PermissionDeniedException();
     if (tableWithOrders.orders.length == 0) throw new EmptyTableException();
 
     const { sorted, ...formatTable } =
