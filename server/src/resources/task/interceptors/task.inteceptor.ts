@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  Logger,
   NestInterceptor,
   mixin,
 } from "@nestjs/common";
@@ -22,6 +23,7 @@ export const CREATE_CATEGORY_ACTION = "category.create";
 export function TaskInterceptor(action: string) {
   @Injectable()
   class TaskInterceptorClass implements NestInterceptor {
+    logger: Logger = new Logger();
     constructor(public readonly taskService: TaskService) {}
     intercept(
       context: ExecutionContext,
@@ -36,7 +38,10 @@ export function TaskInterceptor(action: string) {
             restaurantId: restaurantId,
             action: action,
           });
-          if (!task) return;
+          if (!task)
+            return this.logger.warn(
+              `Cannot find task ${action} for ${restaurantId}`
+            );
           if (!task.done) {
             await this.taskService.tick({ id: task.id });
           }

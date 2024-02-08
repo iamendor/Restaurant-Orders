@@ -37,11 +37,22 @@ export class OpenHourResolver {
     this.cacheService.del(this.cachePrefix(restaurantId));
   }
 
-  //TODO: check if it has on that day
   @Mutation(() => OpenHour, { name: "createOpenHour" })
   @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
+    const openHours = await this.openHourService.list(id);
+    const today = openHours.find((oh) => oh.name == data.name);
+    if (today) {
+      const updated = await this.openHourService.update({
+        where: { id: today.id },
+        update: { start: data.start, end: data.end },
+      });
+      this.clearCache(id);
+
+      return updated;
+    }
+
     const openHour = await this.openHourService.create(data, id);
 
     this.clearCache(id);
@@ -56,11 +67,23 @@ export class OpenHourResolver {
     @Args("data", { type: () => [CreateOpenHour] }) data: CreateOpenHour[],
     @User() { id }: JwtPayload
   ) {
-    const openHours = await this.openHourService.createMany(data, id);
+    const current = await this.openHourService.list(id);
+    for (let i = 0; i < data.length; i++) {
+      const today = current.find((oh) => oh.name == data[i].name);
+      if (today) {
+        const update = { start: data[i].start, end: data[i].end };
+        await this.openHourService.update({
+          where: { id: today.id },
+          update,
+        });
+      } else {
+        await this.openHourService.create(data[i], id);
+      }
+    }
 
     this.clearCache(id);
 
-    return openHours;
+    return { message: "success" };
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })
@@ -73,6 +96,8 @@ export class OpenHourResolver {
     if (openHour.restaurantId != id) throw new PermissionDeniedException();
 
     const updated = await this.openHourService.update({ where, update });
+
+    this.clearCache(id);
     return updated;
   }
 

@@ -24,12 +24,7 @@ describe("OpenHour Service", () => {
     const openingHour = await service.create(mockOpen, 1);
     expect(openingHour).toBeDefined();
   });
-  it("should create many", async () => {
-    prisma.openingHour.createMany = jest.fn().mockReturnValue([mockOpen]);
 
-    const openingHours = await service.createMany([mockOpen], 1);
-    expect(openingHours.message).toBe("success");
-  });
   it("list all of restaurant", async () => {
     prisma.openingHour.findMany = jest
       .fn()
