@@ -1,7 +1,6 @@
 import { ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import { JwtModuleOptions } from "@nestjs/jwt";
-import { PubSub } from "graphql-subscriptions";
 import { join } from "path";
 
 export class Config {

@@ -9,6 +9,6 @@ async function bootstrap() {
   const config = app.get<ConfigService>(ConfigService);
   app.useGlobalFilters(new UnExpectedException());
   app.useGlobalFilters(new PrismaClientException());
-  await app.listen(config.get("PORT"));
+  await app.listen(config.get("API_PORT"));
 }
 bootstrap();
