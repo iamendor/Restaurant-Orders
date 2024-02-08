@@ -1,4 +1,4 @@
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
@@ -7,7 +7,7 @@ import { WaiterService } from "../services/waiter.service";
 import { SecurityService } from "../../../security/services/security.service";
 import { RESTAURANT, WAITER } from "../../../role";
 import { UpdateWaiterGuard } from "../guards/waiter.guard";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import {
   AuthException,
@@ -27,6 +27,10 @@ import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { WaiterFilter } from "../../../models/filter.model";
 import { CacheService } from "../../../cache/services/cache.service";
+import {
+  CREATE_WAITER_ACTION,
+  TaskInterceptor,
+} from "../../task/interceptors/task.inteceptor";
 
 @Resolver((of) => Waiter)
 export class WaiterResolver {
@@ -45,6 +49,7 @@ export class WaiterResolver {
     this.cacheService.del(this.cachePrefix(restaurantId));
   }
 
+  @UseInterceptors(TaskInterceptor(CREATE_WAITER_ACTION))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Waiter, { name: "createWaiter" })
   async create(@User() { id }: JwtPayload, @Args("data") data: CreateWaiter) {
@@ -117,7 +122,7 @@ export class WaiterResolver {
     return deleted;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   @Query(() => [Waiter])
   async waiters(
     @RID() restaurantId: number,

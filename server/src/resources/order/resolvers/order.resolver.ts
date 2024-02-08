@@ -6,7 +6,7 @@ import { RoleGuard } from "../../../auth/guards/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { RESTAURANT, WAITER } from "../../../role";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";
 import { GetOrder } from "../decorators/order.decorator";
@@ -45,7 +45,7 @@ export class OrderResolver {
   private DELETE = "DELETE";
 
   @Mutation(() => Order, { name: "createOrder" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
@@ -69,7 +69,7 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "createOrders" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept, OpenGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
     @User() { id }: JwtPayload,
     @RID() restaurantId: number,
@@ -140,7 +140,7 @@ export class OrderResolver {
   }
 
   @Query(() => [Order], { name: "orders" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
   async list(
     @RID() restaurantId: number,
     @Args("filter", {
@@ -191,7 +191,7 @@ export class OrderResolver {
   }
 
   @Subscription(() => [ListenOrder], { resolve: (payload) => payload.orders })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
   async listenOrders(@RID() restaurantId: number) {
     return this.subscriptionService.listenOrders(restaurantId);
   }

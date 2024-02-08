@@ -6,7 +6,7 @@ import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { CategoryService } from "../../category/services/category.service";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { VictualGuard } from "../guard/victual.guard";
 import { GetVictual } from "../decorators/victual.decorator";
@@ -114,7 +114,7 @@ export class VictualResolver {
   }
 
   @Query(() => [Victual], { name: "victuals" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   async list(
     @RID() id: number,
     @Args("filter", { nullable: true, type: () => VictualFilter })

@@ -3,7 +3,7 @@ import { extractRIdFromContext } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { OpenHourService } from "../services/openhour.service";
 import { RestaurantClosedException } from "../../../error";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 
 @Injectable()
 export class OpenGuardBase implements CanActivate {
@@ -53,7 +53,7 @@ export class OpenGuardBase implements CanActivate {
 @Injectable()
 export class OpenGuard implements CanActivate {
   constructor(
-    private readonly idIntercept: IdIntercept,
+    private readonly idIntercept: IdGuard,
     private readonly openGuard: OpenGuardBase
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {

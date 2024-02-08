@@ -5,7 +5,7 @@ import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { TableGuard } from "../guard/table.guard";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { GetTable } from "../decorators/table.decorator";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -89,7 +89,7 @@ export class TableResolver {
   }
 
   @Query(() => [Table], { name: "tables" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   async list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => TableFilter })

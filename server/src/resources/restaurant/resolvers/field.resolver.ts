@@ -9,6 +9,7 @@ import { Table } from "../../../models/table.model";
 import { Victual } from "../../../models/victual.model";
 import { Waiter } from "../../../models/waiter.model";
 import { Restaurant } from "../../../models/restaurant.model";
+import { Task } from "../../../models/task.model";
 
 @Resolver((of) => Restaurant)
 export class FieldResolver {
@@ -56,5 +57,10 @@ export class FieldResolver {
   @ResolveField(() => Boolean, { name: "open" })
   isOpen(@Parent() { id }: Restaurant) {
     return this.fieldService.isOpen(id);
+  }
+
+  @ResolveField(() => [Task], { name: "tasks" })
+  getTasks(@Parent() { id }: Restaurant) {
+    return this.fieldService.getTasks(id);
   }
 }

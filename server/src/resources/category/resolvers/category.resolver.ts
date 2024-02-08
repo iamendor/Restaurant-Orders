@@ -6,7 +6,7 @@ import { RoleGuard } from "../../../auth/guards/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
 import { CategoryGuard } from "../guard/category.guard";
 import { GetCategory } from "../decorators/category.decorator";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
 import {
@@ -97,7 +97,7 @@ export class CategoryResolver {
     return category;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   @Query(() => [Category], { name: "categories" })
   async list(
     @RID() restaurantId: number,

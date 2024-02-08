@@ -122,6 +122,12 @@ export const getMocks = () => ({
 
     return days.map((day) => ({ ...base, name: day, createdAt: new Date() }));
   },
+  tasks: [
+    {
+      id: 1,
+      name: "Test well your application!",
+    },
+  ],
 });
 
 export const createRestaurantWithWaiter = async ({

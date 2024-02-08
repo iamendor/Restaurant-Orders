@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { OrderService } from "../services/order.service";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { WAITER } from "../../../role";
 import {
   OrderClosedException,
@@ -47,7 +47,7 @@ export class OrderBaseGuard implements ModelGuard {
 @Injectable()
 export class OrderGuard implements CanActivate {
   constructor(
-    private readonly idIntercept: IdIntercept,
+    private readonly idIntercept: IdGuard,
     private readonly orderGuard: OrderBaseGuard
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {

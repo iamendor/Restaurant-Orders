@@ -4,7 +4,7 @@ import { RESTAURANT } from "../../role";
 import { getReq } from "../../guard/helper";
 
 @Injectable()
-export class IdIntercept implements CanActivate {
+export class IdGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const ctx = GqlExecutionContext.create(context);
     const req = getReq(ctx);

@@ -5,7 +5,7 @@ import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
 import { RoleGuard } from "../../../auth/guards/role.guard";
 import { EmptyTableException, PermissionDeniedException } from "../../../error";
 import { RESTAURANT, WAITER } from "../../../role";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { MealGuard } from "../guard/meal.guard";
 import { GetMeal } from "../decorators/meal.decorator";
@@ -34,7 +34,7 @@ export class MealResolver {
   }
 
   @Mutation(() => Meal, { name: "createMeal" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard)
   async create(
     @RID() restaurantId: number,
     @Args("data") { tableId }: CreateMeal
@@ -72,7 +72,7 @@ export class MealResolver {
   }
 
   @Query(() => [Meal], { name: "meals" })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
   async list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => MealFilter })

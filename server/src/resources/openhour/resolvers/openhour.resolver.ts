@@ -14,7 +14,7 @@ import { RID } from "../../../auth/decorators/role.decorator";
 import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { PermissionDeniedException } from "../../../error";
 import { CacheService } from "../../../cache/services/cache.service";
 
@@ -86,7 +86,7 @@ export class OpenHourResolver {
   }
 
   @Query(() => [OpenHour], { name: "openHours" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   async list(@RID() restaurantId: number) {
     const cached = await this.cacheService.get({
       key: this.cachePrefix(restaurantId),

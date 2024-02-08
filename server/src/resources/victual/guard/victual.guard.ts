@@ -7,7 +7,7 @@ import {
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { VictualService } from "../services/victual.service";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 import { PermissionDeniedException } from "../../../error";
 
 @Injectable()
@@ -36,7 +36,7 @@ export class VictualBaseGuard implements ModelGuard {
 export class VictualGuard implements CanActivate {
   constructor(
     private readonly victualGuard: VictualBaseGuard,
-    private readonly idIntercept: IdIntercept
+    private readonly idIntercept: IdGuard
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const IIG = this.idIntercept.canActivate(context);

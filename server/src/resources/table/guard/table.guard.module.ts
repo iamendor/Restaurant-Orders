@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { TableService } from "../services/table.service";
 import { TableBaseGuard, TableGuard } from "./table.guard";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guards/id.guard";
 
 @Module({
-  providers: [TableService, TableBaseGuard, IdIntercept, TableGuard],
-  exports: [TableBaseGuard, IdIntercept, TableGuard],
+  providers: [TableService, TableBaseGuard, IdGuard, TableGuard],
+  exports: [TableBaseGuard, IdGuard, TableGuard],
 })
 export class TableGuardModule {}
