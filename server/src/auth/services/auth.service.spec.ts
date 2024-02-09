@@ -1,6 +1,5 @@
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { WaiterModule } from "../../resources/waiter/waiter.module";
 import { AuthService } from "./auth.service";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { WaiterService } from "../../resources/waiter/services/waiter.service";
@@ -10,8 +9,6 @@ import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/
 import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
 import { getMocks } from "../../../test/helper/mocks";
 import { JwtPayload } from "../../interfaces/jwt.interface";
-import { CacheService } from "../../cache/services/cache.service";
-import { CacheServiceMock } from "../../cache/services/mock/cache.service.mock";
 
 describe("AuthService", () => {
   let service: AuthService;

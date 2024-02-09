@@ -5,3 +5,4 @@ export const GetVictual = ResourceDecorator("victual");
 export const GetTable = ResourceDecorator("table");
 export const GetOrder = ResourceDecorator("order");
 export const GetRestaurant = ResourceDecorator("restaurant");
+export const GetMeal = ResourceDecorator("meal");

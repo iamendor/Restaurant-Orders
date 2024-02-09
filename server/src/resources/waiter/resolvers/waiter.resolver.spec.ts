@@ -56,16 +56,12 @@ describe("Waiter Resolver", () => {
 
   it("updates the waiter", async () => {
     const update = { name: "updatedWaiter" };
-    const updatedWaiter = await resolver.update(
-      payload,
-      {
-        update,
-        where: {
-          id: waiterPayload.id,
-        },
+    const updatedWaiter = await resolver.update(payload, {
+      update,
+      where: {
+        id: waiterPayload.id,
       },
-      payload.id
-    );
+    });
     expect(updatedWaiter.name).toBe(update.name);
   });
   it("updates waiter password", async () => {

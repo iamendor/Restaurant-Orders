@@ -19,26 +19,34 @@ import { Success } from "../../../models/success.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { VictualFilter } from "../../../models/filter.model";
 import { PermissionDeniedException } from "../../../error";
-import { CacheService } from "../../../cache/services/cache.service";
 import { VictualGuard } from "../../guard";
 import { GetVictual } from "../../decorators";
 import {
   CREATE_VICTUAL_ACTION,
   TaskInterceptor,
 } from "../../task/interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../cache/interceptors/cache.interceptor";
 
 export interface VerifyCategory {
   restaurantId: number;
   categoryId: number;
 }
 
+const VictualCacheInterceptor = CacheInterceptor({
+  prefix: "victuals",
+  map: (v) => ({ ...v, createdAt: new Date(v.createdAt) }),
+});
+const VictualClearCacheInterceptor = ClearCacheInterceptor("victuals");
+
 @Resolver((of) => Victual)
 export class VictualResolver {
   constructor(
     private readonly victualService: VictualService,
     private readonly categoryService: CategoryService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
+    private readonly filterService: FilterService
   ) {}
 
   private async checkCategory({ restaurantId, categoryId }: VerifyCategory) {
@@ -48,16 +56,11 @@ export class VictualResolver {
     return true;
   }
 
-  private cachePrefix(restaurantId) {
-    return `victuals:${restaurantId}`;
-  }
-
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
-
   @Mutation(() => Victual, { name: "createVictual" })
-  @UseInterceptors(TaskInterceptor(CREATE_VICTUAL_ACTION))
+  @UseInterceptors(
+    VictualClearCacheInterceptor,
+    TaskInterceptor(CREATE_VICTUAL_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@User() { id }: JwtPayload, @Args("data") data: CreateVictual) {
     const { categoryId } = data;
@@ -68,13 +71,14 @@ export class VictualResolver {
       restaurantId: id,
     });
 
-    this.clearCache(id);
-
     return victual;
   }
 
   @Mutation(() => Success, { name: "createVictuals" })
-  @UseInterceptors(TaskInterceptor(CREATE_VICTUAL_ACTION))
+  @UseInterceptors(
+    VictualClearCacheInterceptor,
+    TaskInterceptor(CREATE_VICTUAL_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @User() { id }: JwtPayload,
@@ -94,60 +98,36 @@ export class VictualResolver {
       data.map((meal) => ({ ...meal, restaurantId: id }))
     );
 
-    this.clearCache(id);
-
     return victuals;
   }
   //Victual Guard
   @Mutation(() => Victual, { name: "updateVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
+  @UseInterceptors(VictualClearCacheInterceptor)
   async update(@Args("data") data: UpdateVictual, @User() { id }: JwtPayload) {
     const updated = await this.victualService.update(data);
-
-    this.cacheService.del(this.cachePrefix(id));
 
     return updated;
   }
 
   @Mutation(() => Success, { name: "deleteVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
+  @UseInterceptors(VictualClearCacheInterceptor)
   async delete(@Args("where") where: WhereVictual, @User() { id }: JwtPayload) {
     const deleted = await this.victualService.delete(where);
-
-    this.clearCache(id);
 
     return deleted;
   }
 
   @Query(() => [Victual], { name: "victuals" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(VictualCacheInterceptor)
   async list(
     @RID() id: number,
     @Args("filter", { nullable: true, type: () => VictualFilter })
     filters?: VictualFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(id),
-      json: true,
-    });
-
-    if (cached) {
-      const remap = cached.map((vict) => ({
-        ...vict,
-        createdAt: new Date(vict.createdAt),
-      }));
-
-      if (filters) return this.filterService.victual({ data: remap, filters });
-      return remap;
-    }
-
     const victuals = await this.victualService.list(id);
-
-    this.cacheService.set({
-      key: this.cachePrefix(id),
-      value: JSON.stringify(victuals),
-      ttl: 120_000,
-    });
 
     if (filters) return this.filterService.victual({ data: victuals, filters });
     return victuals;

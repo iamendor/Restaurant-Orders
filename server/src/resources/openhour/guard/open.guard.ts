@@ -42,7 +42,6 @@ export class OpenGuard implements CanActivate {
     const ctx = GqlExecutionContext.create(context);
     const id = extractRIdFromContext(ctx);
     const openHour = (await this.openHourService.list(id)).find((oh) => {
-      console.log(oh);
       return oh.name == day;
     });
     if (!openHour) throw new RestaurantClosedException();

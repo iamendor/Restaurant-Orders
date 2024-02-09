@@ -16,29 +16,30 @@ import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { PermissionDeniedException } from "../../../error";
-import { CacheService } from "../../../cache/services/cache.service";
 import {
   CREATE_OPENHOUR_ACTION,
   TaskInterceptor,
 } from "../../task/interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../cache/interceptors/cache.interceptor";
+
+const OpenHourCacheInterceptor = CacheInterceptor({
+  prefix: "openhours",
+  map: (oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }),
+});
+const OpenHourClearCacheInterceptor = ClearCacheInterceptor("openhours");
 
 @Resolver((of) => OpenHour)
 export class OpenHourResolver {
-  constructor(
-    private readonly openHourService: OpenHourService,
-    private readonly cacheService: CacheService
-  ) {}
-
-  private cachePrefix(restaurantId: number) {
-    return `openhours:${restaurantId}`;
-  }
-
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
+  constructor(private readonly openHourService: OpenHourService) {}
 
   @Mutation(() => OpenHour, { name: "createOpenHour" })
-  @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
+  @UseInterceptors(
+    OpenHourClearCacheInterceptor,
+    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
     const openHours = await this.openHourService.list(id);
@@ -48,20 +49,20 @@ export class OpenHourResolver {
         where: { id: today.id },
         update: { start: data.start, end: data.end },
       });
-      this.clearCache(id);
 
       return updated;
     }
 
     const openHour = await this.openHourService.create(data, id);
 
-    this.clearCache(id);
-
     return openHour;
   }
 
   @Mutation(() => Success, { name: "createOpenHours" })
-  @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
+  @UseInterceptors(
+    OpenHourClearCacheInterceptor,
+    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateOpenHour] }) data: CreateOpenHour[],
@@ -81,13 +82,12 @@ export class OpenHourResolver {
       }
     }
 
-    this.clearCache(id);
-
     return { message: "success" };
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseInterceptors(OpenHourClearCacheInterceptor)
   async update(
     @Args("data") { where, update }: UpdateOpenHour,
     @User() { id }: JwtPayload
@@ -97,12 +97,12 @@ export class OpenHourResolver {
 
     const updated = await this.openHourService.update({ where, update });
 
-    this.clearCache(id);
     return updated;
   }
 
   @Mutation(() => Success, { name: "deleteOpenHour" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseInterceptors(OpenHourClearCacheInterceptor)
   async delete(
     @Args("where") where: WhereOpenHour,
     @User() { id }: JwtPayload
@@ -112,30 +112,14 @@ export class OpenHourResolver {
 
     await this.openHourService.delete(where);
 
-    this.clearCache(id);
-
     return { message: "success" };
   }
 
   @Query(() => [OpenHour], { name: "openHours" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(OpenHourCacheInterceptor)
   async list(@RID() restaurantId: number) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached)
-      return cached.map((oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }));
-
     const openHours = await this.openHourService.list(restaurantId);
-
-    this.cacheService.set({
-      key: this.cachePrefix(restaurantId),
-      value: JSON.stringify(openHours),
-      ttl: 120_000,
-    });
-
     return openHours;
   }
 }

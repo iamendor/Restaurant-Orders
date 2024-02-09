@@ -27,6 +27,16 @@ import {
   CREATE_ORDER_ACTION,
   TaskInterceptor,
 } from "../../task/interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../cache/interceptors/cache.interceptor";
+
+const OrderCacheInterceptor = CacheInterceptor({
+  prefix: "orders",
+  map: (ord) => ({ ...ord, createdAt: new Date(ord.createdAt) }),
+});
+const OrderClearCacheInterceptor = ClearCacheInterceptor("orders");
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -49,7 +59,10 @@ export class OrderResolver {
   private DELETE = "DELETE";
 
   @Mutation(() => Order, { name: "createOrder" })
-  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
+  @UseInterceptors(
+    OrderClearCacheInterceptor,
+    TaskInterceptor(CREATE_ORDER_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(
     @User() { id }: JwtPayload,
@@ -73,7 +86,10 @@ export class OrderResolver {
   }
 
   @Mutation(() => Success, { name: "createOrders" })
-  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
+  @UseInterceptors(
+    OrderClearCacheInterceptor,
+    TaskInterceptor(CREATE_ORDER_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
     @User() { id }: JwtPayload,
@@ -109,6 +125,7 @@ export class OrderResolver {
     OpenGuard,
     ...OrderGuard
   )
+  @UseInterceptors(OrderClearCacheInterceptor)
   async update(
     @RID() restaurantId: number,
     @Args("data") { where, update }: UpdateOrder
@@ -135,6 +152,7 @@ export class OrderResolver {
     OpenGuard,
     ...OrderGuard
   )
+  @UseInterceptors(OrderClearCacheInterceptor)
   async delete(
     @RID() restaurantId: number,
     @Args("where") where: WhereOrder,
@@ -156,40 +174,17 @@ export class OrderResolver {
 
   @Query(() => [Order], { name: "orders" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
+  @UseInterceptors(OrderCacheInterceptor)
   async list(
     @RID() restaurantId: number,
     @Args("filter", {
       nullable: true,
       type: () => OrderFilter,
-      defaultValue: { isClosed: false },
+      defaultValue: { isClosed: "false" },
     })
     filters?: OrderFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached) {
-      const remap = cached.map((ord) => ({
-        ...ord,
-        createdAt: new Date(ord.createdAt),
-      }));
-
-      if (filters)
-        return this.filterService.orders({
-          data: remap,
-          filters: { ...filters, isClosed: filters.isClosed || "false" },
-        });
-      return remap;
-    }
-
     const orders = await this.orderService.list(restaurantId);
-
-    this.cacheService.set({
-      key: this.cachePrefix(restaurantId),
-      value: JSON.stringify(orders),
-    });
 
     if (filters)
       return this.filterService.orders({
