@@ -6,8 +6,8 @@ import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { DateScalar } from "../models/date.model";
 import { PrismaModule } from "../prisma/prisma.module";
-import { CacheModule as CachingModule } from "@nestjs/cache-manager";
 import * as Joi from "joi";
+import { RedisModule } from "@nestjs-modules/ioredis";
 
 @Global()
 @Module({
@@ -23,7 +23,10 @@ import * as Joi from "joi";
         abortEarly: true,
       }),
     }),
-    CachingModule.register({ isGlobal: true }),
+    RedisModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: Config.getRedisConfig,
+    }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: Config.getJwtConfig,

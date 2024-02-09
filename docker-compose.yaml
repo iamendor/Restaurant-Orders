@@ -2,6 +2,7 @@ services:
   db:
     container_name: swr_db
     image: mysql
+    restart: always
     volumes:
       - swr_db:/var/lib/mysql
     environment:
@@ -12,5 +13,19 @@ services:
       - "3306:3306"
     expose:
       - 3306
+  redis:
+    container_name: swr_redis
+    restart: always
+    image: redis
+    volumes:
+      - swr_redis:/etc/redis
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=1
+    ports:
+      - "6379:6379"
+    expose:
+      - 6379
 volumes:
   swr_db:
+  swr_redis:

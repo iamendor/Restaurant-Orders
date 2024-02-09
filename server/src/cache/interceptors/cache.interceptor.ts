@@ -68,7 +68,6 @@ export const CacheInterceptor = ({
         key,
         json: true,
       });
-
       if (cached) {
         this.logger.log(`Cache found for ${key}`, "CacheInterceptor");
         if (!map) return of(cached);
