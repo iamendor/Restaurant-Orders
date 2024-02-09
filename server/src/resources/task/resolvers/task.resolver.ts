@@ -10,26 +10,22 @@ import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { TaskFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { CacheInterceptor } from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 
 const TaskCacheInterceptor = CacheInterceptor({ prefix: "tasks" });
 
 @Resolver((of) => Task)
 export class TaskResolver {
-  constructor(
-    private readonly taskService: TaskService,
-    private readonly filterService: FilterService
-  ) {}
+  constructor(private readonly taskService: TaskService) {}
 
   @Query(() => [Task], { name: "listTasks" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  @UseInterceptors(TaskCacheInterceptor)
+  @UseInterceptors(TaskCacheInterceptor, FilterInterceptor("tasks"))
   async list(
     @User() { id }: JwtPayload,
     @Args("filter", { type: () => TaskFilter, nullable: true })
-    filters?: TaskFilter
+    _filters?: TaskFilter
   ) {
     const tasks = await this.taskService.list(id);
-    if (filters) return this.filterService.tasks({ data: tasks, filters });
-    return tasks;
   }
 }

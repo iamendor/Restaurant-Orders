@@ -72,7 +72,7 @@ export class FilterService {
   waiters(data: IFilter<Waiter>) {
     return this.filter(data, this.wRules) as Waiter[];
   }
-  victual(data: IFilter<Victual>) {
+  victuals(data: IFilter<Victual>) {
     return this.filter(data, this.vRules) as Victual[];
   }
   categories(data: IFilter<Category>): Category[] {
@@ -81,7 +81,7 @@ export class FilterService {
   orders(data: IFilter<Order>) {
     return this.filter(data, this.oRules) as Order[];
   }
-  meal(data: IFilter<Meal>) {
+  meals(data: IFilter<Meal>) {
     return this.filter(data, this.mRules) as Meal[];
   }
   tables(data: IFilter<Table>) {

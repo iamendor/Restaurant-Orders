@@ -21,6 +21,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 
 const MealCacheInterceptor = CacheInterceptor({
   prefix: "meals",
@@ -80,16 +81,13 @@ export class MealResolver {
 
   @Query(() => [Meal], { name: "meals" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
-  @UseInterceptors(MealCacheInterceptor)
+  @UseInterceptors(MealCacheInterceptor, FilterInterceptor("meals"))
   async list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => MealFilter })
-    filters?: MealFilter
+    _filter?: MealFilter
   ) {
-    const meals = await this.mealService.list(restaurantId);
-
-    if (filters) return this.filterService.meal({ data: meals, filters });
-    return meals;
+    return this.mealService.list(restaurantId);
   }
 
   @Query(() => Meal, { name: "meal" })

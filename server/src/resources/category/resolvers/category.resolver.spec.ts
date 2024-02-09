@@ -76,12 +76,9 @@ describe("CategoryResolver", () => {
     expect(updated.name).toBe(update);
   });
   it("delete category", async () => {
-    const deleted = await resolver.delete(
-      {
-        id: categoryId,
-      },
-      Rpayload
-    );
+    const deleted = await resolver.delete({
+      id: categoryId,
+    });
     expect(deleted.message).toBe(SUCCESS);
   });
   describe("List", () => {
@@ -93,10 +90,6 @@ describe("CategoryResolver", () => {
     it("list as waiter", async () => {
       const categories = await resolver.list(Rpayload.id);
       expect(categories.length).toEqual(2);
-    });
-    it("should filter out all category", async () => {
-      const categories = await resolver.list(Rpayload.id, { name: "nomatch" });
-      expect(categories.length).toEqual(0);
     });
   });
   describe("Find", () => {

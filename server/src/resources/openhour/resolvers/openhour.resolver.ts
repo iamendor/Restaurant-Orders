@@ -15,7 +15,6 @@ import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IdGuard } from "../../../auth/guard/id.guard";
-import { PermissionDeniedException } from "../../../error";
 import {
   CREATE_OPENHOUR_ACTION,
   TaskInterceptor,
@@ -24,6 +23,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
+import { OpenHourGuard } from "../../guard";
 
 const OpenHourCacheInterceptor = CacheInterceptor({
   prefix: "openhours",
@@ -35,6 +35,18 @@ const OpenHourClearCacheInterceptor = ClearCacheInterceptor("openhours");
 export class OpenHourResolver {
   constructor(private readonly openHourService: OpenHourService) {}
 
+  private async isAlreadyCreated(
+    data: CreateOpenHour,
+    restaurantId: number,
+    list?: OpenHour[]
+  ): Promise<OpenHour> {
+    if (!list) {
+      list = await this.openHourService.list(restaurantId);
+    }
+    return list.find((oh) => oh.name == data.name);
+  }
+
+  //TODO: pipe
   @Mutation(() => OpenHour, { name: "createOpenHour" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
@@ -42,22 +54,18 @@ export class OpenHourResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
-    const openHours = await this.openHourService.list(id);
-    const today = openHours.find((oh) => oh.name == data.name);
-    if (today) {
-      const updated = await this.openHourService.update({
-        where: { id: today.id },
+    const isCreated = await this.isAlreadyCreated(data, id);
+    if (isCreated) {
+      return await this.openHourService.update({
+        where: { id: isCreated.id },
         update: { start: data.start, end: data.end },
       });
-
-      return updated;
     }
 
-    const openHour = await this.openHourService.create(data, id);
-
-    return openHour;
+    return this.openHourService.create(data, id);
   }
 
+  //TODO: pipe
   @Mutation(() => Success, { name: "createOpenHours" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
@@ -70,56 +78,39 @@ export class OpenHourResolver {
   ) {
     const current = await this.openHourService.list(id);
     for (let i = 0; i < data.length; i++) {
-      const today = current.find((oh) => oh.name == data[i].name);
+      const today = await this.isAlreadyCreated(data[i], id, current);
       if (today) {
         const update = { start: data[i].start, end: data[i].end };
         await this.openHourService.update({
           where: { id: today.id },
           update,
         });
-      } else {
-        await this.openHourService.create(data[i], id);
+        data.splice(i, 1);
       }
     }
+    await this.openHourService.createMany(data, id);
 
     return { message: "success" };
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), OpenHourGuard)
   @UseInterceptors(OpenHourClearCacheInterceptor)
-  async update(
-    @Args("data") { where, update }: UpdateOpenHour,
-    @User() { id }: JwtPayload
-  ) {
-    const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new PermissionDeniedException();
-
-    const updated = await this.openHourService.update({ where, update });
-
-    return updated;
+  update(@Args("data") { where, update }: UpdateOpenHour) {
+    return this.openHourService.update({ where, update });
   }
 
   @Mutation(() => Success, { name: "deleteOpenHour" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), OpenHourGuard)
   @UseInterceptors(OpenHourClearCacheInterceptor)
-  async delete(
-    @Args("where") where: WhereOpenHour,
-    @User() { id }: JwtPayload
-  ) {
-    const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new PermissionDeniedException();
-
-    await this.openHourService.delete(where);
-
-    return { message: "success" };
+  async delete(@Args("where") where: WhereOpenHour) {
+    return this.openHourService.delete(where);
   }
 
   @Query(() => [OpenHour], { name: "openHours" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   @UseInterceptors(OpenHourCacheInterceptor)
   async list(@RID() restaurantId: number) {
-    const openHours = await this.openHourService.list(restaurantId);
-    return openHours;
+    return this.openHourService.list(restaurantId);
   }
 }

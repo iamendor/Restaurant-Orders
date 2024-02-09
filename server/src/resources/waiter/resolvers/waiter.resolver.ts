@@ -34,6 +34,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 
 const WaiterCacheInterceptor = CacheInterceptor({
   prefix: "waiters",
@@ -49,24 +50,22 @@ export class WaiterResolver {
     private readonly filterService: FilterService
   ) {}
 
+  @Mutation(() => Waiter, { name: "createWaiter" })
   @UseInterceptors(
     WaiterClearCacheInterceptor,
     TaskInterceptor(CREATE_WAITER_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  @Mutation(() => Waiter, { name: "createWaiter" })
-  async create(@User() { id }: JwtPayload, @Args("data") data: CreateWaiter) {
-    const waiter = await this.waiterService.create({
+  create(@User() { id }: JwtPayload, @Args("data") data: CreateWaiter) {
+    return this.waiterService.create({
       data,
       restaurantId: id,
     });
-
-    return waiter;
   }
 
+  @Mutation(() => Waiter, { name: "updateWaiter" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @UseInterceptors(WaiterClearCacheInterceptor)
-  @Mutation(() => Waiter, { name: "updateWaiter" })
   async update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
     const where = role === WAITER ? { id: user.id } : { ...data.where };
@@ -79,8 +78,8 @@ export class WaiterResolver {
     return updated;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @Mutation(() => Success, { name: "updateWaiterPassword" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   async updatePassword(
     @User() user: JwtPayload,
     @Args("data") data: UpdateWaiterPassword
@@ -104,6 +103,7 @@ export class WaiterResolver {
     });
   }
 
+  //TODO: refactor
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(WaiterClearCacheInterceptor)
   @Mutation(() => Success, { name: "deleteWaiter" })
@@ -117,25 +117,22 @@ export class WaiterResolver {
     return deleted;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
-  @UseInterceptors(WaiterCacheInterceptor)
   @Query(() => [Waiter])
-  async waiters(
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(WaiterCacheInterceptor, FilterInterceptor("waiters"))
+  waiters(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => WaiterFilter })
-    filters?: WaiterFilter
+    _filters?: WaiterFilter
   ) {
-    const waiters = await this.waiterService.list({
+    return this.waiterService.list({
       id: restaurantId,
     });
-
-    if (filters) return this.filterService.waiters({ data: waiters, filters });
-
-    return waiters;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
+  //TODO: refactor
   @Query(() => Waiter, { name: "waiterInfo" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
   async info(
     @User() user: JwtPayload,
     @Args("where", { nullable: true }) where?: WhereWaiter

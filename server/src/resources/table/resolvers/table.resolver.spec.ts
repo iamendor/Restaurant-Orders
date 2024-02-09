@@ -84,11 +84,7 @@ describe("TableResolver", () => {
 
     expect(tables.length).toEqual(3);
   });
-  it("filters out all table", async () => {
-    const tables = await resolver.list(Rpayload.id, { name: "no match" });
 
-    expect(tables.length).toEqual(0);
-  });
   it("returns table with specific id", async () => {
     const table = await resolver.find(
       {

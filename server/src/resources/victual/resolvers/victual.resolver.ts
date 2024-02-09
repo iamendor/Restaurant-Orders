@@ -129,7 +129,8 @@ export class VictualResolver {
   ) {
     const victuals = await this.victualService.list(id);
 
-    if (filters) return this.filterService.victual({ data: victuals, filters });
+    if (filters)
+      return this.filterService.victuals({ data: victuals, filters });
     return victuals;
   }
 

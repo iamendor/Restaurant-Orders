@@ -59,10 +59,7 @@ describe("MealResolver", () => {
     const meals = await resolver.list(restaurantPayload.id);
     expect(meals.length).toEqual(1);
   });
-  it("should filter out all meal", async () => {
-    const meals = await resolver.list(restaurantPayload.id, { minPrice: 500 });
-    expect(meals.length).toEqual(0);
-  });
+
   it("return by id", async () => {
     const meal = await resolver.find(mockMeal, { id: mealId });
     expect(meal).toBeDefined();

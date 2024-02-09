@@ -21,7 +21,6 @@ import { Success } from "../../../models/success.model";
 import { OrderFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
-import { CacheService } from "../../../cache/services/cache.service";
 import { GetOrder } from "../../decorators";
 import {
   CREATE_ORDER_ACTION,
@@ -31,6 +30,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 
 const OrderCacheInterceptor = CacheInterceptor({
   prefix: "orders",
@@ -43,17 +43,9 @@ export class OrderResolver {
   logger: Logger = new Logger();
   constructor(
     private readonly orderService: OrderService,
-    private readonly subscriptionService: SubscriptionService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
-  private cachePrefix(restaurantId: number) {
-    return `orders:${restaurantId}`;
-  }
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
   private UPDATE = "UPDATE";
   private CREATE = "CREATE";
   private DELETE = "DELETE";
@@ -75,8 +67,6 @@ export class OrderResolver {
       waiterId: id,
     });
 
-    this.clearCache(restaurantId);
-
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
       action: this.CREATE,
@@ -85,6 +75,7 @@ export class OrderResolver {
     return order;
   }
 
+  //TODO: validate table and victual
   @Mutation(() => Success, { name: "createOrders" })
   @UseInterceptors(
     OrderClearCacheInterceptor,
@@ -103,8 +94,6 @@ export class OrderResolver {
     }));
 
     await this.orderService.createMany(ordersData);
-
-    this.clearCache(restaurantId);
 
     const orders = await this.orderService.listLatest({
       restaurantId,
@@ -135,8 +124,6 @@ export class OrderResolver {
       update: { ...update, isReady: update.isReady || false },
     });
 
-    this.clearCache(restaurantId);
-
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...updatedOrder,
       action: this.UPDATE,
@@ -162,8 +149,6 @@ export class OrderResolver {
       ...where,
     });
 
-    this.clearCache(restaurantId);
-
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
       action: this.DELETE,
@@ -174,24 +159,17 @@ export class OrderResolver {
 
   @Query(() => [Order], { name: "orders" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
-  @UseInterceptors(OrderCacheInterceptor)
-  async list(
+  @UseInterceptors(OrderCacheInterceptor, FilterInterceptor("orders"))
+  list(
     @RID() restaurantId: number,
     @Args("filter", {
       nullable: true,
       type: () => OrderFilter,
       defaultValue: { isClosed: "false" },
     })
-    filters?: OrderFilter
+    _filters?: OrderFilter
   ) {
-    const orders = await this.orderService.list(restaurantId);
-
-    if (filters)
-      return this.filterService.orders({
-        data: orders,
-        filters: { ...filters, isClosed: filters.isClosed || "false" },
-      });
-    return orders;
+    return this.orderService.list(restaurantId);
   }
 
   @Query(() => Order, { name: "order" })

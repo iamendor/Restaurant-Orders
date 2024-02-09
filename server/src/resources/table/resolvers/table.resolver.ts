@@ -17,8 +17,6 @@ import {
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
 import { TableFilter } from "../../../models/filter.model";
-import { FilterService } from "../../../filter/services/filter.service";
-import { CacheService } from "../../../cache/services/cache.service";
 import { GetTable } from "../../decorators";
 import {
   CREATE_TABLE_ACTION,
@@ -28,6 +26,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 
 const TabelCacheInterceptor = CacheInterceptor({
   prefix: "tables",
@@ -37,11 +36,9 @@ const TableClearCacheInterceptor = ClearCacheInterceptor("tables");
 
 @Resolver((of) => Table)
 export class TableResolver {
-  constructor(
-    private readonly tableService: TableService,
-    private readonly filterService: FilterService
-  ) {}
+  constructor(private readonly tableService: TableService) {}
 
+  //TODO: pipe
   @Mutation(() => Table, { name: "createTable" })
   @UseInterceptors(
     TableClearCacheInterceptor,
@@ -56,6 +53,7 @@ export class TableResolver {
     return table;
   }
 
+  //TODO: pipe
   @Mutation(() => Success, { name: "createTables" })
   @UseInterceptors(
     TableClearCacheInterceptor,
@@ -79,38 +77,31 @@ export class TableResolver {
   @Mutation(() => Table, { name: "updateTable" })
   @UseInterceptors(TableClearCacheInterceptor)
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
-  async update(@Args("data") data: UpdateTable, @User() { id }: JwtPayload) {
-    const updated = await this.tableService.update(data);
-
-    return updated;
+  update(@Args("data") data: UpdateTable, @User() { id }: JwtPayload) {
+    return this.tableService.update(data);
   }
 
   @Mutation(() => Success, { name: "deleteTable" })
   @UseGuards(TableClearCacheInterceptor)
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
-  async delete(@Args("where") where: WhereTable, @User() { id }: JwtPayload) {
-    const deleted = await this.tableService.delete(where);
-
-    return deleted;
+  delete(@Args("where") where: WhereTable, @User() { id }: JwtPayload) {
+    return this.tableService.delete(where);
   }
 
   @Query(() => [Table], { name: "tables" })
-  @UseInterceptors(TabelCacheInterceptor)
+  @UseInterceptors(TabelCacheInterceptor, FilterInterceptor("tables"))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
-  async list(
+  list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => TableFilter })
-    filters?: TableFilter
+    _filters?: TableFilter
   ) {
-    const tables = await this.tableService.list(restaurantId);
-
-    if (filters) return this.filterService.tables({ data: tables, filters });
-    return tables;
+    return this.tableService.list(restaurantId);
   }
 
   @Query(() => Table, { name: "table" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), TableGuard)
-  async find(@GetTable() table: Table, @Args("where") _: WhereTable) {
+  find(@GetTable() table: Table, @Args("where") _: WhereTable) {
     return table;
   }
 }
