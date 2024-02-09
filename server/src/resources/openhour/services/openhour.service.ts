@@ -27,6 +27,17 @@ export class OpenHourService {
     return openHour;
   }
 
+  async createMany(
+    data: CreateOpenHour[],
+    restaurantId: number
+  ): Promise<Success> {
+    await this.prismaService.openingHour.createMany({
+      data: data.map((oh) => ({ ...oh, restaurantId })),
+      skipDuplicates: true,
+    });
+    return { message: "success" };
+  }
+
   list(restaurantId: number) {
     return this.prismaService.openingHour.findMany({
       where: {

@@ -17,46 +17,48 @@ import {
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
 import { TableFilter } from "../../../models/filter.model";
-import { FilterService } from "../../../filter/services/filter.service";
-import { CacheService } from "../../../cache/services/cache.service";
 import { GetTable } from "../../decorators";
 import {
   CREATE_TABLE_ACTION,
   TaskInterceptor,
 } from "../../task/interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+
+const TabelCacheInterceptor = CacheInterceptor({
+  prefix: "tables",
+  map: (tab) => ({ ...tab, createdAt: new Date(tab.createdAt) }),
+});
+const TableClearCacheInterceptor = ClearCacheInterceptor("tables");
 
 @Resolver((of) => Table)
 export class TableResolver {
-  constructor(
-    private readonly tableService: TableService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
-  ) {}
+  constructor(private readonly tableService: TableService) {}
 
-  private cachePrefix(restaurantId: number) {
-    return `tables:${restaurantId}`;
-  }
-
-  private clearCache(restaurantId: number) {
-    return this.cacheService.del(this.cachePrefix(restaurantId));
-  }
-
+  //TODO: pipe
   @Mutation(() => Table, { name: "createTable" })
-  @UseInterceptors(TaskInterceptor(CREATE_TABLE_ACTION))
+  @UseInterceptors(
+    TableClearCacheInterceptor,
+    TaskInterceptor(CREATE_TABLE_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@User() { id }: JwtPayload, @Args("data") data: CreateTable) {
     const table = await this.tableService.create({
       ...data,
       restaurantId: id,
     });
-
-    this.clearCache(id);
-
     return table;
   }
 
+  //TODO: pipe
   @Mutation(() => Success, { name: "createTables" })
-  @UseInterceptors(TaskInterceptor(CREATE_TABLE_ACTION))
+  @UseInterceptors(
+    TableClearCacheInterceptor,
+    TaskInterceptor(CREATE_TABLE_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @User() { id }: JwtPayload,
@@ -69,68 +71,37 @@ export class TableResolver {
 
     const tables = await this.tableService.createMany(modified);
 
-    this.clearCache(id);
-
     return tables;
   }
 
   @Mutation(() => Table, { name: "updateTable" })
+  @UseInterceptors(TableClearCacheInterceptor)
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
-  async update(@Args("data") data: UpdateTable, @User() { id }: JwtPayload) {
-    const updated = await this.tableService.update(data);
-
-    this.clearCache(id);
-
-    return updated;
+  update(@Args("data") data: UpdateTable, @User() { id }: JwtPayload) {
+    return this.tableService.update(data);
   }
 
   @Mutation(() => Success, { name: "deleteTable" })
+  @UseGuards(TableClearCacheInterceptor)
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
-  async delete(@Args("where") where: WhereTable, @User() { id }: JwtPayload) {
-    const deleted = await this.tableService.delete(where);
-
-    this.clearCache(id);
-
-    return deleted;
+  delete(@Args("where") where: WhereTable, @User() { id }: JwtPayload) {
+    return this.tableService.delete(where);
   }
 
   @Query(() => [Table], { name: "tables" })
+  @UseInterceptors(TabelCacheInterceptor, FilterInterceptor("tables"))
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
-  async list(
+  list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => TableFilter })
-    filters?: TableFilter
+    _filters?: TableFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached) {
-      const remap = cached.map((table) => ({
-        ...table,
-        createdAt: new Date(table.createdAt),
-      }));
-
-      if (filters) return this.filterService.tables({ data: remap, filters });
-      return remap;
-    }
-
-    const tables = await this.tableService.list(restaurantId);
-
-    this.cacheService.set({
-      key: this.cachePrefix(restaurantId),
-      value: JSON.stringify(tables),
-      ttl: 120_000_000,
-    });
-
-    if (filters) return this.filterService.tables({ data: tables, filters });
-    return tables;
+    return this.tableService.list(restaurantId);
   }
 
   @Query(() => Table, { name: "table" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), TableGuard)
-  async find(@GetTable() table: Table, @Args("where") _: WhereTable) {
+  find(@GetTable() table: Table, @Args("where") _: WhereTable) {
     return table;
   }
 }

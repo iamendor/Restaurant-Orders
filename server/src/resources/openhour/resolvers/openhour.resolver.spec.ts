@@ -8,6 +8,8 @@ import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
+import { PrismaService } from "../../../prisma/services/prisma.service";
+import { IdGuard } from "../../../auth/guard/id.guard";
 
 describe("OpenHourResolver", () => {
   let resolver: OpenHourResolver;
@@ -21,6 +23,8 @@ describe("OpenHourResolver", () => {
         { provide: OpenHourService, useClass: OpenHourServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        PrismaService,
+        IdGuard,
         OpenHourResolver,
       ],
     }).compile();
@@ -42,13 +46,10 @@ describe("OpenHourResolver", () => {
   });
   it("updates the open hour", async () => {
     const update = { name: "Sunday" };
-    const oh = await resolver.update(
-      {
-        where: { id: 1 },
-        update,
-      },
-      jwt
-    );
+    const oh = await resolver.update({
+      where: { id: 1 },
+      update,
+    });
     expect(oh.name).toBe(update.name);
   });
   it("lists all", async () => {
@@ -56,7 +57,7 @@ describe("OpenHourResolver", () => {
     expect(ls.length).toEqual(2);
   });
   it("deletes open hour", async () => {
-    const deleted = await resolver.delete({ id: 1 }, { id: 1 } as JwtPayload);
+    const deleted = await resolver.delete({ id: 1 });
     expect(deleted.message).toBe("success");
   });
 });

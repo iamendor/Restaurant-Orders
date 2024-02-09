@@ -103,10 +103,4 @@ describe("OrderResolver", () => {
     expect(orders.length).toEqual(1);
     orderId = orders[0].id;
   });
-  it("should filter out all order", async () => {
-    const orders = await resolver.list(restaurantId, {
-      description: "no match",
-    });
-    expect(orders.length).toBe(0);
-  });
 });

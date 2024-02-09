@@ -21,35 +21,40 @@ import { Success } from "../../../models/success.model";
 import { OrderFilter } from "../../../models/filter.model";
 import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
-import { CacheService } from "../../../cache/services/cache.service";
 import { GetOrder } from "../../decorators";
 import {
   CREATE_ORDER_ACTION,
   TaskInterceptor,
 } from "../../task/interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../cache/interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+
+const OrderCacheInterceptor = CacheInterceptor({
+  prefix: "orders",
+  map: (ord) => ({ ...ord, createdAt: new Date(ord.createdAt) }),
+});
+const OrderClearCacheInterceptor = ClearCacheInterceptor("orders");
 
 @Resolver((of) => Order)
 export class OrderResolver {
   logger: Logger = new Logger();
   constructor(
     private readonly orderService: OrderService,
-    private readonly subscriptionService: SubscriptionService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
-  private cachePrefix(restaurantId: number) {
-    return `orders:${restaurantId}`;
-  }
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
   private UPDATE = "UPDATE";
   private CREATE = "CREATE";
   private DELETE = "DELETE";
 
   @Mutation(() => Order, { name: "createOrder" })
-  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
+  @UseInterceptors(
+    OrderClearCacheInterceptor,
+    TaskInterceptor(CREATE_ORDER_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(
     @User() { id }: JwtPayload,
@@ -62,8 +67,6 @@ export class OrderResolver {
       waiterId: id,
     });
 
-    this.clearCache(restaurantId);
-
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
       action: this.CREATE,
@@ -72,8 +75,12 @@ export class OrderResolver {
     return order;
   }
 
+  //TODO: validate table and victual
   @Mutation(() => Success, { name: "createOrders" })
-  @UseInterceptors(TaskInterceptor(CREATE_ORDER_ACTION))
+  @UseInterceptors(
+    OrderClearCacheInterceptor,
+    TaskInterceptor(CREATE_ORDER_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
     @User() { id }: JwtPayload,
@@ -87,8 +94,6 @@ export class OrderResolver {
     }));
 
     await this.orderService.createMany(ordersData);
-
-    this.clearCache(restaurantId);
 
     const orders = await this.orderService.listLatest({
       restaurantId,
@@ -109,6 +114,7 @@ export class OrderResolver {
     OpenGuard,
     ...OrderGuard
   )
+  @UseInterceptors(OrderClearCacheInterceptor)
   async update(
     @RID() restaurantId: number,
     @Args("data") { where, update }: UpdateOrder
@@ -117,8 +123,6 @@ export class OrderResolver {
       where,
       update: { ...update, isReady: update.isReady || false },
     });
-
-    this.clearCache(restaurantId);
 
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...updatedOrder,
@@ -135,6 +139,7 @@ export class OrderResolver {
     OpenGuard,
     ...OrderGuard
   )
+  @UseInterceptors(OrderClearCacheInterceptor)
   async delete(
     @RID() restaurantId: number,
     @Args("where") where: WhereOrder,
@@ -143,8 +148,6 @@ export class OrderResolver {
     const deleted = await this.orderService.delete({
       ...where,
     });
-
-    this.clearCache(restaurantId);
 
     this.subscriptionService.invalidateOrders(restaurantId, {
       ...order,
@@ -156,47 +159,17 @@ export class OrderResolver {
 
   @Query(() => [Order], { name: "orders" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
-  async list(
+  @UseInterceptors(OrderCacheInterceptor, FilterInterceptor("orders"))
+  list(
     @RID() restaurantId: number,
     @Args("filter", {
       nullable: true,
       type: () => OrderFilter,
-      defaultValue: { isClosed: false },
+      defaultValue: { isClosed: "false" },
     })
-    filters?: OrderFilter
+    _filters?: OrderFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached) {
-      const remap = cached.map((ord) => ({
-        ...ord,
-        createdAt: new Date(ord.createdAt),
-      }));
-
-      if (filters)
-        return this.filterService.orders({
-          data: remap,
-          filters: { ...filters, isClosed: filters.isClosed || "false" },
-        });
-      return remap;
-    }
-
-    const orders = await this.orderService.list(restaurantId);
-
-    this.cacheService.set({
-      key: this.cachePrefix(restaurantId),
-      value: JSON.stringify(orders),
-    });
-
-    if (filters)
-      return this.filterService.orders({
-        data: orders,
-        filters: { ...filters, isClosed: filters.isClosed || "false" },
-      });
-    return orders;
+    return this.orderService.list(restaurantId);
   }
 
   @Query(() => Order, { name: "order" })

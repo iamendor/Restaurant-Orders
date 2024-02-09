@@ -1,3 +1,4 @@
+import { RedisModuleOptions } from "@nestjs-modules/ioredis";
 import { ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import { JwtModuleOptions } from "@nestjs/jwt";
@@ -31,10 +32,17 @@ export class Config {
 
   static getJwtConfig(configService: ConfigService): JwtModuleOptions {
     return {
-      secret: configService.get("JWT_SECRET"),
+      secret: configService.getOrThrow("JWT_SECRET"),
       signOptions: {
         expiresIn: "12h",
       },
+    };
+  }
+
+  static getRedisConfig(configService: ConfigService): RedisModuleOptions {
+    return {
+      type: "single",
+      url: "redis://127.0.0.1:6379",
     };
   }
 }

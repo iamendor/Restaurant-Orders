@@ -5,6 +5,7 @@ import { Victual } from "../../models/victual.model";
 import { Category } from "../../models/category.model";
 import { Order } from "../../models/order.model";
 import { Table } from "../../models/table.model";
+import { Task } from "../../models/task.model";
 
 describe("FilterService", () => {
   let service: FilterService;
@@ -77,7 +78,7 @@ describe("FilterService", () => {
     ] as Victual[];
 
     it("should filter by name", () => {
-      const filtered = service.victual({
+      const filtered = service.victuals({
         data: victuals,
         filters: {
           name: "vt",
@@ -86,7 +87,7 @@ describe("FilterService", () => {
       expect(filtered.length).toEqual(1);
     });
     it("should filter with min price", () => {
-      const filtered = service.victual({
+      const filtered = service.victuals({
         data: victuals,
         filters: {
           min: 12,
@@ -95,7 +96,7 @@ describe("FilterService", () => {
       expect(filtered.length).toEqual(1);
     });
     it("should filter with max price", () => {
-      const filtered = service.victual({
+      const filtered = service.victuals({
         data: victuals,
         filters: {
           max: 12,
@@ -104,7 +105,7 @@ describe("FilterService", () => {
       expect(filtered.length).toEqual(1);
     });
     it("should combine the two", () => {
-      const filtered = service.victual({
+      const filtered = service.victuals({
         data: victuals,
         filters: {
           max: 12,
@@ -205,6 +206,31 @@ describe("FilterService", () => {
         filters: { name: "ok" },
       });
       expect(filtered.length).toEqual(1);
+    });
+  });
+  describe("Task", () => {
+    const tasks = [
+      { id: 1, done: false },
+      { id: 2, done: true },
+    ] as Task[];
+
+    it("should filter by done", () => {
+      const filtered = service.tasks({
+        data: tasks,
+        filters: { done: "true" },
+      });
+      const filtered2 = service.tasks({
+        data: tasks,
+        filters: { done: "false" },
+      });
+      const filtered3 = service.tasks({
+        data: tasks,
+        filters: { done: "all" },
+      });
+
+      expect(filtered.length).toBe(1);
+      expect(filtered2.length).toBe(1);
+      expect(filtered3.length).toBe(2);
     });
   });
 });

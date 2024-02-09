@@ -15,53 +15,62 @@ import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IdGuard } from "../../../auth/guard/id.guard";
-import { PermissionDeniedException } from "../../../error";
-import { CacheService } from "../../../cache/services/cache.service";
 import {
   CREATE_OPENHOUR_ACTION,
   TaskInterceptor,
 } from "../../task/interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../cache/interceptors/cache.interceptor";
+import { OpenHourGuard } from "../../guard";
+
+const OpenHourCacheInterceptor = CacheInterceptor({
+  prefix: "openhours",
+  map: (oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }),
+});
+const OpenHourClearCacheInterceptor = ClearCacheInterceptor("openhours");
 
 @Resolver((of) => OpenHour)
 export class OpenHourResolver {
-  constructor(
-    private readonly openHourService: OpenHourService,
-    private readonly cacheService: CacheService
-  ) {}
+  constructor(private readonly openHourService: OpenHourService) {}
 
-  private cachePrefix(restaurantId: number) {
-    return `openhours:${restaurantId}`;
+  private async isAlreadyCreated(
+    data: CreateOpenHour,
+    restaurantId: number,
+    list?: OpenHour[]
+  ): Promise<OpenHour> {
+    if (!list) {
+      list = await this.openHourService.list(restaurantId);
+    }
+    return list.find((oh) => oh.name == data.name);
   }
 
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
-
+  //TODO: pipe
   @Mutation(() => OpenHour, { name: "createOpenHour" })
-  @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
+  @UseInterceptors(
+    OpenHourClearCacheInterceptor,
+    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
-    const openHours = await this.openHourService.list(id);
-    const today = openHours.find((oh) => oh.name == data.name);
-    if (today) {
-      const updated = await this.openHourService.update({
-        where: { id: today.id },
+    const isCreated = await this.isAlreadyCreated(data, id);
+    if (isCreated) {
+      return await this.openHourService.update({
+        where: { id: isCreated.id },
         update: { start: data.start, end: data.end },
       });
-      this.clearCache(id);
-
-      return updated;
     }
 
-    const openHour = await this.openHourService.create(data, id);
-
-    this.clearCache(id);
-
-    return openHour;
+    return this.openHourService.create(data, id);
   }
 
+  //TODO: pipe
   @Mutation(() => Success, { name: "createOpenHours" })
-  @UseInterceptors(TaskInterceptor(CREATE_OPENHOUR_ACTION))
+  @UseInterceptors(
+    OpenHourClearCacheInterceptor,
+    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateOpenHour] }) data: CreateOpenHour[],
@@ -69,73 +78,39 @@ export class OpenHourResolver {
   ) {
     const current = await this.openHourService.list(id);
     for (let i = 0; i < data.length; i++) {
-      const today = current.find((oh) => oh.name == data[i].name);
+      const today = await this.isAlreadyCreated(data[i], id, current);
       if (today) {
         const update = { start: data[i].start, end: data[i].end };
         await this.openHourService.update({
           where: { id: today.id },
           update,
         });
-      } else {
-        await this.openHourService.create(data[i], id);
+        data.splice(i, 1);
       }
     }
-
-    this.clearCache(id);
+    await this.openHourService.createMany(data, id);
 
     return { message: "success" };
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async update(
-    @Args("data") { where, update }: UpdateOpenHour,
-    @User() { id }: JwtPayload
-  ) {
-    const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new PermissionDeniedException();
-
-    const updated = await this.openHourService.update({ where, update });
-
-    this.clearCache(id);
-    return updated;
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), OpenHourGuard)
+  @UseInterceptors(OpenHourClearCacheInterceptor)
+  update(@Args("data") { where, update }: UpdateOpenHour) {
+    return this.openHourService.update({ where, update });
   }
 
   @Mutation(() => Success, { name: "deleteOpenHour" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async delete(
-    @Args("where") where: WhereOpenHour,
-    @User() { id }: JwtPayload
-  ) {
-    const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new PermissionDeniedException();
-
-    await this.openHourService.delete(where);
-
-    this.clearCache(id);
-
-    return { message: "success" };
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), OpenHourGuard)
+  @UseInterceptors(OpenHourClearCacheInterceptor)
+  async delete(@Args("where") where: WhereOpenHour) {
+    return this.openHourService.delete(where);
   }
 
   @Query(() => [OpenHour], { name: "openHours" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(OpenHourCacheInterceptor)
   async list(@RID() restaurantId: number) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached)
-      return cached.map((oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }));
-
-    const openHours = await this.openHourService.list(restaurantId);
-
-    this.cacheService.set({
-      key: this.cachePrefix(restaurantId),
-      value: JSON.stringify(openHours),
-      ttl: 120_000,
-    });
-
-    return openHours;
+    return this.openHourService.list(restaurantId);
   }
 }
