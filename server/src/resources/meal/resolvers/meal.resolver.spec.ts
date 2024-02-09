@@ -13,14 +13,13 @@ import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { TaskService } from "../../task/services/task.service";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { FieldService } from "../services/field.service";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;
-  let prisma: PrismaService;
 
   const mocks = getMocks();
   let restaurantPayload: JwtPayload;
-  let waiterPayload: JwtPayload;
 
   const tableId: number = 1;
   let mealId: number;
@@ -34,15 +33,12 @@ describe("MealResolver", () => {
         { provide: MealService, useClass: MealServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        { provide: FieldService, useValue: { orders: () => [mocks.order] } },
       ],
     }).compile();
-    prisma = module.get<PrismaService>(PrismaService);
     resolver = module.get<MealResolver>(MealResolver);
 
-    [restaurantPayload, waiterPayload] = [
-      mocks.restaurantPayload(mocks.restaurantModel),
-      mocks.waiterPayload(mocks.waiter, 1),
-    ];
+    restaurantPayload = mocks.restaurantPayload(mocks.restaurantModel);
   });
 
   it("should be defined", () => {
@@ -50,7 +46,7 @@ describe("MealResolver", () => {
   });
 
   it("create a meal", async () => {
-    const meal = await resolver.create(waiterPayload.restaurantId, { tableId });
+    const meal = await resolver.create({ tableId, restaurantId: 1 });
     expect(meal).toBeDefined();
     expect(meal.total).toEqual(100);
     mealId = meal.id;

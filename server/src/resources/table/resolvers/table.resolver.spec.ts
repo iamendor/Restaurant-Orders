@@ -51,13 +51,15 @@ describe("TableResolver", () => {
   });
 
   it("create a table", async () => {
-    const table = await resolver.create(Rpayload, mockTable);
+    const table = await resolver.create(mockTable);
     expect(table.name).toBe(mockTable.name);
     mockTable = { ...mockTable, id: table.id };
   });
   it("create multiple table", async () => {
     const tables = [1, 2].map(() => mocks.table());
-    const createTables = await resolver.createMany(Rpayload, tables);
+    const createTables = await resolver.createMany(
+      tables.map((t) => ({ ...t, restaurantId: 1 }))
+    );
     expect(createTables.message).toBe(SUCCESS);
   });
   it("update table", async () => {

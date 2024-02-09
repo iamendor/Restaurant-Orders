@@ -27,6 +27,7 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { AddRID } from "../../pipes/rid.pipe";
 
 const CategoryCacheInterceptor = CacheInterceptor({
   prefix: "categories",
@@ -38,21 +39,17 @@ const CategoryClearCacheInterceptor = ClearCacheInterceptor("categories");
 export class CategoryResolver {
   constructor(private readonly categoryService: CategoryService) {}
 
-  //TODO: pipe
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
     CategoryClearCacheInterceptor
   )
   @Mutation(() => Category, { name: "createCategory" })
-  create(@User() { id }: JwtPayload, @Args("data") data: CreateCategory) {
-    return this.categoryService.create({
-      ...data,
-      restaurantId: id,
-    });
+  create(@Args("data", AddRID) data: CreateCategory) {
+    return this.categoryService.create(data);
   }
 
-  //TODO: pipe
+  //TODO: add minlength pipe
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
@@ -60,12 +57,10 @@ export class CategoryResolver {
   )
   @Mutation(() => Success, { name: "createCategories" })
   createMany(
-    @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateCategory] }) data: CreateCategory[]
+    @Args("data", { type: () => [CreateCategory] })
+    data: Required<CreateCategory>[]
   ): Promise<Success> {
-    return this.categoryService.createMany(
-      data.map((cat) => ({ ...cat, restaurantId: id }))
-    );
+    return this.categoryService.createMany(data);
   }
 
   @Mutation(() => Category, { name: "updateCategory" })

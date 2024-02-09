@@ -41,7 +41,11 @@ describe("CategoryService", () => {
       .mockImplementation(({ data }) => [...data]);
 
     const categories = await service.createMany(
-      [1, 2].map((i) => ({ name: `Category${i}`, restaurantId: 1 }))
+      [1, 2].map((i) => ({
+        name: `Category${i}`,
+        restaurantId: 1,
+        parentId: 1,
+      }))
     );
     expect(categories.message).toBe("success");
   });

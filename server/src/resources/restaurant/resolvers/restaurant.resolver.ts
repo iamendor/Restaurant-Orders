@@ -56,9 +56,8 @@ export class RestaurantResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Success, { name: "deleteRestaurant" })
-  async delete(@User() restaurant: JwtPayload) {
-    const deleted = await this.restaurantService.delete({ id: restaurant.id });
-    return deleted;
+  delete(@User() restaurant: JwtPayload) {
+    return this.restaurantService.delete({ id: restaurant.id });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), RestaurantGuard)

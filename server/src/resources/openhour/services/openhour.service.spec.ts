@@ -21,7 +21,7 @@ describe("OpenHour Service", () => {
   it("should create an openhour", async () => {
     prisma.openingHour.create = jest.fn().mockReturnValue(mockOpen);
 
-    const openingHour = await service.create(mockOpen, 1);
+    const openingHour = await service.create(mockOpen);
     expect(openingHour).toBeDefined();
   });
 

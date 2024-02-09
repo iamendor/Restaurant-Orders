@@ -9,21 +9,17 @@ import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.moc
 import { SecurityModule } from "../../../security/security.module";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { SubscriptionServiceMock } from "../../../subscription/services/mock/subscription.service";
-import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { CreateOrder } from "../../../models/order.model";
 import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
-import { IdGuard } from "../../../auth/guard/id.guard";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
   let restaurantId: number;
-  let restaurantToken: JwtPayload;
-  let waiterToken: JwtPayload;
   let orderId: number;
   const mocks = getMocks();
   let mockOrder: CreateOrder;
@@ -39,15 +35,12 @@ describe("OrderResolver", () => {
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
-        IdGuard,
         OrderResolver,
       ],
     }).compile();
     resolver = module.get<OrderResolver>(OrderResolver);
 
     restaurantId = 1;
-    restaurantToken = mocks.restaurantPayload(mocks.restaurantModel);
-    waiterToken = mocks.waiterPayload(mocks.waiter, 1);
 
     mockOrder = mocks.order({
       restaurantId: 1,
@@ -62,14 +55,12 @@ describe("OrderResolver", () => {
   });
 
   it("creates a new order", async () => {
-    const order = await resolver.create(waiterToken, restaurantId, mockOrder);
+    const order = await resolver.create(mockOrder);
     expect(order.description).toBe("this is a mock order");
     orderId = order.id;
   });
   it("creates multiple order", async () => {
-    const created = await resolver.createMany(waiterToken, restaurantId, [
-      mockOrder,
-    ]);
+    const created = await resolver.createMany([mockOrder]);
     expect(created.message).toBe(SUCCESS);
   });
   it("updates the order", async () => {
@@ -85,15 +76,15 @@ describe("OrderResolver", () => {
   });
   it("deletes the order", async () => {
     const deleted = await resolver.delete(
-      restaurantId,
       { id: orderId },
       {
         ...mockOrder,
-        id: orderId,
+        id: 1,
         createdAt: new Date(),
-        isReady: false,
         closed: false,
+        isReady: false,
         quantity: 1,
+        restaurantId: 1,
       }
     );
     expect(deleted.message).toBe(SUCCESS);

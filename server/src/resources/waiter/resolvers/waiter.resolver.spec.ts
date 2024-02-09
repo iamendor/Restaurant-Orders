@@ -47,7 +47,7 @@ describe("Waiter Resolver", () => {
   });
 
   it("creates a new waiter", async () => {
-    const create = await resolver.create(payload, mocks.waiter);
+    const create = await resolver.create(mocks.waiter);
     expect(create).toBeDefined();
     expect(create.name).toBe(mocks.waiter.name);
 

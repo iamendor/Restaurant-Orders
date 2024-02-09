@@ -4,6 +4,7 @@ import { RestaurantService } from "../services/restaurant.service";
 import { getReq } from "../../../guard/helper";
 import { IdGuard } from "../../../auth/guard/id.guard";
 
+//TODO: refactor
 @Injectable()
 export class RestaurantBaseGuard implements CanActivate {
   constructor(private readonly restaurantService: RestaurantService) {}

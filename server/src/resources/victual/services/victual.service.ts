@@ -7,10 +7,14 @@ import {
   Victual,
 } from "../../../models/victual.model";
 import { Success } from "../../../models/success.model";
+import { PermissionDeniedException } from "../../../error";
+
 
 @Injectable()
 export class VictualService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  
 
   async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;

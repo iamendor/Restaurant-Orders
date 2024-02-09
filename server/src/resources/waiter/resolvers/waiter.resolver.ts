@@ -24,7 +24,6 @@ import {
   UpdateWaiterPassword,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
-import { FilterService } from "../../../filter/services/filter.service";
 import { WaiterFilter } from "../../../models/filter.model";
 import {
   CREATE_WAITER_ACTION,
@@ -35,6 +34,7 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { AddRID } from "../../pipes/rid.pipe";
 
 const WaiterCacheInterceptor = CacheInterceptor({
   prefix: "waiters",
@@ -46,8 +46,7 @@ const WaiterClearCacheInterceptor = ClearCacheInterceptor("waiters");
 export class WaiterResolver {
   constructor(
     private readonly waiterService: WaiterService,
-    private readonly securityService: SecurityService,
-    private readonly filterService: FilterService
+    private readonly securityService: SecurityService
   ) {}
 
   @Mutation(() => Waiter, { name: "createWaiter" })
@@ -56,11 +55,8 @@ export class WaiterResolver {
     TaskInterceptor(CREATE_WAITER_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  create(@User() { id }: JwtPayload, @Args("data") data: CreateWaiter) {
-    return this.waiterService.create({
-      data,
-      restaurantId: id,
-    });
+  create(@Args("data", AddRID) data: CreateWaiter) {
+    return this.waiterService.create(data);
   }
 
   @Mutation(() => Waiter, { name: "updateWaiter" })

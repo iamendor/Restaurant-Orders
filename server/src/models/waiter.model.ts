@@ -51,14 +51,8 @@ export class CreateWaiter extends PickType(
 ) {
   @Field()
   password: string;
-}
-
-@InputType()
-export class CreateWaiterData {
   @Field()
-  restaurantId: number;
-  @Field(() => CreateWaiter)
-  data: CreateWaiter;
+  restaurantId?: number;
 }
 
 @InputType()

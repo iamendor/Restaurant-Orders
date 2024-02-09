@@ -16,9 +16,7 @@ import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 
 describe("CategoryResolver", () => {
   let resolver: CategoryResolver;
-  let prisma: PrismaService;
   const mocks = getMocks();
-  let Wpayload: JwtPayload;
   let Rpayload: JwtPayload;
   let categoryId: number;
   let cat: Category;
@@ -37,8 +35,6 @@ describe("CategoryResolver", () => {
     }).compile();
 
     resolver = module.get<CategoryResolver>(CategoryResolver);
-    prisma = module.get<PrismaService>(PrismaService);
-    Wpayload = mocks.waiterPayload(mocks.waiter, 1);
     Rpayload = mocks.restaurantPayload(mocks.restaurant);
   });
 
@@ -47,7 +43,7 @@ describe("CategoryResolver", () => {
   });
 
   it("create a category", async () => {
-    const category = await resolver.create(Rpayload, {
+    const category = await resolver.create({
       name: mocks.category.name,
     });
     expect(category.name).toBe(mocks.category.name);
@@ -57,7 +53,9 @@ describe("CategoryResolver", () => {
   it("create multiple", async () => {
     const categories = [1, 2].map((i) => ({ name: `category${i}` }));
 
-    const created = await resolver.createMany(Rpayload, categories);
+    const created = await resolver.createMany(
+      categories.map((cat) => ({ ...cat, restaurantId: 1, parentId: null }))
+    );
     expect(created.message).toBe(SUCCESS);
   });
   it("update the category", async () => {

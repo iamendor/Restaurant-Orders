@@ -37,7 +37,7 @@ describe("OpenHourResolver", () => {
   });
 
   it("create an open hour", async () => {
-    const oh = await resolver.create(openHour, jwt);
+    const oh = await resolver.create(openHour);
     expect(oh).toBeDefined();
   });
   it("create multiple open hour", async () => {

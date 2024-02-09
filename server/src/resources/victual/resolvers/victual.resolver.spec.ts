@@ -17,7 +17,6 @@ import { TaskService } from "../../task/services/task.service";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
-  let prisma: PrismaService;
 
   let Rpayload: JwtPayload;
   let Wpayload: JwtPayload;
@@ -41,7 +40,6 @@ describe("MealResolver", () => {
         IdGuard,
       ],
     }).compile();
-    prisma = module.get<PrismaService>(PrismaService);
     resolver = module.get<VictualResolver>(VictualResolver);
 
     mockMeal = mocks.victual.withCategoryId(1);
@@ -62,25 +60,22 @@ describe("MealResolver", () => {
     const mls = [1, 2].map(() => ({
       ...mocks.victual.withCategoryId(categoryId),
     }));
-    const meals = await resolver.createMany(Rpayload, mls);
+    const meals = await resolver.createMany(mls);
     expect(meals.message).toBe(SUCCESS);
   });
   it("updates the meal's price", async () => {
-    const updatedMeal = await resolver.update(
-      {
-        where: {
-          id: mealId,
-        },
-        update: {
-          price: 2.0,
-        },
+    const updatedMeal = await resolver.update({
+      where: {
+        id: mealId,
       },
-      Rpayload
-    );
+      update: {
+        price: 2.0,
+      },
+    });
     expect(updatedMeal.price).toEqual(2.0);
   });
   it("deletes the meal", async () => {
-    const deleted = await resolver.delete({ id: mealId }, Rpayload);
+    const deleted = await resolver.delete({ id: mealId });
     expect(deleted.message).toBe(SUCCESS);
   });
   describe("List and find as restaurant", () => {

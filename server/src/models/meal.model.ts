@@ -32,6 +32,8 @@ export class Meal {
 export class CreateMeal {
   @Field()
   tableId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
 }
 
 @InputType()

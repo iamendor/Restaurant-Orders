@@ -33,4 +33,8 @@ export class CategoryServiceMock {
   list() {
     return [1, 2].map(() => this.category);
   }
+
+  check() {
+    return true;
+  }
 }

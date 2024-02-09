@@ -31,10 +31,7 @@ describe("WaiterService", () => {
   it("should create new waiter", async () => {
     prisma.waiter.create = jest.fn().mockImplementation(({ data }) => data);
 
-    const waiter = await service.create({
-      restaurantId: 1,
-      data: mockWaiter,
-    });
+    const waiter = await service.create({ ...mockWaiter, restaurantId: 1 });
     expect(waiter).toBeDefined();
     expect(waiter.email).toBe(mockWaiter.email);
   });

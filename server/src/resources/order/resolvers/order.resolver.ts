@@ -31,6 +31,8 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { AddRID } from "../../pipes/rid.pipe";
+import { AddWID } from "../../pipes/wid.pipe";
 
 const OrderCacheInterceptor = CacheInterceptor({
   prefix: "orders",
@@ -56,18 +58,10 @@ export class OrderResolver {
     TaskInterceptor(CREATE_ORDER_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
-  async create(
-    @User() { id }: JwtPayload,
-    @RID() restaurantId: number,
-    @Args("data") data: CreateOrder
-  ) {
-    const order = await this.orderService.create({
-      ...data,
-      restaurantId,
-      waiterId: id,
-    });
+  async create(@Args("data", AddRID, AddWID) data: CreateOrder) {
+    const order = await this.orderService.create(data);
 
-    this.subscriptionService.invalidateOrders(restaurantId, {
+    this.subscriptionService.invalidateOrders(data.restaurantId, {
       ...order,
       action: this.CREATE,
     });
@@ -76,6 +70,7 @@ export class OrderResolver {
   }
 
   //TODO: validate table and victual
+  //TODO: add minlength pipe
   @Mutation(() => Success, { name: "createOrders" })
   @UseInterceptors(
     OrderClearCacheInterceptor,
@@ -83,24 +78,17 @@ export class OrderResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
-    @User() { id }: JwtPayload,
-    @RID() restaurantId: number,
-    @Args("data", { type: () => [CreateOrder] }) data: CreateOrder[]
+    @Args("data", { type: () => [CreateOrder] }, AddRID, AddWID)
+    data: CreateOrder[]
   ) {
-    const ordersData = data.map((order) => ({
-      ...order,
-      restaurantId,
-      waiterId: id,
-    }));
-
-    await this.orderService.createMany(ordersData);
+    await this.orderService.createMany(data);
 
     const orders = await this.orderService.listLatest({
-      restaurantId,
-      count: ordersData.length,
+      restaurantId: data[0].restaurantId,
+      count: data.length,
     });
     this.subscriptionService.invalidateOrders(
-      restaurantId,
+      data[0].restaurantId,
       ...orders.map((order) => ({ ...order, action: this.CREATE }))
     );
 
@@ -140,16 +128,10 @@ export class OrderResolver {
     ...OrderGuard
   )
   @UseInterceptors(OrderClearCacheInterceptor)
-  async delete(
-    @RID() restaurantId: number,
-    @Args("where") where: WhereOrder,
-    @GetOrder() order: Order
-  ) {
-    const deleted = await this.orderService.delete({
-      ...where,
-    });
+  async delete(@Args("where") where: WhereOrder, @GetOrder() order: Order) {
+    const deleted = await this.orderService.delete(where);
 
-    this.subscriptionService.invalidateOrders(restaurantId, {
+    this.subscriptionService.invalidateOrders(order.restaurantId, {
       ...order,
       action: this.DELETE,
     });
@@ -176,11 +158,5 @@ export class OrderResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), ...OrderGuard)
   async find(@GetOrder() order: Order, @Args("where") _: WhereOrder) {
     return order;
-  }
-
-  @Subscription(() => [ListenOrder], { resolve: (payload) => payload.orders })
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
-  async listenOrders(@RID() restaurantId: number) {
-    return this.subscriptionService.listenOrders(restaurantId);
   }
 }

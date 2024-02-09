@@ -27,6 +27,7 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { AddRID } from "../../pipes/rid.pipe";
 
 const TabelCacheInterceptor = CacheInterceptor({
   prefix: "tables",
@@ -38,40 +39,31 @@ const TableClearCacheInterceptor = ClearCacheInterceptor("tables");
 export class TableResolver {
   constructor(private readonly tableService: TableService) {}
 
-  //TODO: pipe
+  //TODO: unique fail for the same in restaurant
   @Mutation(() => Table, { name: "createTable" })
   @UseInterceptors(
     TableClearCacheInterceptor,
     TaskInterceptor(CREATE_TABLE_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async create(@User() { id }: JwtPayload, @Args("data") data: CreateTable) {
-    const table = await this.tableService.create({
-      ...data,
-      restaurantId: id,
-    });
-    return table;
+  create(
+    @Args("data", { type: () => CreateTable }, AddRID)
+    data: Required<CreateTable>
+  ) {
+    return this.tableService.create(data);
   }
 
-  //TODO: pipe
   @Mutation(() => Success, { name: "createTables" })
   @UseInterceptors(
     TableClearCacheInterceptor,
     TaskInterceptor(CREATE_TABLE_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async createMany(
-    @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateTable] }) data: CreateTable[]
+  createMany(
+    @Args("data", { type: () => [CreateTable] }, AddRID)
+    data: Required<CreateTable>[]
   ) {
-    const modified = data.map((table) => ({
-      ...table,
-      restaurantId: id,
-    }));
-
-    const tables = await this.tableService.createMany(modified);
-
-    return tables;
+    return this.tableService.createMany(data);
   }
 
   @Mutation(() => Table, { name: "updateTable" })

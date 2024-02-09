@@ -13,7 +13,17 @@ import { Success } from "../../../models/success.model";
 export class OpenHourService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateOpenHour, restaurantId: number): Promise<OpenHour> {
+  async isAlreadyCreated(
+    data: CreateOpenHour,
+    list?: OpenHour[]
+  ): Promise<OpenHour> {
+    if (!list) {
+      list = await this.list(data.restaurantId);
+    }
+    return list.find((oh) => oh.name == data.name);
+  }
+
+  async create({ restaurantId, ...data }: CreateOpenHour): Promise<OpenHour> {
     const openHour = await this.prismaService.openingHour.create({
       data: {
         ...data,
@@ -27,12 +37,9 @@ export class OpenHourService {
     return openHour;
   }
 
-  async createMany(
-    data: CreateOpenHour[],
-    restaurantId: number
-  ): Promise<Success> {
+  async createMany(data: Required<CreateOpenHour>[]): Promise<Success> {
     await this.prismaService.openingHour.createMany({
-      data: data.map((oh) => ({ ...oh, restaurantId })),
+      data,
       skipDuplicates: true,
     });
     return { message: "success" };
