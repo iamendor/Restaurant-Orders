@@ -22,7 +22,7 @@ import {
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 import { AddRID } from "../../pipes/rid.pipe";
-import { FieldService } from "../services/field.service";
+import { FieldService } from "../../table/services/field.service";
 
 const MealCacheInterceptor = CacheInterceptor({
   prefix: "meals",
@@ -51,7 +51,7 @@ export class MealResolver {
     @Args("data", { type: () => CreateMeal }, AddRID)
     { tableId, restaurantId }: Required<CreateMeal>
   ): Promise<Meal> {
-    const orders = await this.fieldService.getOrders(tableId);
+    const orders = await this.fieldService.getOrders(tableId, true);
 
     if (orders.length == 0) throw new EmptyTableException();
 

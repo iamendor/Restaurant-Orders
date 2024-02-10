@@ -3,7 +3,6 @@ import { OpenHourService } from "../openhour/services/openhour.service";
 import { OrderService } from "../order/services/order.service";
 import { TableService } from "../table/services/table.service";
 import { VictualService } from "../victual/services/victual.service";
-import { WaiterService } from "../waiter/services/waiter.service";
 import { ResourceGuard } from "./resource.guard";
 
 export const CategoryGuard = ResourceGuard({

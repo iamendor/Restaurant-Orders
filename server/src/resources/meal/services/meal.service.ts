@@ -3,7 +3,6 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { Success } from "../../../models/success.model";
 import { Meal, WhereMeal } from "../../../models/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
-import { Order } from "../../../models/order.model";
 
 @Injectable()
 export class MealService {

@@ -1,25 +1,21 @@
-import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { OrderService } from "../services/order.service";
 import { Logger, UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
-import { User } from "../../../auth/decorators/user.decorator";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { RESTAURANT, WAITER } from "../../../role";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { OrderGuard } from "../guard/order.guard";
-import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Order,
   CreateOrder,
   UpdateOrder,
   WhereOrder,
-  ListenOrder,
 } from "../../../models/order.model";
 import { Success } from "../../../models/success.model";
 import { OrderFilter } from "../../../models/filter.model";
-import { FilterService } from "../../../filter/services/filter.service";
 import { OpenGuard } from "../../openhour/guard/open.guard";
 import { GetOrder } from "../../decorators";
 import {

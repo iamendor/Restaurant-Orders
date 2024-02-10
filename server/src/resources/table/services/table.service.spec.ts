@@ -2,14 +2,12 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TableService } from "./table.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { getMocks } from "../../../../test/helper/mocks";
+import { mockRestaurant, mockTable } from "../../../../test/helper/mock.unit";
 
 describe("TableService", () => {
   let service: TableService;
   let tableId: number;
   let prisma: PrismaService;
-  const mocks = getMocks();
-  let restaurant = { ...mocks.restaurant, id: 1 };
 
   const SUCCESS = "success";
 
@@ -33,11 +31,7 @@ describe("TableService", () => {
       return { ...rest, id: 1 };
     });
 
-    const mockTable = mocks.table();
-    const table = await service.create({
-      name: mockTable.name,
-      restaurantId: restaurant.id,
-    });
+    const table = await service.create(mockTable);
     expect(table).toBeDefined();
     expect(table.name).toBe(mockTable.name);
 
@@ -56,7 +50,7 @@ describe("TableService", () => {
       {
         name: "TestTable3",
       },
-    ].map((d) => ({ ...d, restaurantId: restaurant.id }));
+    ].map((d) => ({ ...d, restaurantId: 1 }));
 
     const createTables = await service.createMany(tables);
     expect(createTables.message).toBe(SUCCESS);
@@ -64,7 +58,7 @@ describe("TableService", () => {
 
   it("should update the table", async () => {
     prisma.table.update = jest.fn().mockImplementation(({ where, data }) => ({
-      ...mocks.table(),
+      ...mockTable,
       ...where,
       ...data,
     }));
@@ -84,9 +78,9 @@ describe("TableService", () => {
   it("should list all table", async () => {
     prisma.table.findMany = jest
       .fn()
-      .mockReturnValue([1, 2, 3].map(() => mocks.table()));
+      .mockReturnValue([1, 2, 3].map(() => mockTable));
 
-    const tables = await service.list(restaurant.id);
+    const tables = await service.list(mockRestaurant.id);
     expect(tables.length).toEqual(3);
   });
 
@@ -94,9 +88,9 @@ describe("TableService", () => {
     prisma.table.findUniqueOrThrow = jest
       .fn()
       .mockImplementation(({ where }) => ({
-        ...mocks.table(),
+        ...mockTable,
         where,
-        restaurantId: restaurant.id,
+        restaurantId: mockRestaurant.id,
       }));
 
     const table = await service.find({

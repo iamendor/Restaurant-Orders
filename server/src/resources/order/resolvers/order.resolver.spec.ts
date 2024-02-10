@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { OrderResolver } from "./order.resolver";
 import { OrderService } from "../services/order.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
-import { getMocks } from "../../../../test/helper/mocks";
 import { OrderServiceMock } from "../services/mock/order.service.mock";
 import { WaiterService } from "../../waiter/services/waiter.service";
 import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.mock";
@@ -16,17 +15,22 @@ import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
+import { ContextIdFactory } from "@nestjs/core";
+import { mockOrder } from "../../../../test/helper/mock.unit";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
-  let restaurantId: number;
-  let orderId: number;
-  const mocks = getMocks();
-  let mockOrder: CreateOrder;
+
+  let order: CreateOrder = mockOrder;
 
   const SUCCESS = "success";
 
   beforeAll(async () => {
+    const contextId = ContextIdFactory.create();
+    jest
+      .spyOn(ContextIdFactory, "getByRequest")
+      .mockImplementation(() => contextId);
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [SecurityModule, PrismaModule, FilterModule, OpenGuardModule],
       providers: [
@@ -38,16 +42,7 @@ describe("OrderResolver", () => {
         OrderResolver,
       ],
     }).compile();
-    resolver = module.get<OrderResolver>(OrderResolver);
-
-    restaurantId = 1;
-
-    mockOrder = mocks.order({
-      restaurantId: 1,
-      victualId: 1,
-      tableId: 1,
-      waiterId: 1,
-    });
+    resolver = await module.resolve<OrderResolver>(OrderResolver, contextId);
   });
 
   it("should be defined", () => {
@@ -55,18 +50,17 @@ describe("OrderResolver", () => {
   });
 
   it("creates a new order", async () => {
-    const order = await resolver.create(mockOrder);
-    expect(order.description).toBe("this is a mock order");
-    orderId = order.id;
+    const create = await resolver.create(order);
+    expect(create.description).toBe("this is a mock order");
   });
   it("creates multiple order", async () => {
-    const created = await resolver.createMany([mockOrder]);
+    const created = await resolver.createMany([order]);
     expect(created.message).toBe(SUCCESS);
   });
   it("updates the order", async () => {
-    const updated = await resolver.update(restaurantId, {
+    const updated = await resolver.update(1, {
       where: {
-        id: orderId,
+        id: 1,
       },
       update: {
         isReady: true,
@@ -76,9 +70,9 @@ describe("OrderResolver", () => {
   });
   it("deletes the order", async () => {
     const deleted = await resolver.delete(
-      { id: orderId },
+      { id: 1 },
       {
-        ...mockOrder,
+        ...order,
         id: 1,
         createdAt: new Date(),
         closed: false,
@@ -90,8 +84,7 @@ describe("OrderResolver", () => {
     expect(deleted.message).toBe(SUCCESS);
   });
   it("list all order", async () => {
-    const orders = await resolver.list(restaurantId);
+    const orders = await resolver.list(1);
     expect(orders.length).toEqual(1);
-    orderId = orders[0].id;
   });
 });

@@ -124,6 +124,18 @@ export const getMutations = () => ({
         }
       }
     `,
+    createAndLogin: () => `
+      mutation createAndLoginWaiter($data: CreateWaiter!, $credentials: LoginWaiter!){
+        createWaiter(data: $data){
+          id
+          name
+          gender
+        }
+        loginWaiter(credentials: $credentials){
+          access_token
+        }
+      }
+    `,
   },
   table: {
     create: () => `

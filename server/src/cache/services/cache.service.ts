@@ -1,5 +1,5 @@
 import { InjectRedis } from "@nestjs-modules/ioredis";
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { Redis } from "ioredis";
 
 export interface SetCache {

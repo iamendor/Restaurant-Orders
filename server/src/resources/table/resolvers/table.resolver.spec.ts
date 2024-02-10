@@ -2,31 +2,29 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TableResolver } from "./table.resolver";
 import { TableService } from "../services/table.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
-import { getMocks } from "../../../../test/helper/mocks";
 import { TableServiceMock } from "../services/mock/table.service.mock";
-import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
+import {
+  mockRestaurantPayload,
+  mockTable,
+  mockWaiterPayload,
+} from "../../../../test/helper/mock.unit";
+import { ContextIdFactory } from "@nestjs/core";
 
 describe("TableResolver", () => {
   let resolver: TableResolver;
-  let prisma: PrismaService;
-  let service: TableService;
-
-  let Rpayload: JwtPayload;
-  let Wpayload: JwtPayload;
-  const mocks = getMocks();
-  let mockTable: any = mocks.table();
-
   const SUCCESS = "success";
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    const contextId = ContextIdFactory.create();
+    jest
+      .spyOn(ContextIdFactory, "getByRequest")
+      .mockImplementation(() => contextId);
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaModule, FilterModule],
       providers: [
@@ -38,12 +36,7 @@ describe("TableResolver", () => {
       ],
     }).compile();
 
-    resolver = module.get<TableResolver>(TableResolver);
-    service = await module.resolve<TableService>(TableService);
-    prisma = module.get<PrismaService>(PrismaService);
-
-    Rpayload = mocks.restaurantPayload({ ...mocks.restaurant, id: 1 });
-    Wpayload = mocks.waiterPayload(mocks.waiter, 1);
+    resolver = await module.resolve<TableResolver>(TableResolver);
   });
 
   it("should be defined", () => {
@@ -53,10 +46,9 @@ describe("TableResolver", () => {
   it("create a table", async () => {
     const table = await resolver.create(mockTable);
     expect(table.name).toBe(mockTable.name);
-    mockTable = { ...mockTable, id: table.id };
   });
   it("create multiple table", async () => {
-    const tables = [1, 2].map(() => mocks.table());
+    const tables = [1, 2].map((id) => ({ ...mockTable, id }));
     const createTables = await resolver.createMany(
       tables.map((t) => ({ ...t, restaurantId: 1 }))
     );
@@ -71,35 +63,31 @@ describe("TableResolver", () => {
           name: update,
         },
       },
-      Rpayload
+      mockRestaurantPayload
     );
     expect(updatedTable.name).toBe(update);
-
-    mockTable = updatedTable;
   });
   it("lists all table of restaurant", async () => {
-    const tables = await resolver.list(Rpayload.id);
+    const tables = await resolver.list(mockRestaurantPayload.id);
     expect(tables.length).toEqual(3);
   });
   it("lists all table of restaurant as waiter", async () => {
-    const tables = await resolver.list(Wpayload.restaurantId);
+    const tables = await resolver.list(mockWaiterPayload.restaurantId);
 
     expect(tables.length).toEqual(3);
   });
 
   it("returns table with specific id", async () => {
-    const table = await resolver.find(
-      {
-        ...mockTable,
-      },
-      { id: mockTable.id }
-    );
+    const table = resolver.find(mockTable, { id: mockTable.id });
     expect(table).toBeDefined();
-    expect(table.name).toBe("updatedTableName");
+    expect(table.name).toBe(mockTable.name);
   });
 
   it("deletes table", async () => {
-    const deletedTable = await resolver.delete({ id: mockTable.id }, Rpayload);
+    const deletedTable = await resolver.delete(
+      { id: mockTable.id },
+      mockRestaurantPayload
+    );
     expect(deletedTable.message).toBe(SUCCESS);
   });
 });

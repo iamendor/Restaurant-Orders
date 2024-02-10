@@ -2,13 +2,12 @@ import { Test } from "@nestjs/testing";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { OpenHourService } from "./openhour.service";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { getMocks } from "../../../../test/helper/mocks";
+import { mockOpenHour } from "../../../../test/helper/mock.unit";
 
 describe("OpenHour Service", () => {
   let service: OpenHourService;
   let prisma: PrismaService;
-  const mocks = getMocks();
-  const mockOpen = mocks.openingHour();
+  const mockOpen = mockOpenHour;
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [PrismaModule],
