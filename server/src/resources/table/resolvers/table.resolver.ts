@@ -4,7 +4,7 @@ import { User } from "../../../auth/decorators/user.decorator";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
-import { TableGuard } from "../../guard";
+import { TableGuard } from "../../../guard";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -17,7 +17,7 @@ import {
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
 import { TableFilter } from "../../../models/filter.model";
-import { GetTable } from "../../decorators";
+import { GetTable } from "../../../decorators";
 import {
   CREATE_TABLE_ACTION,
   TaskInterceptor,
@@ -27,7 +27,8 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
-import { AddRID } from "../../pipes/rid.pipe";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const TabelCacheInterceptor = CacheInterceptor({
   prefix: "tables",
@@ -60,7 +61,7 @@ export class TableResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   createMany(
-    @Args("data", { type: () => [CreateTable] }, AddRID)
+    @Args("data", { type: () => [CreateTable] }, MinArrayPipe, AddRID)
     data: Required<CreateTable>[]
   ) {
     return this.tableService.createMany(data);

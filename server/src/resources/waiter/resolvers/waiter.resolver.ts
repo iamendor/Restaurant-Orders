@@ -34,7 +34,7 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
-import { AddRID } from "../../pipes/rid.pipe";
+import { AddRID } from "../../../pipes/rid.pipe";
 
 const WaiterCacheInterceptor = CacheInterceptor({
   prefix: "waiters",

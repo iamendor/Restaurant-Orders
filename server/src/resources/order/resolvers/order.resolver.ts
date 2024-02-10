@@ -17,7 +17,7 @@ import {
 import { Success } from "../../../models/success.model";
 import { OrderFilter } from "../../../models/filter.model";
 import { OpenGuard } from "../../openhour/guard/open.guard";
-import { GetOrder } from "../../decorators";
+import { GetOrder } from "../../../decorators";
 import {
   CREATE_ORDER_ACTION,
   TaskInterceptor,
@@ -27,8 +27,9 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
-import { AddRID } from "../../pipes/rid.pipe";
-import { AddWID } from "../../pipes/wid.pipe";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { AddWID } from "../../../pipes/wid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const OrderCacheInterceptor = CacheInterceptor({
   prefix: "orders",
@@ -66,7 +67,6 @@ export class OrderResolver {
   }
 
   //TODO: validate table and victual
-  //TODO: add minlength pipe
   @Mutation(() => Success, { name: "createOrders" })
   @UseInterceptors(
     OrderClearCacheInterceptor,
@@ -74,7 +74,7 @@ export class OrderResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async createMany(
-    @Args("data", { type: () => [CreateOrder] }, AddRID, AddWID)
+    @Args("data", { type: () => [CreateOrder] }, MinArrayPipe, AddRID, AddWID)
     data: CreateOrder[]
   ) {
     await this.orderService.createMany(data);

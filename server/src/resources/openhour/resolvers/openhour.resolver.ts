@@ -23,8 +23,9 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
-import { OpenHourGuard } from "../../guard";
-import { AddRID } from "../../pipes/rid.pipe";
+import { OpenHourGuard } from "../../../guard";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const OpenHourCacheInterceptor = CacheInterceptor({
   prefix: "openhours",
@@ -56,7 +57,6 @@ export class OpenHourResolver {
     return this.openHourService.create(data);
   }
 
-  //TODO: add minlength pipe
   @Mutation(() => Success, { name: "createOpenHours" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
@@ -64,7 +64,7 @@ export class OpenHourResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
-    @Args("data", { type: () => [CreateOpenHour] }, AddRID)
+    @Args("data", { type: () => [CreateOpenHour] }, MinArrayPipe, AddRID)
     data: Required<CreateOpenHour>[],
     @User() { id }: JwtPayload
   ) {

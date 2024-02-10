@@ -7,8 +7,8 @@ import {
 } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
-import { RESTAURANT } from "../../role";
-import { JwtPayload } from "../../interfaces/jwt.interface";
+import { RESTAURANT } from "../role";
+import { JwtPayload } from "../interfaces/jwt.interface";
 
 @Injectable({ scope: Scope.REQUEST })
 export class AddRID implements PipeTransform {

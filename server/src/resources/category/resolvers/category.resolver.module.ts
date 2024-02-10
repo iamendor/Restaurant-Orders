@@ -6,7 +6,7 @@ import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { TaskServiceModule } from "../../task/services/task.service.module";
-import { AddRID } from "../../pipes/rid.pipe";
+import { AddRID } from "../../../pipes/rid.pipe";
 
 @Module({
   imports: [

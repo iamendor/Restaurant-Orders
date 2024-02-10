@@ -15,7 +15,7 @@ import {
   UpdateRestaurantPassword,
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
-import { GetRestaurant } from "../../decorators";
+import { GetRestaurant } from "../../../decorators";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {

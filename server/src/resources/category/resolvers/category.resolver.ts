@@ -4,7 +4,7 @@ import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
-import { CategoryGuard } from "../../guard";
+import { CategoryGuard } from "../../../guard";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -17,7 +17,7 @@ import {
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Success } from "../../../models/success.model";
 import { CategoryFilter } from "../../../models/filter.model";
-import { GetCategory } from "../../decorators";
+import { GetCategory } from "../../../decorators";
 import {
   CREATE_CATEGORY_ACTION,
   TaskInterceptor,
@@ -27,7 +27,8 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
-import { AddRID } from "../../pipes/rid.pipe";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const CategoryCacheInterceptor = CacheInterceptor({
   prefix: "categories",
@@ -49,7 +50,6 @@ export class CategoryResolver {
     return this.categoryService.create(data);
   }
 
-  //TODO: add minlength pipe
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
@@ -57,7 +57,7 @@ export class CategoryResolver {
   )
   @Mutation(() => Success, { name: "createCategories" })
   createMany(
-    @Args("data", { type: () => [CreateCategory] }, AddRID)
+    @Args("data", { type: () => [CreateCategory] }, MinArrayPipe, AddRID)
     data: Required<CreateCategory>[]
   ): Promise<Success> {
     return this.categoryService.createMany(data);

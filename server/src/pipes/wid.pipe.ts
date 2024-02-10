@@ -7,9 +7,9 @@ import {
 } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
-import { RESTAURANT, WAITER } from "../../role";
-import { JwtPayload } from "../../interfaces/jwt.interface";
-import { SomethingWentWrongException } from "../../error";
+import { RESTAURANT, WAITER } from "../role";
+import { JwtPayload } from "../interfaces/jwt.interface";
+import { SomethingWentWrongException } from "../error";
 
 @Injectable({ scope: Scope.REQUEST })
 export class AddWID implements PipeTransform {

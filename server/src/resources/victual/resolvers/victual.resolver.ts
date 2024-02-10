@@ -16,11 +16,9 @@ import {
   WhereVictual,
 } from "../../../models/victual.model";
 import { Success } from "../../../models/success.model";
-import { FilterService } from "../../../filter/services/filter.service";
 import { VictualFilter } from "../../../models/filter.model";
-import { PermissionDeniedException } from "../../../error";
-import { VictualGuard } from "../../guard";
-import { GetVictual } from "../../decorators";
+import { VictualGuard } from "../../../guard";
+import { GetVictual } from "../../../decorators";
 import {
   CREATE_VICTUAL_ACTION,
   TaskInterceptor,
@@ -29,8 +27,9 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
-import { AddRID } from "../../pipes/rid.pipe";
+import { AddRID } from "../../../pipes/rid.pipe";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const VictualCacheInterceptor = CacheInterceptor({
   prefix: "victuals",
@@ -72,7 +71,8 @@ export class VictualResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
-    @Args("data", { type: () => [CreateVictual] }, AddRID) data: CreateVictual[]
+    @Args("data", { type: () => [CreateVictual] }, MinArrayPipe, AddRID)
+    data: CreateVictual[]
   ) {
     const categories = [...new Set(data.map((v) => v.categoryId))];
 

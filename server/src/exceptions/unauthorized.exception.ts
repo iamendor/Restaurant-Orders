@@ -1,5 +1,4 @@
 import { Catch, ExceptionFilter, UnauthorizedException } from "@nestjs/common";
-import { GraphQLError } from "graphql";
 import { AuthException } from "../error";
 
 @Catch(UnauthorizedException)
