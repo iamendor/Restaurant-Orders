@@ -37,7 +37,7 @@ export class Category {
 export class CreateCategory {
   @Field()
   name: string;
-  @Field({ nullable: true, defaultValue: null })
+  @Field({ nullable: true })
   parentId?: number;
   @Field({ nullable: true })
   restaurantId?: number;

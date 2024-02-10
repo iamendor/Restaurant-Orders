@@ -32,7 +32,7 @@ export class Waiter {
   @Field(() => Restaurant)
   restaurant?: Restaurant;
   @Field()
-  restaurantId?: number;
+  restaurantId: number;
 }
 
 @ObjectType()
@@ -51,7 +51,7 @@ export class CreateWaiter extends PickType(
 ) {
   @Field()
   password: string;
-  @Field()
+  @Field({ nullable: true })
   restaurantId?: number;
 }
 

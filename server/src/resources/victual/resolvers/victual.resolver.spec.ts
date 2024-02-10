@@ -1,13 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { getMocks } from "../../../../test/helper/mocks";
-import { PrismaService } from "../../../prisma/services/prisma.service";
 import { VictualResolver } from "./victual.resolver";
 import { VictualService } from "../services/victual.service";
 import { VictualServiceMock } from "../services/mock/victual.service.mock";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceMock } from "../../category/services/mock/category.service.mock";
-import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";

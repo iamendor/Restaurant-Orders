@@ -29,6 +29,7 @@ export const mockWaiter = {
   email: "waiter@gmail.com",
   password: "mockWaiter123",
   createdAt: new Date(),
+  restaurantId: 1,
 };
 
 export const mockVictual = {
@@ -97,4 +98,13 @@ export const mockOpenHour = {
   start: "08:00:00",
   end: "22:00:00",
   restaurantId: 1,
+  createdAt: new Date(),
+};
+
+export const mockTask = {
+  done: false,
+  base: {
+    id: 1,
+    name: "Test app",
+  },
 };

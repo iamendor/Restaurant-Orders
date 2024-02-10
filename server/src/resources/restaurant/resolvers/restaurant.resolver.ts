@@ -46,8 +46,10 @@ export class RestaurantResolver {
     const { password } = (await this.restaurantService.find({
       id,
     })) as PRestaurant;
-    if (!this.securityService.compare({ str: update.old, hash: password }))
+
+    if (!this.securityService.compare({ str: update.old, hash: password })) {
       throw new UnauthorizedException();
+    }
     return this.restaurantService.updatePassword({
       where: { id },
       update,

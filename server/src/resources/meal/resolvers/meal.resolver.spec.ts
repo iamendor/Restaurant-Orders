@@ -9,13 +9,13 @@ import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { TaskService } from "../../task/services/task.service";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
-import { FieldService } from "../services/field.service";
 import { ContextIdFactory } from "@nestjs/core";
 import {
   mockMeal,
   mockOrder,
   mockRestaurantPayload,
 } from "../../../../test/helper/mock.unit";
+import { FieldService } from "../../table/services/field.service";
 
 describe("MealResolver", () => {
   let resolver: MealResolver;

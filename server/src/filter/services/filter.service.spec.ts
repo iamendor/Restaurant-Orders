@@ -13,6 +13,7 @@ import {
   mockVictual,
   mockWaiter,
 } from "../../../test/helper/mock.unit";
+import { Waiter } from "../../models/waiter.model";
 
 describe("FilterService", () => {
   let service: FilterService;
@@ -43,7 +44,7 @@ describe("FilterService", () => {
         email: "ezittegyteszt@gmail.com",
         gender: "female",
       },
-    ];
+    ] as Waiter[];
     it("should filter by name", () => {
       const filtered = service.waiters({
         data: waiters,
