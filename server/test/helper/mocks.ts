@@ -3,6 +3,7 @@ import { PrismaService } from "../../src/prisma/services/prisma.service";
 import * as bcrypt from "bcrypt";
 import { RESTAURANT, WAITER } from "../../src/role";
 import { JwtPayload } from "../../src/interfaces/jwt.interface";
+
 export const getMocks = () => ({
   restaurantPayload: (restaurant): JwtPayload => ({
     name: restaurant.name,

@@ -38,4 +38,7 @@ export class OpenHourServiceMock {
   delete() {
     return { message: "success" };
   }
+  isAlreadyCreated() {
+    return false;
+  }
 }

@@ -57,7 +57,7 @@ export class CategoryResolver {
   )
   @Mutation(() => Success, { name: "createCategories" })
   createMany(
-    @Args("data", { type: () => [CreateCategory] })
+    @Args("data", { type: () => [CreateCategory] }, AddRID)
     data: Required<CreateCategory>[]
   ): Promise<Success> {
     return this.categoryService.createMany(data);

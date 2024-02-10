@@ -5,8 +5,7 @@ import * as bcrypt from "bcrypt";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { SecurityModule } from "../../../security/security.module";
 import { getMocks } from "../../../../test/helper/mocks";
-
-export const mockRestaurant = { ...getMocks().restaurant, id: 1 };
+import { mockRestaurant } from "../../../../test/helper/mock.unit";
 
 describe("RestaurantService", () => {
   let service: RestaurantService;

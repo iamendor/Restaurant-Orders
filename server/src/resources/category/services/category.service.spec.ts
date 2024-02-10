@@ -2,13 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CategoryService } from "./category.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { getMocks } from "../../../../test/helper/mocks";
+import { mockCategory } from "../../../../test/helper/mock.unit";
 
 describe("CategoryService", () => {
   let service: CategoryService;
   let prisma: PrismaService;
-  const mocks = getMocks();
-  let catId;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,53 +22,41 @@ describe("CategoryService", () => {
   });
 
   it("creates a new category", async () => {
-    prisma.category.create = jest
-      .fn()
-      .mockImplementation(({ data }) => ({ ...mocks.category, id: 0, data }));
+    prisma.category.create = jest.fn().mockReturnValue(mockCategory);
 
-    const category = await service.create({
-      ...mocks.category,
-      restaurantId: 1,
-    });
-    expect(category.name).toBe(mocks.category.name);
-    catId = category.id;
+    const category = await service.create(mockCategory);
+    expect(category.name).toBe(mockCategory.name);
   });
   it("creates multiple category", async () => {
     prisma.category.createMany = jest
       .fn()
       .mockImplementation(({ data }) => [...data]);
 
-    const categories = await service.createMany(
-      [1, 2].map((i) => ({
-        name: `Category${i}`,
-        restaurantId: 1,
-        parentId: 1,
-      }))
-    );
+    const categories = await service.createMany([mockCategory]);
     expect(categories.message).toBe("success");
   });
   it("find by id", async () => {
     prisma.category.findUniqueOrThrow = jest
       .fn()
       .mockImplementation(({ where }) => ({
-        ...mocks.category,
+        ...mockCategory,
         ...where,
       }));
 
-    const category = await service.find({ id: catId });
+    const category = await service.find({ id: 1 });
     expect(category).toBeDefined();
   });
   it("updates the category", async () => {
     prisma.category.update = jest
       .fn()
       .mockImplementation(({ where, data }) => ({
-        ...mocks.category,
+        ...mockCategory,
         ...where,
         ...data,
       }));
 
     const updatedCategory = await service.update({
-      where: { id: catId },
+      where: { id: 1 },
       update: {
         name: "updated",
       },
@@ -81,7 +67,7 @@ describe("CategoryService", () => {
     prisma.category.delete = jest.fn().mockReturnValue({ deleted: true });
 
     const deleted = await service.delete({
-      id: catId,
+      id: 1,
     });
     expect(deleted.message).toBe("success");
   });

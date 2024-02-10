@@ -1,15 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { mockRestaurant } from "../../restaurant/services/restaurant.service.spec";
 import { WaiterService } from "./waiter.service";
 import { SecurityModule } from "../../../security/security.module";
-import { getMocks } from "../../../../test/helper/mocks";
+import { mockRestaurant, mockWaiter } from "../../../../test/helper/mock.unit";
 
 describe("WaiterService", () => {
   let service: WaiterService;
   let prisma: PrismaService;
-  const mockWaiter = getMocks().waiter;
   const SUCCESS = "success";
 
   beforeAll(async () => {
@@ -31,7 +29,7 @@ describe("WaiterService", () => {
   it("should create new waiter", async () => {
     prisma.waiter.create = jest.fn().mockImplementation(({ data }) => data);
 
-    const waiter = await service.create({ ...mockWaiter, restaurantId: 1 });
+    const waiter = await service.create(mockWaiter);
     expect(waiter).toBeDefined();
     expect(waiter.email).toBe(mockWaiter.email);
   });

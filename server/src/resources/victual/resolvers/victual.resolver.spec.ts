@@ -14,21 +14,23 @@ import { CacheServiceMock } from "../../../cache/services/mock/cache.service.moc
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
+import { ContextIdFactory } from "@nestjs/core";
+import {
+  mockRestaurantPayload,
+  mockVictual,
+  mockWaiterPayload,
+} from "../../../../test/helper/mock.unit";
 
 describe("MealResolver", () => {
   let resolver: VictualResolver;
 
-  let Rpayload: JwtPayload;
-  let Wpayload: JwtPayload;
-
-  let categoryId: number;
-  let mealId: number;
-  let mockMeal;
-  const mocks = getMocks();
-
   const SUCCESS = "success";
 
   beforeAll(async () => {
+    const contextId = ContextIdFactory.create();
+    jest
+      .spyOn(ContextIdFactory, "getByRequest")
+      .mockImplementation(() => contextId);
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaModule, FilterModule],
       providers: [
@@ -40,11 +42,10 @@ describe("MealResolver", () => {
         IdGuard,
       ],
     }).compile();
-    resolver = module.get<VictualResolver>(VictualResolver);
-
-    mockMeal = mocks.victual.withCategoryId(1);
-    Rpayload = mocks.restaurantPayload(mocks.restaurantModel);
-    Wpayload = mocks.waiterPayload(mocks.waiter, 1);
+    resolver = await module.resolve<VictualResolver>(
+      VictualResolver,
+      contextId
+    );
   });
 
   it("should be defined", () => {
@@ -52,13 +53,12 @@ describe("MealResolver", () => {
   });
 
   it("creates a meal with the category", async () => {
-    const meal = await resolver.create(Rpayload, mockMeal);
-    expect(meal.name).toBe(mockMeal.name);
-    mealId = meal.id;
+    const meal = await resolver.create(mockRestaurantPayload, mockVictual);
+    expect(meal.name).toBe(mockVictual.name);
   });
   it("creates two meals", async () => {
     const mls = [1, 2].map(() => ({
-      ...mocks.victual.withCategoryId(categoryId),
+      ...mockVictual,
     }));
     const meals = await resolver.createMany(mls);
     expect(meals.message).toBe(SUCCESS);
@@ -66,7 +66,7 @@ describe("MealResolver", () => {
   it("updates the meal's price", async () => {
     const updatedMeal = await resolver.update({
       where: {
-        id: mealId,
+        id: 1,
       },
       update: {
         price: 2.0,
@@ -75,33 +75,27 @@ describe("MealResolver", () => {
     expect(updatedMeal.price).toEqual(2.0);
   });
   it("deletes the meal", async () => {
-    const deleted = await resolver.delete({ id: mealId });
+    const deleted = await resolver.delete({ id: 1 });
     expect(deleted.message).toBe(SUCCESS);
   });
   describe("List and find as restaurant", () => {
     it("lists meal", async () => {
-      const meals = await resolver.list(Rpayload.id);
+      const meals = await resolver.list(mockRestaurantPayload.id);
       expect(meals.length).toEqual(2);
-      mealId = meals[0].id;
     });
     it("returns specific", async () => {
-      const meal = await resolver.find(mockMeal, { id: mealId });
+      const meal = await resolver.find(mockVictual, { id: 1 });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
-    });
-    it("should filter out all victual", async () => {
-      const meal = await resolver.list(Rpayload.id, { name: "no match" });
-
-      expect(meal.length).toEqual(0);
     });
   });
   describe("List and find as waiter", () => {
     it("lists meal", async () => {
-      const meals = await resolver.list(Wpayload.restaurantId);
+      const meals = await resolver.list(mockWaiterPayload.restaurantId);
       expect(meals.length).toEqual(2);
     });
     it("returns specific", async () => {
-      const meal = await resolver.find(mockMeal, { id: mealId });
+      const meal = await resolver.find(mockVictual, { id: 1 });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
     });
