@@ -35,6 +35,7 @@ import {
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
+import { WaiterGuard } from "../../../guard";
 
 const WaiterCacheInterceptor = CacheInterceptor({
   prefix: "waiters",
@@ -99,18 +100,11 @@ export class WaiterResolver {
     });
   }
 
-  //TODO: refactor
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), WaiterGuard)
   @UseInterceptors(WaiterClearCacheInterceptor)
   @Mutation(() => Success, { name: "deleteWaiter" })
   async delete(@User() { id }: JwtPayload, @Args("where") where: WhereWaiter) {
-    const { restaurantId } = await this.waiterService.find({ id: where.id });
-
-    if (restaurantId != id) throw new PermissionDeniedException();
-
-    const deleted = await this.waiterService.delete(where);
-
-    return deleted;
+    return this.waiterService.delete(where);
   }
 
   @Query(() => [Waiter])
@@ -126,28 +120,21 @@ export class WaiterResolver {
     });
   }
 
-  //TODO: refactor
   @Query(() => Waiter, { name: "waiterInfo" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   async info(
     @User() user: JwtPayload,
+    @RID() restaurantId: number,
     @Args("where", { nullable: true }) where?: WhereWaiter
   ) {
-    if (user.role === WAITER) {
-      if (!where) return this.waiterService.find({ id: user.id });
+    const find = user.role == WAITER ? { id: user.id } : where;
 
-      const waiter = await this.waiterService.find({ ...where });
+    if (!find) throw new NotSpecifiedException("waiter");
 
-      if (waiter.restaurantId != user.restaurantId)
-        throw new PermissionDeniedException();
+    const waiter = await this.waiterService.find(find);
 
-      return waiter;
-    }
-    if (!where) throw new NotSpecifiedException("waiter");
-
-    const waiter = await this.waiterService.find({ ...where });
-
-    if (waiter.restaurantId != user.id) throw new PermissionDeniedException();
+    if (waiter.restaurantId != restaurantId)
+      throw new PermissionDeniedException();
 
     return waiter;
   }

@@ -15,6 +15,7 @@ import {
   mockWaiter,
   mockWaiterPayload,
 } from "../../../../test/helper/mock.unit";
+import { IdGuard } from "../../../auth/guard/id.guard";
 
 describe("Waiter Resolver", () => {
   let resolver: WaiterResolver;
@@ -33,6 +34,7 @@ describe("Waiter Resolver", () => {
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        IdGuard,
         WaiterResolver,
       ],
     }).compile();
@@ -95,7 +97,7 @@ describe("Waiter Resolver", () => {
   });
 
   it("returns info of waiter", async () => {
-    const info = await resolver.info(mockWaiterPayload);
+    const info = await resolver.info(mockWaiterPayload, 1);
     expect(info.name).toBe("updatedWaiter");
   });
 });

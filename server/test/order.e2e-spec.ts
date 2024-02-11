@@ -52,7 +52,7 @@ describe("Order", () => {
       "Friday",
       "Saturday",
       "Sunday",
-    ][new Date().getDay() - 1];
+    ][new Date().getDay() == 0 ? 6 : new Date().getDay() - 1];
 
     const { access_token: rt, restaurant } = await requestNewRestaurant(server);
     const { access_token: wt } = await requestNewWaiter(server, rt);
