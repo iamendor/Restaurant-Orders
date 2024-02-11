@@ -8,8 +8,8 @@ import {
   WhereOrder,
 } from "../../../models/order.model";
 import { Success } from "../../../models/success.model";
-import { SomethingWentWrongException } from "../../../error";
 import { Prisma } from "@prisma/client";
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class OrderService {
@@ -100,5 +100,10 @@ export class OrderService {
       },
     });
     return order;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const order = await this.find({ id });
+    return order.restaurantId == restaurantId;
   }
 }

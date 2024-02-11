@@ -70,13 +70,6 @@ export class MealResolver {
     return meal;
   }
 
-  @Mutation(() => Success, { name: "deleteMeal" })
-  @UseInterceptors(MealClearCacheInterceptor)
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), MealGuard)
-  async delete(@Args("where") where: WhereMeal) {
-    await this.mealService.delete(where);
-  }
-
   @Query(() => [Meal], { name: "meals" })
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER, RESTAURANT), IdGuard)
   @UseInterceptors(MealCacheInterceptor, FilterInterceptor("meals"))

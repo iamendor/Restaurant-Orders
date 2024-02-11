@@ -30,6 +30,7 @@ import {
 import { AddRID } from "../../../pipes/rid.pipe";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
+import { PermissionDeniedException } from "../../../error";
 
 const VictualCacheInterceptor = CacheInterceptor({
   prefix: "victuals",
@@ -57,7 +58,12 @@ export class VictualResolver {
     @Args("data", AddRID) data: CreateVictual
   ) {
     const { categoryId } = data;
-    await this.categoryService.check({ restaurantId: id, categoryId });
+    const isCatValid = await this.categoryService.validate({
+      restaurantId: id,
+      id: categoryId,
+    });
+
+    if (!isCatValid) throw new PermissionDeniedException();
 
     const victual = await this.victualService.create(data);
 
@@ -78,8 +84,8 @@ export class VictualResolver {
 
     for (let i = 0; i < categories.length; i++) {
       const catId = categories[i];
-      await this.categoryService.check({
-        categoryId: catId,
+      await this.categoryService.validate({
+        id: catId,
         restaurantId: data[i].restaurantId,
       });
     }

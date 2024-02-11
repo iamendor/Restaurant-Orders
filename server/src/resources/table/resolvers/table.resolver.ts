@@ -29,6 +29,7 @@ import {
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
+import { UniqueFieldFailedException } from "../../../error";
 
 const TabelCacheInterceptor = CacheInterceptor({
   prefix: "tables",
@@ -40,17 +41,22 @@ const TableClearCacheInterceptor = ClearCacheInterceptor("tables");
 export class TableResolver {
   constructor(private readonly tableService: TableService) {}
 
-  //TODO: unique fail for the same in restaurant
   @Mutation(() => Table, { name: "createTable" })
   @UseInterceptors(
     TableClearCacheInterceptor,
     TaskInterceptor(CREATE_TABLE_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  create(
+  async create(
     @Args("data", { type: () => CreateTable }, AddRID)
-    data: Required<CreateTable>
+    data: Required<CreateTable>,
+    @User() { id }: JwtPayload
   ) {
+    const tableNames = (await this.tableService.list(id)).map(
+      (tab) => tab.name
+    );
+    if (tableNames.includes(data.name)) throw new UniqueFieldFailedException();
+
     return this.tableService.create(data);
   }
 
@@ -60,10 +66,20 @@ export class TableResolver {
     TaskInterceptor(CREATE_TABLE_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  createMany(
+  async createMany(
     @Args("data", { type: () => [CreateTable] }, MinArrayPipe, AddRID)
-    data: Required<CreateTable>[]
+    data: Required<CreateTable>[],
+    @User() { id }: JwtPayload
   ) {
+    const tableNames = (await this.tableService.list(id)).map(
+      (tab) => tab.name
+    );
+
+    for (let i = 0; i < data.length; i++) {
+      if (tableNames.includes(data[i].name))
+        throw new UniqueFieldFailedException();
+    }
+
     return this.tableService.createMany(data);
   }
 

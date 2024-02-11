@@ -32,4 +32,7 @@ export class VictualServiceMock {
   find(where) {
     return { ...this.victual, ...where };
   }
+  validate() {
+    return true;
+  }
 }

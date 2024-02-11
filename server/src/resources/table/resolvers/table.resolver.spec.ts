@@ -44,13 +44,17 @@ describe("TableResolver", () => {
   });
 
   it("create a table", async () => {
-    const table = await resolver.create(mockTable);
-    expect(table.name).toBe(mockTable.name);
+    const table = await resolver.create(
+      { ...mockTable, name: `${mockTable.name}Create` },
+      mockRestaurantPayload
+    );
+    expect(table.name).toBe(`${mockTable.name}Create`);
   });
   it("create multiple table", async () => {
-    const tables = [1, 2].map((id) => ({ ...mockTable, id }));
+    const tables = [1, 2].map((id) => ({ name: `${mockTable.name}${id}`, id }));
     const createTables = await resolver.createMany(
-      tables.map((t) => ({ ...t, restaurantId: 1 }))
+      tables.map((t) => ({ ...t, restaurantId: 1 })),
+      mockRestaurantPayload
     );
     expect(createTables.message).toBe(SUCCESS);
   });

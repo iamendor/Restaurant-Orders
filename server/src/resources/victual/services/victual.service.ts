@@ -7,14 +7,11 @@ import {
   Victual,
 } from "../../../models/victual.model";
 import { Success } from "../../../models/success.model";
-import { PermissionDeniedException } from "../../../error";
-
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class VictualService {
   constructor(private readonly prismaService: PrismaService) {}
-
-  
 
   async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;
@@ -91,5 +88,10 @@ export class VictualService {
       },
     });
     return meal;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const victual = await this.find({ id });
+    return victual.restaurantId == restaurantId;
   }
 }

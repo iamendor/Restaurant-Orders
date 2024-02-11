@@ -30,6 +30,11 @@ import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor
 import { AddRID } from "../../../pipes/rid.pipe";
 import { AddWID } from "../../../pipes/wid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
+import { TableService } from "../../table/services/table.service";
+import { User } from "../../../auth/decorators/user.decorator";
+import { JwtPayload } from "../../../interfaces/jwt.interface";
+import { PermissionDeniedException } from "../../../error";
+import { VictualService } from "../../victual/services/victual.service";
 
 const OrderCacheInterceptor = CacheInterceptor({
   prefix: "orders",
@@ -42,7 +47,9 @@ export class OrderResolver {
   logger: Logger = new Logger();
   constructor(
     private readonly orderService: OrderService,
-    private readonly subscriptionService: SubscriptionService
+    private readonly subscriptionService: SubscriptionService,
+    private readonly tableService: TableService,
+    private readonly victualService: VictualService
   ) {}
 
   private UPDATE = "UPDATE";
@@ -56,6 +63,17 @@ export class OrderResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(@Args("data", AddRID, AddWID) data: CreateOrder) {
+    const isVictualValid = await this.victualService.validate({
+      id: data.victualId,
+      restaurantId: data.restaurantId,
+    });
+    const isTableValid = await this.tableService.validate({
+      id: data.tableId,
+      restaurantId: data.restaurantId,
+    });
+
+    if (!isVictualValid || !isTableValid) throw new PermissionDeniedException();
+
     const order = await this.orderService.create(data);
 
     this.subscriptionService.invalidateOrders(data.restaurantId, {
@@ -66,17 +84,35 @@ export class OrderResolver {
     return order;
   }
 
-  //TODO: validate table and victual
   @Mutation(() => Success, { name: "createOrders" })
   @UseInterceptors(
     OrderClearCacheInterceptor,
     TaskInterceptor(CREATE_ORDER_ACTION)
   )
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), OpenGuard)
   async createMany(
+    @User() { restaurantId }: JwtPayload,
     @Args("data", { type: () => [CreateOrder] }, MinArrayPipe, AddRID, AddWID)
     data: CreateOrder[]
   ) {
+    const victIds = [...new Set(data.map((o) => o.victualId))];
+    const tableIds = [...new Set(data.map((o) => o.tableId))];
+    for (let i = 0; i < tableIds.length; i++) {
+      const isTableValid = await this.tableService.validate({
+        id: tableIds[i],
+        restaurantId,
+      });
+      if (!isTableValid) throw new PermissionDeniedException();
+    }
+
+    for (let i = 0; i < victIds.length; i++) {
+      const isVictualValid = await this.victualService.validate({
+        id: victIds[i],
+        restaurantId,
+      });
+      if (!isVictualValid) throw new PermissionDeniedException();
+    }
+
     await this.orderService.createMany(data);
 
     const orders = await this.orderService.listLatest({

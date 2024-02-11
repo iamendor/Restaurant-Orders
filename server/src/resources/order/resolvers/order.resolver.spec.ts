@@ -16,7 +16,14 @@ import { CacheServiceMock } from "../../../cache/services/mock/cache.service.moc
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
 import { ContextIdFactory } from "@nestjs/core";
-import { mockOrder } from "../../../../test/helper/mock.unit";
+import {
+  mockOrder,
+  mockWaiterPayload,
+} from "../../../../test/helper/mock.unit";
+import { TableService } from "../../table/services/table.service";
+import { TableServiceMock } from "../../table/services/mock/table.service.mock";
+import { VictualService } from "../../victual/services/victual.service";
+import { VictualServiceMock } from "../../victual/services/mock/victual.service.mock";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -39,6 +46,8 @@ describe("OrderResolver", () => {
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        { provide: TableService, useClass: TableServiceMock },
+        { provide: VictualService, useClass: VictualServiceMock },
         OrderResolver,
       ],
     }).compile();
@@ -54,7 +63,7 @@ describe("OrderResolver", () => {
     expect(create.description).toBe("this is a mock order");
   });
   it("creates multiple order", async () => {
-    const created = await resolver.createMany([order]);
+    const created = await resolver.createMany(mockWaiterPayload, [order]);
     expect(created.message).toBe(SUCCESS);
   });
   it("updates the order", async () => {

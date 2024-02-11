@@ -36,4 +36,7 @@ export class OrderServiceMock {
   find(where) {
     return { ...this.order, ...where };
   }
+  validate() {
+    return true;
+  }
 }

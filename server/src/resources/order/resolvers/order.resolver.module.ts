@@ -8,6 +8,8 @@ import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheModule } from "../../../cache/cache.module";
 import { TaskServiceModule } from "../../task/services/task.service.module";
 import { OrderSubscriptionResolver } from "./order.subscription.resolver";
+import { TableServiceModule } from "../../table/services/table.service.module";
+import { VictualServiceModule } from "../../victual/services/victual.service.module";
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { OrderSubscriptionResolver } from "./order.subscription.resolver";
     OpenGuardModule,
     CacheModule,
     TaskServiceModule,
+    TableServiceModule,
+    VictualServiceModule,
   ],
   providers: [OrderResolver, OrderSubscriptionResolver, FieldResolver],
 })

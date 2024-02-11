@@ -37,4 +37,7 @@ export class WaiterServiceMock {
   delete() {
     return { message: this.SUCCESS };
   }
+  validate() {
+    return true;
+  }
 }

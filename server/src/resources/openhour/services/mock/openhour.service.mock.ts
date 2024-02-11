@@ -41,4 +41,7 @@ export class OpenHourServiceMock {
   isAlreadyCreated() {
     return false;
   }
+  validate() {
+    return true;
+  }
 }

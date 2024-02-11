@@ -8,11 +8,7 @@ import {
 } from "../../../models/category.model";
 import { Success } from "../../../models/success.model";
 import { PermissionDeniedException } from "../../../error";
-
-interface VerifyCategory {
-  restaurantId: number;
-  categoryId: number;
-}
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class CategoryService {
@@ -86,10 +82,8 @@ export class CategoryService {
     return categories;
   }
 
-  async check({ restaurantId, categoryId }: VerifyCategory) {
-    const category = await this.find({ id: categoryId });
-    if (category.restaurantId != restaurantId)
-      throw new PermissionDeniedException();
-    return true;
+  async validate({ restaurantId, id }: VerifyResource) {
+    const category = await this.find({ id });
+    return category.restaurantId == restaurantId;
   }
 }

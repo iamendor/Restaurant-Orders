@@ -35,4 +35,7 @@ export class TableServiceMock {
   delete() {
     return { message: this.SUCCESS };
   }
+  validate() {
+    return true;
+  }
 }

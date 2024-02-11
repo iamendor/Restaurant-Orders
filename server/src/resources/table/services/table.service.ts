@@ -7,6 +7,7 @@ import {
   CreateTable,
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class TableService {
@@ -64,5 +65,10 @@ export class TableService {
         id: where.id,
       },
     });
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const table = await this.find({ id });
+    return table.restaurantId == restaurantId;
   }
 }

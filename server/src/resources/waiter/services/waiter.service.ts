@@ -12,6 +12,7 @@ import {
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
 import { Prisma } from "@prisma/client";
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class WaiterService {
@@ -84,5 +85,10 @@ export class WaiterService {
       },
     });
     return waiters;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const waiter = await this.find({ id });
+    return waiter.restaurantId == restaurantId;
   }
 }

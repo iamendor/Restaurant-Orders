@@ -6,8 +6,8 @@ import {
   UpdateOpenHour,
   WhereOpenHour,
 } from "../../../models/openhour.model";
-import { SomethingWentWrongException } from "../../../error";
 import { Success } from "../../../models/success.model";
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class OpenHourService {
@@ -73,5 +73,10 @@ export class OpenHourService {
       where,
     });
     return openHour;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const oh = await this.find({ id });
+    return oh.restaurantId == restaurantId;
   }
 }
