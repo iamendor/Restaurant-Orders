@@ -1,22 +1,23 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { ModelGuard, initGuardProps } from "../../../guard/helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { MealService } from "../services/meal.service";
 import { IdGuard } from "../../../auth/guard/id.guard";
+import { Observable } from "rxjs";
+import { TableService } from "../../table/services/table.service";
 import { PermissionDeniedException } from "../../../error";
 
 @Injectable()
-export class MealBaseGuard implements ModelGuard {
+export class MealGuard implements ModelGuard {
   FIND: string = "meal";
   UPDATE: string = "updateMeal";
   DELETE: string = "deleteMeal";
-  constructor(private readonly mealService: MealService) {}
+  constructor(
+    private readonly mealService: MealService,
+    private readonly idGuard: IdGuard
+  ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    this.idGuard.canActivate(context);
     const ctx = GqlExecutionContext.create(context);
     const { req, fnContext: mutation, id, args } = initGuardProps(ctx);
     let where;
@@ -34,14 +35,21 @@ export class MealBaseGuard implements ModelGuard {
 }
 
 @Injectable()
-export class MealGuard implements CanActivate {
+export class CreateMealGuard implements CanActivate {
   constructor(
-    private readonly mealGuard: MealBaseGuard,
-    private readonly idIntercept: IdGuard
+    private readonly idGuard: IdGuard,
+    private readonly tableService: TableService
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const IIG = this.idIntercept.canActivate(context);
-    const MBG = await this.mealGuard.canActivate(context);
-    return IIG && MBG;
+    this.idGuard.canActivate(context);
+    const ctx = GqlExecutionContext.create(context);
+    const args = ctx.getArgs();
+    const user = ctx.getContext().req.user;
+    const tableId = args.data.tableId;
+    const table = await this.tableService.find({ id: tableId });
+    if (table.restaurantId != user.restaurantId)
+      throw new PermissionDeniedException();
+
+    return true;
   }
 }

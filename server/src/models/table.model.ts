@@ -28,16 +28,9 @@ export class Table {
 }
 
 @InputType()
-export class CreateTable extends PickType(
-  Table,
-  ["name"] as const,
-  InputType
-) {}
-
-@InputType()
-export class CreateTableData extends CreateTable {
-  @Field()
-  restaurantId: number;
+export class CreateTable extends PickType(Table, ["name"] as const, InputType) {
+  @Field({ nullable: true })
+  restaurantId?: number;
 }
 
 @InputType()

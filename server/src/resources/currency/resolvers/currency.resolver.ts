@@ -9,8 +9,7 @@ export class CurrencyResolver {
   constructor(private readonly currencyService: CurrencyService) {}
   @Query(() => [Currency], { name: "listCurrencies" })
   @UseInterceptors(CacheInterceptor({ restaurant: false, prefix: "currency" }))
-  async list() {
-    const currencies = await this.currencyService.list();
-    return currencies;
+  list(): Promise<Currency[]> {
+    return this.currencyService.list();
   }
 }

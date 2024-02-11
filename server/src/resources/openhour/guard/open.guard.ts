@@ -21,7 +21,7 @@ export class OpenGuard implements CanActivate {
       "Saturday",
       "Sunday",
     ];
-    return days[num - 1];
+    return num == 0 ? days[6] : days[num - 1];
   }
   private formatTime(date: Date) {
     return date.toTimeString().slice(0, 8);

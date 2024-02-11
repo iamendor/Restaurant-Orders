@@ -2,64 +2,57 @@ import { Test } from "@nestjs/testing";
 import { WaiterResolver } from "./waiter.resolver";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { WaiterService } from "../services/waiter.service";
-import { PrismaService } from "../../../prisma/services/prisma.service";
-import { getMocks } from "../../../../test/helper/mocks";
 import { SecurityModule } from "../../../security/security.module";
 import { WaiterServiceMock } from "../services/mock/waiter.service.mock";
-import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { TaskService } from "../../task/services/task.service";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
+import { ContextIdFactory } from "@nestjs/core";
+import {
+  mockRestaurantPayload,
+  mockWaiter,
+  mockWaiterPayload,
+} from "../../../../test/helper/mock.unit";
+import { IdGuard } from "../../../auth/guard/id.guard";
 
-jest.mock("../services/waiter.service");
 describe("Waiter Resolver", () => {
-  let service: WaiterService;
   let resolver: WaiterResolver;
-  let prisma: PrismaService;
 
   const SUCCESS = "success";
 
-  let payload: JwtPayload;
-  let waiterPayload: JwtPayload;
-  const mocks = getMocks();
-  const restaurant = { ...mocks.restaurant, id: 1 };
-  let restaurantId: number;
-
   beforeAll(async () => {
-    jest.clearAllMocks();
+    const contextId = ContextIdFactory.create();
+    jest
+      .spyOn(ContextIdFactory, "getByRequest")
+      .mockImplementation(() => contextId);
+
     const module = await Test.createTestingModule({
       imports: [SecurityModule, PrismaModule, FilterModule],
       providers: [
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        IdGuard,
         WaiterResolver,
       ],
     }).compile();
-    resolver = module.get<WaiterResolver>(WaiterResolver);
-    service = module.get<WaiterService>(WaiterService);
-    prisma = module.get<PrismaService>(PrismaService);
-
-    payload = mocks.restaurantPayload(restaurant);
-    restaurantId = restaurant.id;
+    resolver = await module.resolve<WaiterResolver>(WaiterResolver);
   });
 
   it("creates a new waiter", async () => {
-    const create = await resolver.create(payload, mocks.waiter);
+    const create = await resolver.create(mockWaiter);
     expect(create).toBeDefined();
-    expect(create.name).toBe(mocks.waiter.name);
-
-    waiterPayload = mocks.waiterPayload(create, restaurantId);
+    expect(create.name).toBe(mockWaiter.name);
   });
 
   it("updates the waiter", async () => {
     const update = { name: "updatedWaiter" };
-    const updatedWaiter = await resolver.update(payload, {
+    const updatedWaiter = await resolver.update(mockRestaurantPayload, {
       update,
       where: {
-        id: waiterPayload.id,
+        id: mockWaiter.id,
       },
     });
     expect(updatedWaiter.name).toBe(update.name);
@@ -68,21 +61,24 @@ describe("Waiter Resolver", () => {
     const update = {
       password: "updatedPassword",
     };
-    const updatedPassword = await resolver.updatePassword(payload, {
-      update,
-      where: {
-        id: waiterPayload.id,
-      },
-    });
+    const updatedPassword = await resolver.updatePassword(
+      mockRestaurantPayload,
+      {
+        update,
+        where: {
+          id: 1,
+        },
+      }
+    );
     expect(updatedPassword.message).toBe(SUCCESS);
   });
 
   it("updates with waiter role", async () => {
     const update = {
-      password: mocks.waiter.password,
+      password: mockWaiter.password,
       old: "updatedPassword",
     };
-    const updatedPassword = await resolver.updatePassword(waiterPayload, {
+    const updatedPassword = await resolver.updatePassword(mockWaiterPayload, {
       update,
     });
     expect(updatedPassword.message).toBe(SUCCESS);
@@ -90,26 +86,18 @@ describe("Waiter Resolver", () => {
   it("returns error because waiter didn't provide the old password", async () => {
     await expect(
       async () =>
-        await resolver.updatePassword(waiterPayload, {
+        await resolver.updatePassword(mockWaiterPayload, {
           update: { password: "error" },
         })
-    ).rejects.toThrowError("no old password specified");
+    ).rejects.toThrow("no old password specified");
   });
   it("lists waiters of restaurant", async () => {
-    service.list = jest.fn().mockReturnValue([{ id: 1, name: "test" }]);
-
-    const waiters = await resolver.waiters(restaurantId);
+    const waiters = await resolver.waiters(1);
     expect(waiters.length).toEqual(1);
   });
 
-  it("should filter out all waiter", async () => {
-    const waiters = await resolver.waiters(restaurantId, { name: "no match" });
-  });
-
   it("returns info of waiter", async () => {
-    const info = await resolver.info(waiterPayload);
+    const info = await resolver.info(mockWaiterPayload, 1);
     expect(info.name).toBe("updatedWaiter");
   });
-
-  afterAll(async () => await prisma.$disconnect());
 });

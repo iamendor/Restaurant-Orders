@@ -2,19 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { OrderService } from "./order.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
-import { clearMocks, getMocks } from "../../../../test/helper/mocks";
+import { mockOrder } from "../../../../test/helper/mock.unit";
 
 describe("OrderService", () => {
   let service: OrderService;
   let prisma: PrismaService;
-
-  const mocks = getMocks();
-  const mockOrder = mocks.order({
-    restaurantId: 1,
-    victualId: 1,
-    tableId: 1,
-    waiterId: 1,
-  });
 
   const SUCCESS = "success";
 

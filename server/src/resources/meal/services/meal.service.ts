@@ -7,18 +7,7 @@ import { CreateMealData } from "../../../interfaces/meal.interface";
 @Injectable()
 export class MealService {
   constructor(private readonly prismaService: PrismaService) {}
-  getOrdersOfTable(tableId: number) {
-    return this.prismaService.table.findFirst({
-      where: { id: tableId },
-      include: {
-        orders: {
-          include: {
-            victual: true,
-          },
-        },
-      },
-    });
-  }
+
   async clearTable(tableId: number) {
     await this.prismaService.order.updateMany({
       where: {
@@ -30,8 +19,9 @@ export class MealService {
       },
     });
   }
-  formatTable(table: any) {
-    const sorted = table.orders.sort((a, b) => a.createdAt - b.createdAt);
+
+  formatTable(orders: any) {
+    const sorted = orders.sort((a, b) => a.createdAt - b.createdAt);
     const start = sorted[0].createdAt;
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;

@@ -1,9 +1,9 @@
-import { CategoryService } from "../category/services/category.service";
-import { OpenHourService } from "../openhour/services/openhour.service";
-import { OrderService } from "../order/services/order.service";
-import { TableService } from "../table/services/table.service";
-import { VictualService } from "../victual/services/victual.service";
-import { WaiterService } from "../waiter/services/waiter.service";
+import { CategoryService } from "../resources/category/services/category.service";
+import { OpenHourService } from "../resources/openhour/services/openhour.service";
+import { OrderService } from "../resources/order/services/order.service";
+import { TableService } from "../resources/table/services/table.service";
+import { VictualService } from "../resources/victual/services/victual.service";
+import { WaiterService } from "../resources/waiter/services/waiter.service";
 import { ResourceGuard } from "./resource.guard";
 
 export const CategoryGuard = ResourceGuard({
@@ -39,4 +39,11 @@ export const OpenHourGuard = ResourceGuard({
   FIND: "",
   DELETE: "deleteOpenHour",
   Inject: OpenHourService,
+});
+
+export const WaiterGuard = ResourceGuard({
+  DELETE: "deleteWaiter",
+  FIND: "",
+  UPDATE: "",
+  Inject: WaiterService,
 });

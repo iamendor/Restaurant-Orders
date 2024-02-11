@@ -15,7 +15,7 @@ import {
   UpdateRestaurantPassword,
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
-import { GetRestaurant } from "../../decorators";
+import { GetRestaurant } from "../../../decorators";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -46,8 +46,10 @@ export class RestaurantResolver {
     const { password } = (await this.restaurantService.find({
       id,
     })) as PRestaurant;
-    if (!this.securityService.compare({ str: update.old, hash: password }))
+
+    if (!this.securityService.compare({ str: update.old, hash: password })) {
       throw new UnauthorizedException();
+    }
     return this.restaurantService.updatePassword({
       where: { id },
       update,
@@ -56,9 +58,8 @@ export class RestaurantResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Success, { name: "deleteRestaurant" })
-  async delete(@User() restaurant: JwtPayload) {
-    const deleted = await this.restaurantService.delete({ id: restaurant.id });
-    return deleted;
+  delete(@User() restaurant: JwtPayload) {
+    return this.restaurantService.delete({ id: restaurant.id });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), RestaurantGuard)

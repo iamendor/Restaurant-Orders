@@ -4,14 +4,14 @@ import {
   Injectable,
   mixin,
 } from "@nestjs/common";
-import { ModelGuard, initGuardProps } from "../../guard/helper";
-import { IdGuard } from "../../auth/guard/id.guard";
+import { ModelGuard, initGuardProps } from "./helper";
+import { IdGuard } from "../auth/guard/id.guard";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import {
   PermissionDeniedException,
   SomethingWentWrongException,
-} from "../../error";
-import { PrismaService } from "../../prisma/services/prisma.service";
+} from "../error";
+import { PrismaService } from "../prisma/services/prisma.service";
 
 export interface CreateResourceGuard {
   UPDATE: string;

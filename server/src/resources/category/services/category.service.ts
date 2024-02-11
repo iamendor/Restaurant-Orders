@@ -2,17 +2,23 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/services/prisma.service";
 import {
   Category,
-  CreateCategoryData,
+  CreateCategory,
   UpdateCategory,
   WhereCategory,
 } from "../../../models/category.model";
 import { Success } from "../../../models/success.model";
+import { PermissionDeniedException } from "../../../error";
+
+interface VerifyCategory {
+  restaurantId: number;
+  categoryId: number;
+}
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateCategoryData): Promise<Category> {
+  async create(data: CreateCategory): Promise<Category> {
     const { restaurantId, parentId, ...rest } = data;
     const category = await this.prismaService.category.create({
       data: {
@@ -31,9 +37,10 @@ export class CategoryService {
     return category;
   }
 
-  async createMany(data: CreateCategoryData[]): Promise<Success> {
+  async createMany(data: Required<CreateCategory>[]): Promise<Success> {
+    const mapped = data.map((cat) => ({ ...cat, root: !cat.parentId }));
     await this.prismaService.category.createMany({
-      data,
+      data: mapped,
       skipDuplicates: true,
     });
     return { message: "success" };
@@ -69,7 +76,7 @@ export class CategoryService {
     });
     return category;
   }
-  //TODO: add implementation for recursive tree
+  //TODO: add implementation for max level
   async list(restaurantId: number): Promise<Category[]> {
     const categories = await this.prismaService.category.findMany({
       where: {
@@ -77,5 +84,12 @@ export class CategoryService {
       },
     });
     return categories;
+  }
+
+  async check({ restaurantId, categoryId }: VerifyCategory) {
+    const category = await this.find({ id: categoryId });
+    if (category.restaurantId != restaurantId)
+      throw new PermissionDeniedException();
+    return true;
   }
 }

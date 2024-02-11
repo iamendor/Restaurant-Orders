@@ -4,7 +4,7 @@ import { User } from "../../../auth/decorators/user.decorator";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
-import { TableGuard } from "../../guard";
+import { TableGuard } from "../../../guard";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -17,7 +17,7 @@ import {
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
 import { TableFilter } from "../../../models/filter.model";
-import { GetTable } from "../../decorators";
+import { GetTable } from "../../../decorators";
 import {
   CREATE_TABLE_ACTION,
   TaskInterceptor,
@@ -27,6 +27,8 @@ import {
   ClearCacheInterceptor,
 } from "../../../cache/interceptors/cache.interceptor";
 import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const TabelCacheInterceptor = CacheInterceptor({
   prefix: "tables",
@@ -38,40 +40,31 @@ const TableClearCacheInterceptor = ClearCacheInterceptor("tables");
 export class TableResolver {
   constructor(private readonly tableService: TableService) {}
 
-  //TODO: pipe
+  //TODO: unique fail for the same in restaurant
   @Mutation(() => Table, { name: "createTable" })
   @UseInterceptors(
     TableClearCacheInterceptor,
     TaskInterceptor(CREATE_TABLE_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async create(@User() { id }: JwtPayload, @Args("data") data: CreateTable) {
-    const table = await this.tableService.create({
-      ...data,
-      restaurantId: id,
-    });
-    return table;
+  create(
+    @Args("data", { type: () => CreateTable }, AddRID)
+    data: Required<CreateTable>
+  ) {
+    return this.tableService.create(data);
   }
 
-  //TODO: pipe
   @Mutation(() => Success, { name: "createTables" })
   @UseInterceptors(
     TableClearCacheInterceptor,
     TaskInterceptor(CREATE_TABLE_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async createMany(
-    @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateTable] }) data: CreateTable[]
+  createMany(
+    @Args("data", { type: () => [CreateTable] }, MinArrayPipe, AddRID)
+    data: Required<CreateTable>[]
   ) {
-    const modified = data.map((table) => ({
-      ...table,
-      restaurantId: id,
-    }));
-
-    const tables = await this.tableService.createMany(modified);
-
-    return tables;
+    return this.tableService.createMany(data);
   }
 
   @Mutation(() => Table, { name: "updateTable" })

@@ -38,6 +38,8 @@ export class CreateVictual {
   price: number;
   @Field()
   categoryId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
 }
 
 @InputType()

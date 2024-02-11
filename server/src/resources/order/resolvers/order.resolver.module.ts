@@ -7,6 +7,7 @@ import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheModule } from "../../../cache/cache.module";
 import { TaskServiceModule } from "../../task/services/task.service.module";
+import { OrderSubscriptionResolver } from "./order.subscription.resolver";
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { TaskServiceModule } from "../../task/services/task.service.module";
     CacheModule,
     TaskServiceModule,
   ],
-  providers: [OrderResolver, FieldResolver],
+  providers: [OrderResolver, OrderSubscriptionResolver, FieldResolver],
 })
 export class OrderResolverModule {}

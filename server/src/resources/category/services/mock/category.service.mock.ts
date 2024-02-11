@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { getMocks } from "../../../../../test/helper/mocks";
+import { mockCategory } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
 export class CategoryServiceMock {
   category;
   SUCCESS = "success";
   constructor() {
-    this.category = getMocks().category;
+    this.category = mockCategory;
   }
 
   create(data) {
@@ -32,5 +32,9 @@ export class CategoryServiceMock {
 
   list() {
     return [1, 2].map(() => this.category);
+  }
+
+  check() {
+    return true;
   }
 }

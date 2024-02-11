@@ -7,7 +7,7 @@ import {
   PermissionDeniedException,
   OrderReadyException,
 } from "../../../error";
-import { OrderGuard as OrderBaseGuard } from "../../guard";
+import { OrderGuard as OrderBaseGuard } from "../../../guard";
 
 @Injectable()
 export class OrderPropertyGuard implements CanActivate {

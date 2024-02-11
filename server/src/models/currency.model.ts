@@ -14,8 +14,8 @@ export class Currency {
   name: string;
   @Field()
   symbol: string;
-  @Field()
-  restaurantId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
 }
 
 @InputType()

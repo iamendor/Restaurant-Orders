@@ -6,10 +6,12 @@ import { FieldResolver } from "./field.resolver";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
 import { TaskServiceModule } from "../../task/services/task.service.module";
+import { TableServiceModule } from "../../table/services/table.service.module";
 
 @Module({
   imports: [
     MealServiceModule,
+    TableServiceModule,
     MealGuardModule,
     FilterModule,
     CacheModule,

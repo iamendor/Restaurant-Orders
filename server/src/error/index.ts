@@ -77,6 +77,14 @@ export class OrderReadyException extends GraphQLError {
   }
 }
 
+export class ShortArrayException extends GraphQLError {
+  constructor(length: number) {
+    super(`array must be at least ${length} long`, {
+      extensions: { code: HttpStatus.BAD_REQUEST },
+    });
+  }
+}
+
 export const expectedExceptions = [
   AuthException,
   PermissionDeniedException,
@@ -87,4 +95,5 @@ export const expectedExceptions = [
   UniqueFieldFailedException,
   OrderClosedException,
   OrderReadyException,
+  ShortArrayException,
 ];

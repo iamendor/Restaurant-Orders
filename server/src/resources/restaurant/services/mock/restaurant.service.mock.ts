@@ -1,14 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { getMocks } from "../../../../../test/helper/mocks";
-import { mockRestaurant } from "../restaurant.service.spec";
 import { SecurityService } from "../../../../security/services/security.service";
+import { mockRestaurant } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
 export class RestaurantServiceMock {
   restaurant;
   SUCCESS = "success";
   constructor(private readonly securityService: SecurityService) {
-    this.restaurant = { ...getMocks().restaurantModel, id: 1 };
+    this.restaurant = { ...mockRestaurant };
   }
 
   create(data) {
@@ -23,7 +22,7 @@ export class RestaurantServiceMock {
   }
   find(where) {
     return {
-      ...mockRestaurant,
+      ...this.restaurant,
       ...where,
       password: this.securityService.hash(this.restaurant.password),
     };
@@ -31,7 +30,7 @@ export class RestaurantServiceMock {
 
   findByEmail(where) {
     return {
-      ...mockRestaurant,
+      ...this.restaurant,
       ...where,
       password: this.securityService.hash(this.restaurant.password),
     };

@@ -39,11 +39,8 @@ export class CreateCategory {
   name: string;
   @Field({ nullable: true })
   parentId?: number;
-}
-@InputType()
-export class CreateCategoryData extends CreateCategory {
-  @Field()
-  restaurantId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
 }
 
 @InputType()

@@ -33,6 +33,8 @@ export class Order {
   restaurant?: Restaurant;
   @Field(() => Victual)
   victual?: Victual;
+  @Field()
+  restaurantId: number;
 }
 
 @InputType()
