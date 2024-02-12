@@ -10,7 +10,6 @@ import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.s
 
 import { JwtPayload } from "../../interfaces/jwt.interface";
 import { mockRestaurant, mockWaiter } from "../../../test/helper/mock.unit";
-import { Restaurant } from "../../models/restaurant.model";
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -71,7 +70,7 @@ describe("AuthService", () => {
     expect(invalidWaiter).toBeNull();
   });
   it("should generate jwt for restaurant", async () => {
-    const payload = service.generateRestaurantJwt(mocks.restaurantModel);
+    const payload = service.generateRestaurantJwt(mockRestaurant);
     expect(typeof payload === "string").toBeTruthy();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);
