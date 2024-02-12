@@ -8,8 +8,9 @@ import {
   WhereOrder,
 } from "../../../models/order.model";
 import { Success } from "../../../models/success.model";
-import { SomethingWentWrongException } from "../../../error";
 import { Prisma } from "@prisma/client";
+import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class OrderService {
@@ -50,7 +51,7 @@ export class OrderService {
       data: data as Prisma.OrderCreateManyInput[],
       skipDuplicates: true,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
   async update(data: UpdateOrder): Promise<Order> {
     const { update, where } = data;
@@ -70,7 +71,7 @@ export class OrderService {
         id: where.id,
       },
     });
-    return { message: "success" };
+    return SUCCESS;
   }
   async list(restaurantId: number) {
     const orders = await this.prismaService.order.findMany({
@@ -100,5 +101,10 @@ export class OrderService {
       },
     });
     return order;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const order = await this.find({ id });
+    return order.restaurantId == restaurantId;
   }
 }

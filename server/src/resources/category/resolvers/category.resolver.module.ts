@@ -1,18 +1,20 @@
 import { Module } from "@nestjs/common";
 import { CategoryServiceModule } from "../services/category.service.module";
-import { CategoryGuardModule } from "../guard/category.guard.module";
 import { CategoryResolver } from "./category.resolver";
 import { FieldResolver } from "./field.resolver";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceModule } from "../../task/services/task.service.module";
+import { AddRID } from "../../../pipes/rid.pipe";
 
 @Module({
   imports: [
     CategoryServiceModule,
-    CategoryGuardModule,
     FilterModule,
     CacheModule,
+    TaskServiceModule,
   ],
-  providers: [CategoryResolver, FieldResolver],
+  providers: [IdGuard, CategoryResolver, FieldResolver],
 })
 export class CategoryResolverModule {}

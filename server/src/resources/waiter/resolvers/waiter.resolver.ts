@@ -1,13 +1,13 @@
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { WaiterService } from "../services/waiter.service";
 import { SecurityService } from "../../../security/services/security.service";
 import { RESTAURANT, WAITER } from "../../../role";
 import { UpdateWaiterGuard } from "../guards/waiter.guard";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import {
   AuthException,
@@ -24,47 +24,46 @@ import {
   UpdateWaiterPassword,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
-import { FilterService } from "../../../filter/services/filter.service";
 import { WaiterFilter } from "../../../models/filter.model";
-import { CacheService } from "../../../cache/services/cache.service";
+import {
+  CREATE_WAITER_ACTION,
+  TaskInterceptor,
+} from "../../../interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { WaiterGuard } from "../../../guard";
+
+const WaiterCacheInterceptor = CacheInterceptor({
+  prefix: "waiters",
+  map: (waiter) => ({ ...waiter, createdAt: new Date(waiter.createdAt) }),
+});
+const WaiterClearCacheInterceptor = ClearCacheInterceptor("waiters");
 
 @Resolver((of) => Waiter)
 export class WaiterResolver {
   constructor(
     private readonly waiterService: WaiterService,
-    private readonly securityService: SecurityService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
+    private readonly securityService: SecurityService
   ) {}
 
-  private cachePrefix(restaurantId: number) {
-    return `waiters:${restaurantId}`;
-  }
-
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Waiter, { name: "createWaiter" })
-  async create(@User() { id }: JwtPayload, @Args("data") data: CreateWaiter) {
-    const waiter = await this.waiterService.create({
-      data,
-      restaurantId: id,
-    });
-
-    this.clearCache(id);
-
-    return waiter;
+  @UseInterceptors(
+    WaiterClearCacheInterceptor,
+    TaskInterceptor(CREATE_WAITER_ACTION)
+  )
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  create(@Args("data", AddRID) data: CreateWaiter) {
+    return this.waiterService.create(data);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @Mutation(() => Waiter, { name: "updateWaiter" })
-  async update(
-    @User() user: JwtPayload,
-    @Args("data") data: UpdateWaiter,
-    @RID() restaurantId: number
-  ) {
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
+  @UseInterceptors(WaiterClearCacheInterceptor)
+  async update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
     const where = role === WAITER ? { id: user.id } : { ...data.where };
 
@@ -73,13 +72,11 @@ export class WaiterResolver {
       where,
     });
 
-    this.clearCache(restaurantId);
-
     return updated;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   @Mutation(() => Success, { name: "updateWaiterPassword" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
   async updatePassword(
     @User() user: JwtPayload,
     @Args("data") data: UpdateWaiterPassword
@@ -103,67 +100,41 @@ export class WaiterResolver {
     });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), WaiterGuard)
+  @UseInterceptors(WaiterClearCacheInterceptor)
   @Mutation(() => Success, { name: "deleteWaiter" })
   async delete(@User() { id }: JwtPayload, @Args("where") where: WhereWaiter) {
-    const { restaurantId } = await this.waiterService.find({ id: where.id });
-
-    if (restaurantId != id) throw new PermissionDeniedException();
-
-    const deleted = await this.waiterService.delete(where);
-
-    this.clearCache(id);
-
-    return deleted;
+    return this.waiterService.delete(where);
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
   @Query(() => [Waiter])
-  async waiters(
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(WaiterCacheInterceptor, FilterInterceptor("waiters"))
+  waiters(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => WaiterFilter })
-    filters?: WaiterFilter
+    _filters?: WaiterFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached) {
-      if (filters) return this.filterService.waiters({ data: cached, filters });
-      return cached;
-    }
-
-    const waiters = await this.waiterService.list({
+    return this.waiterService.list({
       id: restaurantId,
     });
-
-    if (filters) return this.filterService.waiters({ data: waiters, filters });
-
-    return waiters;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
   @Query(() => Waiter, { name: "waiterInfo" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
   async info(
     @User() user: JwtPayload,
+    @RID() restaurantId: number,
     @Args("where", { nullable: true }) where?: WhereWaiter
   ) {
-    if (user.role === WAITER) {
-      if (!where) return this.waiterService.find({ id: user.id });
+    const find = user.role == WAITER ? { id: user.id } : where;
 
-      const waiter = await this.waiterService.find({ ...where });
+    if (!find) throw new NotSpecifiedException("waiter");
 
-      if (waiter.restaurantId != user.restaurantId)
-        throw new PermissionDeniedException();
+    const waiter = await this.waiterService.find(find);
 
-      return waiter;
-    }
-    if (!where) throw new NotSpecifiedException("waiter");
-
-    const waiter = await this.waiterService.find({ ...where });
-
-    if (waiter.restaurantId != user.id) throw new PermissionDeniedException();
+    if (waiter.restaurantId != restaurantId)
+      throw new PermissionDeniedException();
 
     return waiter;
   }

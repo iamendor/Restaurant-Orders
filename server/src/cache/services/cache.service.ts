@@ -1,6 +1,6 @@
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject, Injectable } from "@nestjs/common";
-import { Cache } from "cache-manager";
+import { InjectRedis } from "@nestjs-modules/ioredis";
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { Redis } from "ioredis";
 
 export interface SetCache {
   key: string;
@@ -15,7 +15,7 @@ export interface GetCache {
 
 @Injectable()
 export class CacheService {
-  constructor(@Inject(CACHE_MANAGER) private readonly cacheService: Cache) {}
+  constructor(@InjectRedis() private readonly cacheService: Redis) {}
 
   async get({ key, json }: GetCache) {
     const cached = (await this.cacheService.get(key)) as string;
@@ -24,7 +24,7 @@ export class CacheService {
     return cached;
   }
   async set({ key, value, ttl }: SetCache) {
-    return this.cacheService.set(key, value, ttl || 10_000);
+    return this.cacheService.set(key, value, "EX", ttl || 10);
   }
   del(key: string) {
     return this.cacheService.del(key);

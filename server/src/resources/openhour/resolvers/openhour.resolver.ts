@@ -6,104 +6,107 @@ import {
   WhereOpenHour,
 } from "../../../models/openhour.model";
 import { OpenHourService } from "../services/openhour.service";
-import { UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { Success } from "../../../models/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
-import { IdIntercept } from "../../../auth/guards/id.guard";
-import { PermissionDeniedException } from "../../../error";
-import { CacheService } from "../../../cache/services/cache.service";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import {
+  CREATE_OPENHOUR_ACTION,
+  TaskInterceptor,
+} from "../../../interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../interceptors/cache.interceptor";
+import { OpenHourGuard } from "../../../guard";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
+import { SUCCESS } from "../../../response";
+
+const OpenHourCacheInterceptor = CacheInterceptor({
+  prefix: "openhours",
+  map: (oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }),
+});
+const OpenHourClearCacheInterceptor = ClearCacheInterceptor("openhours");
 
 @Resolver((of) => OpenHour)
 export class OpenHourResolver {
-  constructor(
-    private readonly openHourService: OpenHourService,
-    private readonly cacheService: CacheService
-  ) {}
+  constructor(private readonly openHourService: OpenHourService) {}
 
-  private cachePrefix(restaurantId: number) {
-    return `openhours:${restaurantId}`;
-  }
-
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
+  private;
 
   @Mutation(() => OpenHour, { name: "createOpenHour" })
+  @UseInterceptors(
+    OpenHourClearCacheInterceptor,
+    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
-    const openHour = await this.openHourService.create(data, id);
+  async create(@Args("data", AddRID) data: CreateOpenHour) {
+    const isCreated = await this.openHourService.isAlreadyCreated(data);
+    if (isCreated) {
+      return await this.openHourService.update({
+        where: { id: isCreated.id },
+        update: { start: data.start, end: data.end },
+      });
+    }
 
-    this.clearCache(id);
-
-    return openHour;
+    return this.openHourService.create(data);
   }
 
   @Mutation(() => Success, { name: "createOpenHours" })
+  @UseInterceptors(
+    OpenHourClearCacheInterceptor,
+    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
-    @Args("data", { type: () => [CreateOpenHour] }) data: CreateOpenHour[],
+    @Args("data", { type: () => [CreateOpenHour] }, MinArrayPipe, AddRID)
+    data: Required<CreateOpenHour>[],
     @User() { id }: JwtPayload
   ) {
-    const openHours = await this.openHourService.createMany(data, id);
+    const current = await this.openHourService.list(id);
+    for (let i = 0; i < data.length; i++) {
+      const today = await this.openHourService.isAlreadyCreated(
+        data[i],
+        current
+      );
+      if (today) {
+        const update = { start: data[i].start, end: data[i].end };
+        await this.openHourService.update({
+          where: { id: today.id },
+          update,
+        });
+        data.splice(i, 1);
+      }
+    }
+    await this.openHourService.createMany(data);
 
-    this.clearCache(id);
-
-    return openHours;
+    return SUCCESS;
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async update(
-    @Args("data") { where, update }: UpdateOpenHour,
-    @User() { id }: JwtPayload
-  ) {
-    const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new PermissionDeniedException();
-
-    const updated = await this.openHourService.update({ where, update });
-    return updated;
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), OpenHourGuard)
+  @UseInterceptors(OpenHourClearCacheInterceptor)
+  update(@Args("data") { where, update }: UpdateOpenHour) {
+    return this.openHourService.update({ where, update });
   }
 
   @Mutation(() => Success, { name: "deleteOpenHour" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async delete(
-    @Args("where") where: WhereOpenHour,
-    @User() { id }: JwtPayload
-  ) {
-    const openHour = await this.openHourService.find(where);
-    if (openHour.restaurantId != id) throw new PermissionDeniedException();
-
-    await this.openHourService.delete(where);
-
-    this.clearCache(id);
-
-    return { message: "success" };
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), OpenHourGuard)
+  @UseInterceptors(OpenHourClearCacheInterceptor)
+  async delete(@Args("where") where: WhereOpenHour) {
+    return this.openHourService.delete(where);
   }
 
   @Query(() => [OpenHour], { name: "openHours" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(OpenHourCacheInterceptor)
   async list(@RID() restaurantId: number) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached)
-      return cached.map((oh) => ({ ...oh, createdAt: new Date(oh.createdAt) }));
-
-    const openHours = await this.openHourService.list(restaurantId);
-
-    this.cacheService.set({
-      key: this.cachePrefix(restaurantId),
-      value: JSON.stringify(openHours),
-      ttl: 120_000,
-    });
-
-    return openHours;
+    return this.openHourService.list(restaurantId);
   }
 }

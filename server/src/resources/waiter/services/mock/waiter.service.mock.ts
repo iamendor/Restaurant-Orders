@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { SecurityService } from "../../../../security/services/security.service";
-import { getMocks } from "../../../../../test/helper/mocks";
+import { mockWaiter } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
 export class WaiterServiceMock {
@@ -8,13 +8,13 @@ export class WaiterServiceMock {
   SUCCESS = "success";
   constructor(private readonly securityService: SecurityService) {
     this.waiter = {
-      ...getMocks().waiter,
+      ...mockWaiter,
       id: 1,
-      password: securityService.hash(getMocks().waiter.password),
+      password: securityService.hash(mockWaiter.password),
     };
   }
-  create({ data, restaurantId }) {
-    return { ...data, restaurantId };
+  create(data) {
+    return data;
   }
   update({ where, update }) {
     this.waiter = { ...this.waiter, ...update };
@@ -30,16 +30,13 @@ export class WaiterServiceMock {
       ...where,
     };
   }
-  findByEmail(where) {
-    return {
-      ...this.waiter,
-      ...where,
-    };
-  }
   list() {
     return [this.waiter];
   }
   delete() {
     return { message: this.SUCCESS };
+  }
+  validate() {
+    return true;
   }
 }

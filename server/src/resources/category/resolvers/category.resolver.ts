@@ -1,12 +1,11 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { CategoryService } from "../services/category.service";
-import { Logger, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
-import { CategoryGuard } from "../guard/category.guard";
-import { GetCategory } from "../decorators/category.decorator";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { CategoryGuard } from "../../../guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
 import {
@@ -17,79 +16,134 @@ import {
 } from "../../../models/category.model";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { Success } from "../../../models/success.model";
-import { FilterService } from "../../../filter/services/filter.service";
 import { CategoryFilter } from "../../../models/filter.model";
-import { CacheService } from "../../../cache/services/cache.service";
+import { GetCategory } from "../../../decorators";
+import {
+  CREATE_CATEGORY_ACTION,
+  TaskInterceptor,
+} from "../../../interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
+import {
+  NestedCategoryException,
+  PermissionDeniedException,
+  UniqueFieldFailedException,
+} from "../../../error";
+
+const CategoryCacheInterceptor = CacheInterceptor({
+  prefix: "categories",
+  map: (data) => ({ ...data, createdAt: new Date(data) }),
+});
+const CategoryClearCacheInterceptor = ClearCacheInterceptor("categories");
 
 @Resolver((of) => Category)
 export class CategoryResolver {
-  logger = new Logger();
-  constructor(
-    private readonly categoryService: CategoryService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
-  ) {}
-
-  private cachePrefix(restaurantId: number) {
-    return `categories:${restaurantId}`;
-  }
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
+  constructor(private readonly categoryService: CategoryService) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseInterceptors(
+    TaskInterceptor(CREATE_CATEGORY_ACTION),
+    CategoryClearCacheInterceptor
+  )
   @Mutation(() => Category, { name: "createCategory" })
-  async create(@User() { id }: JwtPayload, @Args("data") data: CreateCategory) {
-    const category = await this.categoryService.create({
-      ...data,
-      restaurantId: id,
-    });
-
-    this.clearCache(id);
-
-    return category;
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  @Mutation(() => Success, { name: "createCategories" })
-  async createMany(
-    @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateCategory] }) data: CreateCategory[]
-  ): Promise<Success> {
-    const categories = await this.categoryService.createMany(
-      data.map((cat) => ({ ...cat, restaurantId: id }))
-    );
-
-    this.clearCache(id);
-
-    return categories;
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), CategoryGuard)
-  @Mutation(() => Category, { name: "updateCategory" })
-  async update(@Args("data") data: UpdateCategory, @User() { id }: JwtPayload) {
-    const updated = await this.categoryService.update(data);
-
-    this.clearCache(id);
-
-    return updated;
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), CategoryGuard)
-  @Mutation(() => Success, { name: "deleteCategory" })
-  async delete(
-    @Args("where") where: WhereCategory,
+  async create(
+    @Args("data", AddRID) data: CreateCategory,
     @User() { id }: JwtPayload
   ) {
-    const deleted = await this.categoryService.delete(where);
+    const isUnique = await this.categoryService.validateUnique({
+      restaurantId: id,
+      name: data.name,
+    });
+    if (!isUnique) throw new UniqueFieldFailedException();
 
-    this.clearCache(id);
+    if (!data.parentId) return this.categoryService.create(data);
+    const { parentId } = data;
 
-    return deleted;
+    const isParentValid = await this.categoryService.validate({
+      id: parentId,
+      restaurantId: id,
+    });
+    if (!isParentValid) throw new PermissionDeniedException();
+
+    const parentLevel = await this.categoryService.validateNesting(parentId);
+    if (!parentLevel) throw new NestedCategoryException(parentId);
+
+    return this.categoryService.create({ ...data, level: parentLevel + 1 });
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), CategoryGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseInterceptors(
+    TaskInterceptor(CREATE_CATEGORY_ACTION),
+    CategoryClearCacheInterceptor
+  )
+  @Mutation(() => Success, { name: "createCategories" })
+  async createMany(
+    @Args("data", { type: () => [CreateCategory] }, MinArrayPipe, AddRID)
+    data: Required<CreateCategory>[],
+    @User() { id }: JwtPayload
+  ): Promise<Success> {
+    const categories = (await this.categoryService.list(id)).map(
+      (cat) => cat.name
+    );
+    for (let i = 0; i < data.length; i++) {
+      if (categories.includes(data[i].name))
+        throw new UniqueFieldFailedException();
+    }
+
+    const parents = [
+      ...new Set(data.map((parent) => parent.parentId).filter(Number)),
+    ];
+    let parentsLevel = {};
+
+    for (let i = 0; i < parents.length; i++) {
+      const isParentValid = await this.categoryService.validate({
+        id: parents[i],
+        restaurantId: id,
+      });
+      if (!isParentValid) throw new PermissionDeniedException();
+
+      const parentLevel = await this.categoryService.validateNesting(
+        parents[i]
+      );
+      if (!parentLevel) throw new NestedCategoryException(parents[i]);
+      parentsLevel[parents[i]] = parentLevel;
+    }
+
+    return this.categoryService.createMany(
+      data.map((cat) =>
+        cat.parentId ? { ...cat, level: parentsLevel[cat.parentId] } : cat
+      )
+    );
+  }
+
+  @Mutation(() => Category, { name: "updateCategory" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), CategoryGuard)
+  @UseInterceptors(CategoryClearCacheInterceptor)
+  async update(@Args("data") data: UpdateCategory, @User() { id }: JwtPayload) {
+    if (data.update.name) {
+      const isUnique = await this.categoryService.validateUnique({
+        restaurantId: id,
+        name: data.update.name,
+      });
+      if (!isUnique) throw new UniqueFieldFailedException();
+    }
+    return this.categoryService.update(data);
+  }
+
+  @Mutation(() => Success, { name: "deleteCategory" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), CategoryGuard)
+  @UseInterceptors(CategoryClearCacheInterceptor)
+  delete(@Args("where") where: WhereCategory) {
+    return this.categoryService.delete(where);
+  }
+
   @Query(() => Category, { name: "category" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), CategoryGuard)
   async find(
     @GetCategory() category: Category,
     @Args("where") _: WhereCategory
@@ -97,39 +151,14 @@ export class CategoryResolver {
     return category;
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
   @Query(() => [Category], { name: "categories" })
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(CategoryCacheInterceptor, FilterInterceptor("categories"))
   async list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => CategoryFilter })
-    filters?: CategoryFilter
+    _filters?: CategoryFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(restaurantId),
-      json: true,
-    });
-
-    if (cached) {
-      const remap = cached.map((cat) => ({
-        ...cat,
-        createdAt: new Date(cat.createdAt),
-      }));
-
-      if (filters)
-        return this.filterService.categories({
-          data: remap,
-          filters,
-        });
-
-      return remap;
-    }
-
-    const categories = await this.categoryService.list(restaurantId);
-    if (filters)
-      return this.filterService.categories({
-        data: categories,
-        filters,
-      });
-    return categories;
+    return await this.categoryService.list(restaurantId);
   }
 }

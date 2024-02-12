@@ -25,6 +25,8 @@ export class Order {
   isReady: boolean;
   @Field()
   closed: boolean;
+  @Field()
+  waiterId: number;
   @Field(() => Waiter)
   waiter?: Waiter;
   @Field(() => Table)
@@ -33,6 +35,8 @@ export class Order {
   restaurant?: Restaurant;
   @Field(() => Victual)
   victual?: Victual;
+  @Field()
+  restaurantId: number;
 }
 
 @InputType()

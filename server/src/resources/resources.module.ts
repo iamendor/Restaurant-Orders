@@ -9,6 +9,7 @@ import { WaiterModule } from "./waiter/waiter.module";
 import { OpenHourModule } from "./openhour/openhour.module";
 import { OrderModule } from "./order/order.module";
 import { MealModule } from "./meal/meal.module";
+import { TaskModule } from "./task/task.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MealModule } from "./meal/meal.module";
     OpenHourModule,
     OrderModule,
     MealModule,
+    TaskModule,
   ],
 })
 export class ResourceModule {}

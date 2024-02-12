@@ -1,7 +1,7 @@
 import { UseGuards } from "@nestjs/common";
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { FieldService } from "../services/field.service";
 import { Victual } from "../../../models/victual.model";
 import { Restaurant } from "../../../models/restaurant.model";

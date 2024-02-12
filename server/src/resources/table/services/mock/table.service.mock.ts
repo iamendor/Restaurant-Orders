@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { getMocks } from "../../../../../test/helper/mocks";
+import { mockTable } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
 export class TableServiceMock {
-  private mockTable;
+  private table;
   private SUCCESS = "success";
   constructor() {
-    this.mockTable = { ...getMocks().table(), id: 1 };
+    this.table = mockTable;
   }
   create(data) {
     return { ...data, id: 1 };
@@ -15,19 +15,31 @@ export class TableServiceMock {
     return { message: this.SUCCESS };
   }
   update({ where, update }) {
+    this.table = {
+      ...this.table,
+      ...where,
+      ...update,
+    };
     return {
-      ...this.mockTable,
+      ...this.table,
       ...where,
       ...update,
     };
   }
   list() {
-    return [1, 2, 3].map((i) => this.mockTable);
+    return [1, 2, 3].map((i) => this.table);
   }
   find(where) {
-    return { ...where, ...this.mockTable };
+    return { ...where, ...this.table };
   }
   delete() {
     return { message: this.SUCCESS };
+  }
+  validate() {
+    return true;
+  }
+
+  validateUnique() {
+    return true;
   }
 }

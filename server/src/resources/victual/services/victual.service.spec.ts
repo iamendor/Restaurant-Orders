@@ -3,15 +3,13 @@ import { VictualService } from "./victual.service";
 import { PrismaModule } from "../../../prisma/prisma.module";
 import { PrismaService } from "../../../prisma/services/prisma.service";
 import { CategoryService } from "../../category/services/category.service";
-import { getMocks } from "../../../../test/helper/mocks";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
+import { mockCategory, mockVictual } from "../../../../test/helper/mock.unit";
 
 describe("MealService", () => {
   let service: VictualService;
   let prisma: PrismaService;
   let catService: CategoryService;
-  const mocks = getMocks();
-  const mockMeal = mocks.victual.withCategoryId(2);
   const SUCCESS = "success";
 
   beforeEach(async () => {
@@ -30,30 +28,25 @@ describe("MealService", () => {
   });
 
   it("creates a victual", async () => {
-    catService.find = jest.fn().mockReturnValue(mocks.category);
-    prisma.victual.create = jest.fn().mockImplementation(() => ({
-      ...mocks.victual.withCategoryId(2),
-    }));
+    catService.find = jest.fn().mockReturnValue(mockCategory);
+    prisma.victual.create = jest.fn().mockImplementation(() => mockVictual);
 
-    const victual = await service.create({
-      ...mockMeal,
-      restaurantId: 1,
-    });
+    const victual = await service.create(mockVictual);
     expect(victual).toBeDefined();
   });
   it("creates many victual", async () => {
     prisma.victual.createMany = jest.fn().mockReturnValue({ count: 2 });
 
-    const victs = [1, 2].map(() => ({
-      ...mocks.victual.withCategoryId(1),
-      restaurantId: 1,
+    const victs = [1, 2].map((id) => ({
+      ...mockVictual,
+      id,
     }));
     const victuals = await service.createMany(victs);
     expect(victuals.message).toBe(SUCCESS);
   });
   it("update victual", async () => {
     prisma.victual.update = jest.fn().mockImplementation(({ where, data }) => ({
-      ...mocks.victual.withCategoryId(2),
+      ...mockVictual,
       ...where,
       ...data,
     }));
@@ -75,9 +68,7 @@ describe("MealService", () => {
   it("list victuals", async () => {
     prisma.victual.findMany = jest
       .fn()
-      .mockImplementation(() =>
-        [1, 2].map(() => ({ ...mocks.victual.withCategoryId(2) }))
-      );
+      .mockImplementation(() => [1, 2].map((id) => ({ ...mockVictual, id })));
 
     const victuals = await service.list(2);
     expect(victuals.length).toEqual(2);
@@ -85,7 +76,7 @@ describe("MealService", () => {
   it("find by id", async () => {
     prisma.victual.findUniqueOrThrow = jest
       .fn()
-      .mockImplementation(({ where }) => ({ ...mockMeal, ...where }));
+      .mockImplementation(({ where }) => ({ ...mockVictual, ...where }));
 
     const victual = await service.find({ id: 1 });
     expect(victual).toBeDefined();

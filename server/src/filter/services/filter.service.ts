@@ -18,12 +18,16 @@ import {
   CategoryFilter,
   MealFilter,
   OrderFilter,
+  TaskFilter,
   VictualFilter,
   WaiterFilter,
 } from "../../models/filter.model";
 import { Table } from "../../models/table.model";
 import { ITableFilter } from "../interfaces/table.interface";
 import { TableRules } from "../rules/tables.rule";
+import { ITaskFilter } from "../interfaces/task.interface";
+import { TaskRules } from "../rules/tasks.rule";
+import { Task } from "../../models/task.model";
 
 interface IFilter<T> {
   data: T[];
@@ -32,7 +36,8 @@ interface IFilter<T> {
     | CategoryFilter
     | OrderFilter
     | VictualFilter
-    | MealFilter;
+    | MealFilter
+    | TaskFilter;
 }
 
 @Injectable()
@@ -43,6 +48,7 @@ export class FilterService {
   private oRules: IOrderFilter;
   private mRules: IMealFilter;
   private tRules: ITableFilter;
+  private tkRules: ITaskFilter;
 
   constructor() {
     this.wRules = WaiterRules();
@@ -51,6 +57,7 @@ export class FilterService {
     this.oRules = OrderRules();
     this.mRules = MealRules();
     this.tRules = TableRules();
+    this.tkRules = TaskRules();
   }
   private filter({ data, filters }, rules) {
     let filtered = data;
@@ -65,7 +72,7 @@ export class FilterService {
   waiters(data: IFilter<Waiter>) {
     return this.filter(data, this.wRules) as Waiter[];
   }
-  victual(data: IFilter<Victual>) {
+  victuals(data: IFilter<Victual>) {
     return this.filter(data, this.vRules) as Victual[];
   }
   categories(data: IFilter<Category>): Category[] {
@@ -74,10 +81,13 @@ export class FilterService {
   orders(data: IFilter<Order>) {
     return this.filter(data, this.oRules) as Order[];
   }
-  meal(data: IFilter<Meal>) {
+  meals(data: IFilter<Meal>) {
     return this.filter(data, this.mRules) as Meal[];
   }
   tables(data: IFilter<Table>) {
     return this.filter(data, this.tRules) as Table[];
+  }
+  tasks(data: IFilter<Task>) {
+    return this.filter(data, this.tkRules) as Task[];
   }
 }

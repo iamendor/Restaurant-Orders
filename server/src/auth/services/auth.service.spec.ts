@@ -1,6 +1,5 @@
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { WaiterModule } from "../../resources/waiter/waiter.module";
 import { AuthService } from "./auth.service";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { WaiterService } from "../../resources/waiter/services/waiter.service";
@@ -8,27 +7,26 @@ import { SecurityModule } from "../../security/security.module";
 import { PrismaModule } from "../../prisma/prisma.module";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
-import { getMocks } from "../../../test/helper/mocks";
+
 import { JwtPayload } from "../../interfaces/jwt.interface";
-import { CacheService } from "../../cache/services/cache.service";
-import { CacheServiceMock } from "../../cache/services/mock/cache.service.mock";
+import { mockRestaurant, mockWaiter } from "../../../test/helper/mock.unit";
+import { Restaurant } from "../../models/restaurant.model";
 
 describe("AuthService", () => {
   let service: AuthService;
   let jwt: JwtService;
 
-  const mocks = getMocks();
   const credentials = {
-    email: mocks.restaurantModel.email,
-    password: mocks.restaurantModel.password,
+    email: mockRestaurant.email,
+    password: mockRestaurant.password,
   };
   const wCredentials = {
-    email: mocks.waiter.email,
-    password: mocks.waiter.password,
+    email: mockWaiter.email,
+    password: mockWaiter.password,
   };
 
   const invalidCredentials = {
-    email: mocks.restaurantModel.email,
+    email: mockWaiter.email,
     password: "invalid",
   };
 
@@ -81,11 +79,11 @@ describe("AuthService", () => {
     expect(decoded.role).toBe("restaurant");
   });
   it("should generate jwt for waiter", async () => {
-    const payload = service.generateWaiterJwt(mocks.waiter);
-    expect(typeof payload === "string").toBeTruthy();
+    const payload = service.generateWaiterJwt(mockWaiter);
+    expect(payload).toBeDefined();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);
-    expect(decoded.name).toBe("waiter1");
+    expect(decoded.name).toBe(mockWaiter.name);
     expect(decoded.role).toBe("waiter");
   });
 });

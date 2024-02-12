@@ -4,14 +4,15 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { SecurityService } from "../../../security/services/security.service";
 import { WhereRestaurant } from "../../../models/restaurant.model";
 import {
-  CreateWaiterData,
   UpdateWaiterPassword,
   UpdateWaiter,
   WhereWaiter,
   Waiter,
+  CreateWaiter,
 } from "../../../models/waiter.model";
 import { Success } from "../../../models/success.model";
 import { Prisma } from "@prisma/client";
+import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class WaiterService {
@@ -20,13 +21,13 @@ export class WaiterService {
     private readonly securityService: SecurityService
   ) {}
 
-  async create(waiter: CreateWaiterData): Promise<Waiter> {
+  async create({ restaurantId, ...waiter }: CreateWaiter): Promise<Waiter> {
     const waiterCreated = await this.prismaService.waiter.create({
       data: {
-        ...waiter.data,
-        password: this.securityService.hash(waiter.data.password),
+        ...waiter,
+        password: this.securityService.hash(waiter.password),
         restaurant: {
-          connect: { id: waiter.restaurantId },
+          connect: { id: restaurantId },
         },
       },
     });
@@ -84,5 +85,10 @@ export class WaiterService {
       },
     });
     return waiters;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const waiter = await this.find({ id });
+    return waiter.restaurantId == restaurantId;
   }
 }

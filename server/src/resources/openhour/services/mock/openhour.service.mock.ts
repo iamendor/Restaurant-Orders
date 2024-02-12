@@ -5,14 +5,15 @@ import {
   UpdateOpenHour,
   WhereOpenHour,
 } from "../../../../models/openhour.model";
-import { getMocks } from "../../../../../test/helper/mocks";
 import { Success } from "../../../../models/success.model";
+import { mockOpenHour } from "../../../../../test/helper/mock.unit";
+import { SUCCESS } from "../../../../response";
 
 @Injectable()
 export class OpenHourServiceMock {
   openHour: OpenHour;
   constructor() {
-    this.openHour = { ...getMocks().openingHour(), createdAt: new Date() };
+    this.openHour = mockOpenHour;
   }
 
   create(data: CreateOpenHour): OpenHour {
@@ -20,7 +21,7 @@ export class OpenHourServiceMock {
   }
 
   createMany(data: CreateOpenHour[]): Success {
-    return { message: "success" };
+    return SUCCESS;
   }
 
   list(restaurantId: number) {
@@ -36,6 +37,12 @@ export class OpenHourServiceMock {
   }
 
   delete() {
-    return { message: "success" };
+    return SUCCESS;
+  }
+  isAlreadyCreated() {
+    return false;
+  }
+  validate() {
+    return true;
   }
 }

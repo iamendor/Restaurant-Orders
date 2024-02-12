@@ -12,6 +12,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 
@@ -24,6 +25,7 @@ model Restaurant{
   address Address?
   currency Currency? @relation(fields: [currencyId], references: [id], onDelete: SetNull)
   currencyId Int?
+  tasks Task[]
   openingHours OpeningHour[]
   waiters Waiter[]
   orders Order[]
@@ -48,6 +50,21 @@ model Address{
   address2 String?
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int @unique
+}
+
+model BaseTask{
+  id Int @id @default(autoincrement())
+  name String @unique
+  action String @unique
+  tasks Task[]
+}
+model Task {
+ id Int @id @default(autoincrement())
+ done Boolean @default(false)
+ base BaseTask @relation(fields: [baseId], references: [id], onDelete: Cascade)
+ restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+ baseId Int
+restaurantId Int
 }
 
 model Waiter{
@@ -104,6 +121,7 @@ model Category{
   restaurantId Int
   parentId Int?
   root Boolean @default(true)
+  level Int @default(1)
   subCategories Category[] @relation("ParentToCategory")
 }
 model Table{

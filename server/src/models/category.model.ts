@@ -19,6 +19,8 @@ export class Category {
   name: string;
   @Field()
   root: boolean;
+  @Field()
+  level: number;
   @Field(() => [Victual])
   victuals?: Victual[];
   @Field(() => Restaurant)
@@ -38,12 +40,11 @@ export class CreateCategory {
   @Field()
   name: string;
   @Field({ nullable: true })
+  level?: number;
+  @Field({ nullable: true })
   parentId?: number;
-}
-@InputType()
-export class CreateCategoryData extends CreateCategory {
-  @Field()
-  restaurantId: number;
+  @Field({ nullable: true })
+  restaurantId?: number;
 }
 
 @InputType()

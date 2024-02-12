@@ -1,20 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { getMocks } from "../../../../../test/helper/mocks";
+import { mockOrder } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
 export class OrderServiceMock {
   order;
   SUCCESS = "success";
   constructor() {
-    this.order = {
-      ...getMocks().order({
-        restaurantId: 1,
-        victualId: 1,
-        waiterId: 1,
-        tableId: 1,
-      }),
-      id: 1,
-    };
+    this.order = mockOrder;
   }
 
   create(data) {
@@ -43,5 +35,8 @@ export class OrderServiceMock {
 
   find(where) {
     return { ...this.order, ...where };
+  }
+  validate() {
+    return true;
   }
 }

@@ -3,18 +3,19 @@ import { FieldResolver } from "./field.resolver";
 import { VictualResolver } from "./victual.resolver";
 import { VictualServiceModule } from "../services/victual.service.module";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
-import { VictualGuardModule } from "../guard/victual.guard.module";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
+import { IdGuard } from "../../../auth/guard/id.guard";
+import { TaskServiceModule } from "../../task/services/task.service.module";
 
 @Module({
   imports: [
     VictualServiceModule,
     CategoryServiceModule,
-    VictualGuardModule,
     FilterModule,
     CacheModule,
+    TaskServiceModule,
   ],
-  providers: [FieldResolver, VictualResolver],
+  providers: [IdGuard, FieldResolver, VictualResolver],
 })
 export class VictualResolverModule {}

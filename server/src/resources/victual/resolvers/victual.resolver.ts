@@ -1,15 +1,13 @@
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { VictualService } from "../services/victual.service";
 import { User } from "../../../auth/decorators/user.decorator";
-import { ForbiddenException, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../../auth/guards/jwt.guard";
-import { RoleGuard } from "../../../auth/guards/role.guard";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
+import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { CategoryService } from "../../category/services/category.service";
-import { IdIntercept } from "../../../auth/guards/id.guard";
+import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { VictualGuard } from "../guard/victual.guard";
-import { GetVictual } from "../decorators/victual.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Victual,
@@ -18,133 +16,106 @@ import {
   WhereVictual,
 } from "../../../models/victual.model";
 import { Success } from "../../../models/success.model";
-import { FilterService } from "../../../filter/services/filter.service";
 import { VictualFilter } from "../../../models/filter.model";
+import { VictualGuard } from "../../../guard";
+import { GetVictual } from "../../../decorators";
+import {
+  CREATE_VICTUAL_ACTION,
+  TaskInterceptor,
+} from "../../../interceptors/task.inteceptor";
+import {
+  CacheInterceptor,
+  ClearCacheInterceptor,
+} from "../../../interceptors/cache.interceptor";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 import { PermissionDeniedException } from "../../../error";
-import { CacheService } from "../../../cache/services/cache.service";
 
-export interface VerifyCategory {
-  restaurantId: number;
-  categoryId: number;
-}
+const VictualCacheInterceptor = CacheInterceptor({
+  prefix: "victuals",
+  map: (v) => ({ ...v, createdAt: new Date(v.createdAt) }),
+});
+const VictualClearCacheInterceptor = ClearCacheInterceptor("victuals");
 
 @Resolver((of) => Victual)
 export class VictualResolver {
   constructor(
     private readonly victualService: VictualService,
-    private readonly categoryService: CategoryService,
-    private readonly filterService: FilterService,
-    private readonly cacheService: CacheService
+    private readonly categoryService: CategoryService
   ) {}
 
-  private async checkCategory({ restaurantId, categoryId }: VerifyCategory) {
-    const category = await this.categoryService.find({ id: categoryId });
-    if (category.restaurantId != restaurantId)
-      throw new PermissionDeniedException();
-    return true;
-  }
-
-  private cachePrefix(restaurantId) {
-    return `victuals:${restaurantId}`;
-  }
-
-  private clearCache(restaurantId: number) {
-    this.cacheService.del(this.cachePrefix(restaurantId));
-  }
+  private;
 
   @Mutation(() => Victual, { name: "createVictual" })
+  @UseInterceptors(
+    VictualClearCacheInterceptor,
+    TaskInterceptor(CREATE_VICTUAL_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async create(@User() { id }: JwtPayload, @Args("data") data: CreateVictual) {
+  async create(
+    @User() { id }: JwtPayload,
+    @Args("data", AddRID) data: CreateVictual
+  ) {
     const { categoryId } = data;
-    await this.checkCategory({ restaurantId: id, categoryId });
-
-    const victual = await this.victualService.create({
-      ...data,
+    const isCatValid = await this.categoryService.validate({
       restaurantId: id,
+      id: categoryId,
     });
 
-    this.clearCache(id);
+    if (!isCatValid) throw new PermissionDeniedException();
+
+    const victual = await this.victualService.create(data);
 
     return victual;
   }
 
   @Mutation(() => Success, { name: "createVictuals" })
+  @UseInterceptors(
+    VictualClearCacheInterceptor,
+    TaskInterceptor(CREATE_VICTUAL_ACTION)
+  )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
-    @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateVictual] }) data: CreateVictual[]
+    @Args("data", { type: () => [CreateVictual] }, MinArrayPipe, AddRID)
+    data: CreateVictual[]
   ) {
     const categories = [...new Set(data.map((v) => v.categoryId))];
 
     for (let i = 0; i < categories.length; i++) {
       const catId = categories[i];
-      await this.checkCategory({
-        categoryId: catId,
-        restaurantId: id,
+      await this.categoryService.validate({
+        id: catId,
+        restaurantId: data[i].restaurantId,
       });
     }
 
-    const victuals = await this.victualService.createMany(
-      data.map((meal) => ({ ...meal, restaurantId: id }))
-    );
-
-    this.clearCache(id);
-
-    return victuals;
+    return this.victualService.createMany(data);
   }
-  //Victual Guard
+
   @Mutation(() => Victual, { name: "updateVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
-  async update(@Args("data") data: UpdateVictual, @User() { id }: JwtPayload) {
-    const updated = await this.victualService.update(data);
-
-    this.cacheService.del(this.cachePrefix(id));
-
-    return updated;
+  @UseInterceptors(VictualClearCacheInterceptor)
+  update(@Args("data") data: UpdateVictual) {
+    return this.victualService.update(data);
   }
 
   @Mutation(() => Success, { name: "deleteVictual" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), VictualGuard)
-  async delete(@Args("where") where: WhereVictual, @User() { id }: JwtPayload) {
-    const deleted = await this.victualService.delete(where);
-
-    this.clearCache(id);
-
-    return deleted;
+  @UseInterceptors(VictualClearCacheInterceptor)
+  delete(@Args("where") where: WhereVictual) {
+    return this.victualService.delete(where);
   }
 
   @Query(() => [Victual], { name: "victuals" })
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdIntercept)
-  async list(
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(VictualCacheInterceptor, FilterInterceptor("victuals"))
+  list(
     @RID() id: number,
     @Args("filter", { nullable: true, type: () => VictualFilter })
-    filters?: VictualFilter
+    _filters?: VictualFilter
   ) {
-    const cached = await this.cacheService.get({
-      key: this.cachePrefix(id),
-      json: true,
-    });
-
-    if (cached) {
-      const remap = cached.map((vict) => ({
-        ...vict,
-        createdAt: new Date(vict.createdAt),
-      }));
-
-      if (filters) return this.filterService.victual({ data: remap, filters });
-      return remap;
-    }
-
-    const victuals = await this.victualService.list(id);
-
-    this.cacheService.set({
-      key: this.cachePrefix(id),
-      value: JSON.stringify(victuals),
-      ttl: 120_000,
-    });
-
-    if (filters) return this.filterService.victual({ data: victuals, filters });
-    return victuals;
+    return this.victualService.list(id);
   }
 
   @Query(() => Victual, { name: "victual" })

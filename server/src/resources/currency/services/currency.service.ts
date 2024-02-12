@@ -7,14 +7,12 @@ export class CurrencyService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async find(where: WhereCurrency) {
-    const currency = await this.prismaService.currency.findUniqueOrThrow({
+    return this.prismaService.currency.findUniqueOrThrow({
       where,
     });
-    return currency;
   }
 
-  async list() {
-    const currencies = await this.prismaService.currency.findMany();
-    return currencies;
+  list() {
+    return this.prismaService.currency.findMany();
   }
 }
