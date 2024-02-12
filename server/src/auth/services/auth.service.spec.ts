@@ -71,7 +71,7 @@ describe("AuthService", () => {
     expect(invalidWaiter).toBeNull();
   });
   it("should generate jwt for restaurant", async () => {
-    const payload = service.generateRestaurantJwt(mockRestaurant as Restaurant);
+    const payload = service.generateRestaurantJwt(mocks.restaurantModel);
     expect(typeof payload === "string").toBeTruthy();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);

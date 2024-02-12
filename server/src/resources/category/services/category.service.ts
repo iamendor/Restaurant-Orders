@@ -75,7 +75,6 @@ export class CategoryService {
     });
     return category;
   }
-
   async list(restaurantId: number): Promise<Category[]> {
     const categories = await this.prismaService.category.findMany({
       where: {

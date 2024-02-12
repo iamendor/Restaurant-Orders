@@ -8,7 +8,6 @@ import { Order } from "../../../models/order.model";
 @Injectable()
 export class MealService {
   constructor(private readonly prismaService: PrismaService) {}
-
   async clearTable(tableId: number) {
     await this.prismaService.order.updateMany({
       where: {
