@@ -9,7 +9,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("MAIN_DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  shadowDatabaseUrl = env("MAIN_SHADOW_DATABASE_URL")
 }
 
 
@@ -22,6 +22,7 @@ model Restaurant{
   address Address?
   currency Currency? @relation(fields: [currencyId], references: [id], onDelete: SetNull)
   currencyId Int?
+  settings Settings?
   tasks Task[]
   openingHours OpeningHour[]
   waiters Waiter[]
@@ -30,6 +31,14 @@ model Restaurant{
   categories Category[]
   tables Table[]
   meals Meal[]
+}
+
+model Settings{
+  id Int @unique @default(autoincrement())
+  createdAt DateTime @default(now())
+  enableAnalytics Boolean @default(false)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int @unique
 }
 
 model Currency{

@@ -8,6 +8,8 @@ migrations/
 .vscode
 schema.gql
 
+generated/
+
 # Logs
 logs
 *.log

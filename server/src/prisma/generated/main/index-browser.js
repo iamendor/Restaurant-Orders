@@ -116,6 +116,13 @@ exports.Prisma.RestaurantScalarFieldEnum = {
   currencyId: 'currencyId'
 };
 
+exports.Prisma.SettingsScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  enableAnalytics: 'enableAnalytics',
+  restaurantId: 'restaurantId'
+};
+
 exports.Prisma.CurrencyScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -229,6 +236,7 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   Restaurant: 'Restaurant',
+  Settings: 'Settings',
   Currency: 'Currency',
   Address: 'Address',
   BaseTask: 'BaseTask',

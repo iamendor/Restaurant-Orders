@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../../src/prisma/generated/analytics"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("ANALYTICS_DATABASE_URL")
+  shadowDatabaseUrl = env("ANALYTICS_SHADOW_DATABASE_URL")
+}
+
+
+model Analytics{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  income Income?
+  popularProduct PopularProduct?
+  waiterOfTheDay WaiterOfTheDay?  
+}
+
+
+model Income{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  total Float
+  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+  analyticsId Int @unique
+}
+
+model PopularProduct{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  numberOne Int
+  numberTwo Int?
+  numberThree Int?
+  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+  analyticsId Int @unique
+}
+
+model WaiterOfTheDay{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  waiterId Int
+  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+  analyticsId Int @unique
+}
