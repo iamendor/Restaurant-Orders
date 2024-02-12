@@ -85,6 +85,14 @@ export class ShortArrayException extends GraphQLError {
   }
 }
 
+export class NestedCategoryException extends GraphQLError {
+  constructor(parent: number) {
+    super(`Category cannot be nested under ${parent}`, {
+      extensions: { code: HttpStatus.BAD_REQUEST },
+    });
+  }
+}
+
 export const expectedExceptions = [
   AuthException,
   PermissionDeniedException,
@@ -96,4 +104,5 @@ export const expectedExceptions = [
   OrderClosedException,
   OrderReadyException,
   ShortArrayException,
+  NestedCategoryException,
 ];

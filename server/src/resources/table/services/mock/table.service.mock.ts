@@ -38,4 +38,8 @@ export class TableServiceMock {
   validate() {
     return true;
   }
+
+  validateUnique() {
+    return true;
+  }
 }

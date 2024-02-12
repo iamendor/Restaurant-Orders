@@ -71,4 +71,9 @@ export class TableService {
     const table = await this.find({ id });
     return table.restaurantId == restaurantId;
   }
+
+  async validateUnique({ name, restaurantId }) {
+    const tables = await this.list(restaurantId);
+    return !tables.map((tab) => tab.name).includes(name);
+  }
 }

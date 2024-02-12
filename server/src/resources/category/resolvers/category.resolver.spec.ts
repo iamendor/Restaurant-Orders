@@ -50,14 +50,24 @@ describe("CategoryResolver", () => {
   });
 
   it("create a category", async () => {
-    const category = await resolver.create(mockCategory);
-    expect(category.name).toBe(mockCategory.name);
+    const category = await resolver.create(
+      { ...mockCategory, name: "unitTestMockCategory" },
+      mockRestaurantPayload
+    );
+    expect(category.name).toBe("unitTestMockCategory");
     cat = category;
   });
   it("create multiple", async () => {
-    const categories = [1, 2].map((i) => ({ ...mockCategory, id: i }));
+    const categories = [1, 2].map((i) => ({
+      ...mockCategory,
+      name: `mockCategory${i}`,
+      id: i,
+    }));
 
-    const created = await resolver.createMany(categories);
+    const created = await resolver.createMany(
+      categories,
+      mockRestaurantPayload
+    );
     expect(created.message).toBe(SUCCESS);
   });
   it("update the category", async () => {

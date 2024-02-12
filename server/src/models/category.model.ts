@@ -19,6 +19,8 @@ export class Category {
   name: string;
   @Field()
   root: boolean;
+  @Field()
+  level: number;
   @Field(() => [Victual])
   victuals?: Victual[];
   @Field(() => Restaurant)
@@ -37,6 +39,8 @@ export class Category {
 export class CreateCategory {
   @Field()
   name: string;
+  @Field({ nullable: true })
+  level?: number;
   @Field({ nullable: true })
   parentId?: number;
   @Field({ nullable: true })

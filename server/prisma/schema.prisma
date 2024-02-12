@@ -121,6 +121,7 @@ model Category{
   restaurantId Int
   parentId Int?
   root Boolean @default(true)
+  level Int @default(1)
   subCategories Category[] @relation("ParentToCategory")
 }
 model Table{

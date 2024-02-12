@@ -46,6 +46,7 @@ export const mockCategory = {
   name: "TestCategory",
   parentId: 1,
   restaurantId: 1,
+  level: 2,
 };
 
 export const mockTable = {

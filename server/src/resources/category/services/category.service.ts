@@ -7,15 +7,16 @@ import {
   WhereCategory,
 } from "../../../models/category.model";
 import { Success } from "../../../models/success.model";
-import { PermissionDeniedException } from "../../../error";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 
 @Injectable()
 export class CategoryService {
+  private MAX_LEVEL = 3;
+
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateCategory): Promise<Category> {
-    const { restaurantId, parentId, ...rest } = data;
+    const { restaurantId, parentId, level, ...rest } = data;
     const category = await this.prismaService.category.create({
       data: {
         ...rest,
@@ -28,6 +29,7 @@ export class CategoryService {
           connect: { id: parentId },
         },
         root: !parentId,
+        level: !parentId ? 1 : level,
       },
     });
     return category;
@@ -72,7 +74,7 @@ export class CategoryService {
     });
     return category;
   }
-  //TODO: add implementation for max level
+
   async list(restaurantId: number): Promise<Category[]> {
     const categories = await this.prismaService.category.findMany({
       where: {
@@ -85,5 +87,17 @@ export class CategoryService {
   async validate({ restaurantId, id }: VerifyResource) {
     const category = await this.find({ id });
     return category.restaurantId == restaurantId;
+  }
+
+  async validateNesting(parentId: number) {
+    const category = await this.find({ id: parentId });
+    return category.level < this.MAX_LEVEL ? category.level : false;
+  }
+
+  async validateUnique({ restaurantId, name }) {
+    const categoryNames = (await this.list(restaurantId)).map(
+      (cat) => cat.name
+    );
+    return !categoryNames.includes(name);
   }
 }

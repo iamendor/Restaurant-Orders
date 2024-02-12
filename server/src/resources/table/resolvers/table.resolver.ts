@@ -52,10 +52,12 @@ export class TableResolver {
     data: Required<CreateTable>,
     @User() { id }: JwtPayload
   ) {
-    const tableNames = (await this.tableService.list(id)).map(
-      (tab) => tab.name
-    );
-    if (tableNames.includes(data.name)) throw new UniqueFieldFailedException();
+    const isUnique = await this.tableService.validateUnique({
+      restaurantId: id,
+      name: data.name,
+    });
+
+    if (!isUnique) throw new UniqueFieldFailedException();
 
     return this.tableService.create(data);
   }
@@ -86,7 +88,15 @@ export class TableResolver {
   @Mutation(() => Table, { name: "updateTable" })
   @UseInterceptors(TableClearCacheInterceptor)
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), TableGuard)
-  update(@Args("data") data: UpdateTable, @User() { id }: JwtPayload) {
+  async update(@Args("data") data: UpdateTable, @User() { id }: JwtPayload) {
+    if (data.update.name) {
+      const isUniqe = await this.tableService.validateUnique({
+        name: data.update.name,
+        restaurantId: id,
+      });
+
+      if (!isUniqe) throw new UniqueFieldFailedException();
+    }
     return this.tableService.update(data);
   }
 

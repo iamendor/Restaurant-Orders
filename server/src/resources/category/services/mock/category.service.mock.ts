@@ -37,4 +37,12 @@ export class CategoryServiceMock {
   validate() {
     return true;
   }
+
+  validateNesting() {
+    return true;
+  }
+
+  validateUnique() {
+    return true;
+  }
 }
