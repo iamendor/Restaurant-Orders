@@ -1,4 +1,4 @@
-import { PrismaService } from "../../src/prisma/services/prisma.service";
+import { PrismaMainService } from "../../src/prisma/main/services/prisma.main.service";
 import {
   mockAddress,
   mockCategory,
@@ -11,7 +11,7 @@ import {
 import req from "./graphql-request";
 import { getMutations } from "./mutations";
 
-export const clearMocks = async ({ prisma }: { prisma: PrismaService }) => {
+export const clearMocks = async ({ prisma }: { prisma: PrismaMainService }) => {
   await prisma.restaurant.deleteMany();
 };
 
@@ -21,7 +21,7 @@ export const createCategory = ({
   prisma,
   restaurantId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
 }) => {
   return prisma.category.create({
@@ -35,7 +35,7 @@ export const createTable = ({
   prisma,
   restaurantId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
 }) => {
   return prisma.table.create({
@@ -51,7 +51,7 @@ export const createVictual = ({
   restaurantId,
   categoryId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
   categoryId: number;
 }) => {

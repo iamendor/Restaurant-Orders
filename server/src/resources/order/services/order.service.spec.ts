@@ -1,23 +1,23 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { OrderService } from "./order.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { mockOrder } from "../../../../test/helper/mock.unit";
 
 describe("OrderService", () => {
   let service: OrderService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
 
   const SUCCESS = "success";
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaMainModule],
       providers: [OrderService],
     }).compile();
 
     service = module.get<OrderService>(OrderService);
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
   });
 
   it("should be defined", () => {

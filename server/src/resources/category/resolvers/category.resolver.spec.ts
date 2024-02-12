@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CategoryResolver } from "./category.resolver";
 import { CategoryService } from "../services/category.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { CategoryServiceMock } from "../services/mock/category.service.mock";
 import { Category } from "../../../models/category.model";
 import { FilterModule } from "../../../filter/filter.module";
@@ -29,7 +29,7 @@ describe("CategoryResolver", () => {
       .mockImplementation(() => contextId);
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, FilterModule],
+      imports: [PrismaMainModule, FilterModule],
       providers: [
         { provide: CategoryService, useClass: CategoryServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },

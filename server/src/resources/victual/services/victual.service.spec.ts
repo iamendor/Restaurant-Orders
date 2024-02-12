@@ -1,25 +1,25 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { VictualService } from "./victual.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
 import { mockCategory, mockVictual } from "../../../../test/helper/mock.unit";
 
 describe("MealService", () => {
   let service: VictualService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
   let catService: CategoryService;
   const SUCCESS = "success";
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, CategoryServiceModule],
+      imports: [PrismaMainModule, CategoryServiceModule],
       providers: [VictualService],
     }).compile();
 
     service = module.get<VictualService>(VictualService);
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
     catService = module.get<CategoryService>(CategoryService);
   });
 

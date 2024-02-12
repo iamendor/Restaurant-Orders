@@ -1,22 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { RestaurantService } from "./restaurant.service";
 import * as bcrypt from "bcrypt";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { SecurityModule } from "../../../security/security.module";
 import { mockRestaurant } from "../../../../test/helper/mock.unit";
 
 describe("RestaurantService", () => {
   let service: RestaurantService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
   const SUCCESS = "success";
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, SecurityModule],
+      imports: [PrismaMainModule, SecurityModule],
       providers: [RestaurantService],
     }).compile();
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
     service = module.get<RestaurantService>(RestaurantService);
   });
 

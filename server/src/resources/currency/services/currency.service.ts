@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { WhereCurrency } from "../../../models/currency.model";
 
 @Injectable()
 export class CurrencyService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   async find(where: WhereCurrency) {
     return this.prismaService.currency.findUniqueOrThrow({

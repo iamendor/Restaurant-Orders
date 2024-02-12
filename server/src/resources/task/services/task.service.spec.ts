@@ -1,19 +1,19 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TaskService } from "./task.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { mockTask } from "../../../../test/helper/mock.unit";
 
 describe("ServicesService", () => {
   let service: TaskService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaMainModule],
       providers: [TaskService],
     }).compile();
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
     service = module.get<TaskService>(TaskService);
   });
 

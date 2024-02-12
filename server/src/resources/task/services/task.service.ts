@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { Success } from "../../../models/success.model";
 import { WhereTask } from "../../../interfaces/task.interface";
 import { BaseTask, Task as PTask } from "@prisma/client";
@@ -8,7 +8,7 @@ import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   private format({ id, base, done }: PTask & { base: BaseTask }): Task {
     return { id, name: base.name, done };

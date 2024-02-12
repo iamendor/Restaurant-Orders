@@ -4,7 +4,7 @@ import { AuthService } from "./auth.service";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { WaiterService } from "../../resources/waiter/services/waiter.service";
 import { SecurityModule } from "../../security/security.module";
-import { PrismaModule } from "../../prisma/prisma.module";
+import { PrismaMainModule } from "../../prisma/main/prisma.main.module";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
 
@@ -36,7 +36,7 @@ describe("AuthService", () => {
           secret: "test",
         }),
         SecurityModule,
-        PrismaModule,
+        PrismaMainModule,
       ],
       providers: [
         AuthService,

@@ -7,7 +7,7 @@ import { CacheService } from "../../../cache/services/cache.service";
 import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
 import { TaskServiceMock } from "../../task/services/mock/task.service.mock";
 import { TaskService } from "../../task/services/task.service";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { ContextIdFactory } from "@nestjs/core";
 import { mockOpenHour } from "../../../../test/helper/mock.unit";
@@ -26,7 +26,7 @@ describe("OpenHourResolver", () => {
         { provide: OpenHourService, useClass: OpenHourServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
-        PrismaService,
+        PrismaMainService,
         IdGuard,
         OpenHourResolver,
       ],

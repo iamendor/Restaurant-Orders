@@ -18,7 +18,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand"
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "migrate:main": "prisma migrate dev --schema ./prisma/main/schema.prisma",
+    "generate:main": "prisma generate --schema ./prisma/main/schema.prisma"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",

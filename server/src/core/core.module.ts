@@ -5,7 +5,7 @@ import { Config } from "../config";
 import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { DateScalar } from "../models/date.model";
-import { PrismaModule } from "../prisma/prisma.module";
+import { PrismaMainModule } from "../prisma/main/prisma.main.module";
 import * as Joi from "joi";
 import { RedisModule } from "@nestjs-modules/ioredis";
 
@@ -36,7 +36,7 @@ import { RedisModule } from "@nestjs-modules/ioredis";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
-    PrismaModule,
+    PrismaMainModule,
   ],
   providers: [DateScalar],
   exports: [JwtModule, GraphQLModule, ConfigModule],

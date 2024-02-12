@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import {
   CreateOpenHour,
   OpenHour,
@@ -12,7 +12,7 @@ import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class OpenHourService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   async isAlreadyCreated(
     data: CreateOpenHour,

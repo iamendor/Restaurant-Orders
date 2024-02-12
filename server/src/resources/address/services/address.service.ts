@@ -1,10 +1,10 @@
 import { Address, WhereAddress } from "../../../models/address.model";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AddressService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   async find(where: WhereAddress): Promise<Address> {
     if (where.id) {

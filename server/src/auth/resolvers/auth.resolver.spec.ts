@@ -4,7 +4,7 @@ import { Test } from "@nestjs/testing";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "../services/auth.service";
 import { JwtStrategy } from "../strategies/jwt.strategy";
-import { PrismaModule } from "../../prisma/prisma.module";
+import { PrismaMainModule } from "../../prisma/main/prisma.main.module";
 import { SecurityModule } from "../../security/security.module";
 import { AuthServiceMock } from "../services/mock/auth.service.mock";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
@@ -26,7 +26,7 @@ describe("Auth Resolver", () => {
         ConfigModule.forRoot({ isGlobal: true }),
         JwtModule.register({ secret: "test" }),
         SecurityModule,
-        PrismaModule,
+        PrismaMainModule,
       ],
       providers: [
         AuthResolver,

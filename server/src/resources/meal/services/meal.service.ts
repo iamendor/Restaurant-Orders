@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { Success } from "../../../models/success.model";
 import { Meal, WhereMeal } from "../../../models/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
@@ -7,7 +7,7 @@ import { Order } from "../../../models/order.model";
 
 @Injectable()
 export class MealService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
   async clearTable(tableId: number) {
     await this.prismaService.order.updateMany({
       where: {

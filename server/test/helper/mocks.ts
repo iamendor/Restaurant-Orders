@@ -1,5 +1,5 @@
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "../../src/prisma/services/prisma.service";
+import { PrismaMainService } from "../../src/prisma/main/services/prisma.main.service";
 import * as bcrypt from "bcrypt";
 import { RESTAURANT, WAITER } from "../../src/role";
 import { JwtPayload } from "../../src/interfaces/jwt.interface";
@@ -129,7 +129,7 @@ export const createRestaurantWithWaiter = async ({
   jwt,
   secret,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   jwt: JwtService;
   secret?: string;
 }) => {
@@ -201,7 +201,7 @@ export const clearMocks = async ({
   prisma,
   createRestaurant,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   createRestaurant?: boolean;
 }) => {
   const mocks = getMocks();

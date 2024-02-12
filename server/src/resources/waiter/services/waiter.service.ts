@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { SecurityService } from "../../../security/services/security.service";
 import { WhereRestaurant } from "../../../models/restaurant.model";
 import {
@@ -17,7 +17,7 @@ import { VerifyResource } from "../../../interfaces/verify.interface";
 @Injectable()
 export class WaiterService {
   constructor(
-    private readonly prismaService: PrismaService,
+    private readonly prismaService: PrismaMainService,
     private readonly securityService: SecurityService
   ) {}
 

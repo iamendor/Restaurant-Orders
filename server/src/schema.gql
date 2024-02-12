@@ -26,6 +26,7 @@ type AuthWaiter {
 type Category {
   createdAt: Date!
   id: Float!
+  level: Float!
   name: String!
   parent: Category
   parentId: Float
@@ -51,17 +52,21 @@ input CreateAddress {
 }
 
 input CreateCategory {
+  level: Float
   name: String!
   parentId: Float
+  restaurantId: Float
 }
 
 input CreateMeal {
+  restaurantId: Float
   tableId: Float!
 }
 
 input CreateOpenHour {
   end: String!
   name: String!
+  restaurantId: Float
   start: String!
 }
 
@@ -85,12 +90,14 @@ input CreateRestaurant {
 
 input CreateTable {
   name: String!
+  restaurantId: Float
 }
 
 input CreateVictual {
   categoryId: Float!
   name: String!
   price: Float!
+  restaurantId: Float
 }
 
 input CreateWaiter {
@@ -99,12 +106,13 @@ input CreateWaiter {
   name: String!
   password: String!
   profileIcon: String
+  restaurantId: Float
 }
 
 type Currency {
   id: Float!
   name: String!
-  restaurantId: Float!
+  restaurantId: Float
   symbol: String!
 }
 
@@ -124,9 +132,11 @@ type ListenOrder {
   isReady: Boolean!
   quantity: Float!
   restaurant: Restaurant!
+  restaurantId: Float!
   table: Table!
   victual: Victual!
   waiter: Waiter!
+  waiterId: Float!
 }
 
 input LoginRestaurant {
@@ -173,7 +183,6 @@ type Mutation {
   createVictuals(data: [CreateVictual!]!): Success!
   createWaiter(data: CreateWaiter!): Waiter!
   deleteCategory(where: WhereCategory!): Success!
-  deleteMeal(where: WhereMeal!): Success!
   deleteOpenHour(where: WhereOpenHour!): Success!
   deleteOrder(where: WhereOrder!): Success!
   deleteRestaurant: Success!
@@ -212,9 +221,11 @@ type Order {
   isReady: Boolean!
   quantity: Float!
   restaurant: Restaurant!
+  restaurantId: Float!
   table: Table!
   victual: Victual!
   waiter: Waiter!
+  waiterId: Float!
 }
 
 input OrderFilter {
@@ -230,6 +241,7 @@ type Query {
   categories(filter: CategoryFilter): [Category!]!
   category(where: WhereCategory!): Category!
   listCurrencies: [Currency!]!
+  listTasks(filter: TaskFilter): [Task!]!
   meal(where: WhereMeal!): Meal!
   meals(filter: MealFilter): [Meal!]!
   openHours: [OpenHour!]!
@@ -256,6 +268,7 @@ type Restaurant {
   open: Boolean!
   orders: [Order!]!
   tables: [Table!]!
+  tasks: [Task!]!
   victuals: [Victual!]!
   waiters: [Waiter!]!
 }
@@ -283,6 +296,17 @@ input TableFilter {
   name: String
 }
 
+type Task {
+  done: Boolean!
+  id: Float!
+  name: String!
+  restaurant: Restaurant!
+}
+
+input TaskFilter {
+  done: String
+}
+
 input UpdateAddress {
   address1: String!
   address2: String!
@@ -297,8 +321,10 @@ input UpdateCategory {
 }
 
 input UpdateCategoryData {
+  level: Float
   name: String
   parentId: Float
+  restaurantId: Float
 }
 
 input UpdateOpenHour {
@@ -344,6 +370,7 @@ input UpdateTable {
 
 input UpdateTableData {
   name: String
+  restaurantId: Float
 }
 
 input UpdateVictual {
@@ -355,6 +382,7 @@ input UpdateVictualData {
   categoryId: Float
   name: String
   price: Float
+  restaurantId: Float
 }
 
 input UpdateWaiter {
@@ -367,6 +395,7 @@ input UpdateWaiterData {
   gender: String
   name: String
   profileIcon: String
+  restaurantId: Float
 }
 
 input UpdateWaiterPassword {

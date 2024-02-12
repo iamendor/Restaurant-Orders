@@ -1,8 +1,8 @@
 import { TestingModule, Test } from "@nestjs/testing";
 import { AppModule } from "../src/app.module";
 import { CoreModule } from "../src/core/core.module";
-import { PrismaModule } from "../src/prisma/prisma.module";
-import { PrismaService } from "../src/prisma/services/prisma.service";
+import { PrismaMainModule } from "../src/prisma/main/prisma.main.module";
+import { PrismaMainService } from "../src/prisma/main/services/prisma.main.service";
 import { clearMocks, mock, requestNewRestaurant } from "./helper/functions";
 import { NestApplication } from "@nestjs/core";
 import req from "./helper/graphql-request";
@@ -13,7 +13,7 @@ import { getQueries } from "./helper/queries";
 describe("Restaurant", () => {
   let app: NestApplication;
   let server;
-  let prismaService: PrismaService;
+  let prismaService: PrismaMainService;
 
   const mutations = getMutations();
   const queries = getQueries();
@@ -22,9 +22,9 @@ describe("Restaurant", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, AppModule, PrismaModule],
+      imports: [CoreModule, AppModule, PrismaMainModule],
     }).compile();
-    prismaService = moduleFixture.get<PrismaService>(PrismaService);
+    prismaService = moduleFixture.get<PrismaMainService>(PrismaMainService);
 
     await clearMocks({ prisma: prismaService });
     app = moduleFixture.createNestApplication();

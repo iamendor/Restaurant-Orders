@@ -11,7 +11,7 @@ import {
   PermissionDeniedException,
   SomethingWentWrongException,
 } from "../error";
-import { PrismaService } from "../prisma/services/prisma.service";
+import { PrismaMainService } from "../prisma/main/services/prisma.main.service";
 
 export interface CreateResourceGuard {
   UPDATE: string;
@@ -34,7 +34,7 @@ export function ResourceGuard({
     service: any;
     constructor(
       public readonly idGuard: IdGuard,
-      public readonly prismaService: PrismaService
+      public readonly prismaService: PrismaMainService
     ) {
       this.FIND = FIND;
       this.DELETE = DELETE;

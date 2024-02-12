@@ -1,22 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AddressService } from "./address.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { mockAddress } from "../../../../test/helper/mock.unit";
 
 describe("AddressService", () => {
   let service: AddressService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
   const address = mockAddress;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaMainModule],
       providers: [AddressService],
     }).compile();
 
     service = module.get<AddressService>(AddressService);
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
   });
 
   it("should be defined", () => {
