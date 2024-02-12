@@ -3,6 +3,7 @@ import { PrismaService } from "../../../prisma/services/prisma.service";
 import { Success } from "../../../models/success.model";
 import { Meal, WhereMeal } from "../../../models/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
+import { Order } from "../../../models/order.model";
 
 @Injectable()
 export class MealService {
@@ -20,8 +21,10 @@ export class MealService {
     });
   }
 
-  formatTable(orders: any) {
-    const sorted = orders.sort((a, b) => a.createdAt - b.createdAt);
+  formatTable(orders: Order[]) {
+    const sorted = orders.sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+    );
     const start = sorted[0].createdAt;
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;
@@ -78,10 +81,5 @@ export class MealService {
       },
     });
     return meal;
-  }
-
-  async delete(where: WhereMeal): Promise<Success> {
-    await this.prismaService.meal.delete({ where: { id: where.id } });
-    return { message: "success" };
   }
 }

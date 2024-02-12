@@ -32,8 +32,4 @@ export class MealServiceMock {
   find(where) {
     return { ...this.meal, ...where };
   }
-
-  delete() {
-    return { message: "success" };
-  }
 }

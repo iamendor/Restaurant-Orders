@@ -4,6 +4,7 @@ import { Success } from "../../../models/success.model";
 import { WhereTask } from "../../../interfaces/task.interface";
 import { BaseTask, Task as PTask } from "@prisma/client";
 import { Task } from "../../../models/task.model";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class TaskService {
@@ -23,7 +24,7 @@ export class TaskService {
       data: base.map((task) => ({ restaurantId, baseId: task.id })),
     });
 
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async list(restaurantId: number): Promise<Task[]> {

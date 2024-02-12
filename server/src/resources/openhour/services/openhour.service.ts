@@ -8,6 +8,7 @@ import {
 } from "../../../models/openhour.model";
 import { Success } from "../../../models/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class OpenHourService {
@@ -42,7 +43,7 @@ export class OpenHourService {
       data,
       skipDuplicates: true,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   list(restaurantId: number) {
@@ -65,7 +66,7 @@ export class OpenHourService {
     await this.prismaService.openingHour.delete({
       where,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async find(where: WhereOpenHour): Promise<OpenHour> {

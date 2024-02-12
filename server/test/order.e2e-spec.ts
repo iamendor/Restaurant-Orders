@@ -100,6 +100,7 @@ describe("Order", () => {
         victualId,
         createdAt: undefined,
         id: undefined,
+        closed: undefined,
       };
     });
     it("runs the request", async () => {

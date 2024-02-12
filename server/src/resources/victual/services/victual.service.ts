@@ -8,6 +8,7 @@ import {
 } from "../../../models/victual.model";
 import { Success } from "../../../models/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class VictualService {
@@ -47,7 +48,7 @@ export class VictualService {
       data: checked,
       skipDuplicates: true,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async update(data: UpdateVictual): Promise<Victual> {
@@ -69,7 +70,7 @@ export class VictualService {
         id: where.id,
       },
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async list(restaurantId: number): Promise<Victual[]> {

@@ -1,7 +1,7 @@
 import { Query, Resolver } from "@nestjs/graphql";
 import { Currency } from "../../../models/currency.model";
 import { CurrencyService } from "../services/currency.service";
-import { CacheInterceptor } from "../../../cache/interceptors/cache.interceptor";
+import { CacheInterceptor } from "../../../interceptors/cache.interceptor";
 import { UseInterceptors } from "@nestjs/common";
 
 @Resolver((of) => Currency)

@@ -8,6 +8,7 @@ import {
 } from "../../../models/table.model";
 import { Success } from "../../../models/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class TableService {
@@ -32,7 +33,7 @@ export class TableService {
       data: [...data],
       skipDuplicates: true,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async update(data: UpdateTable) {
@@ -49,7 +50,7 @@ export class TableService {
         id: where.id,
       },
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async list(restaurantId: number): Promise<Table[]> {

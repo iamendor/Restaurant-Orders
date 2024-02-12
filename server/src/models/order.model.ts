@@ -25,6 +25,8 @@ export class Order {
   isReady: boolean;
   @Field()
   closed: boolean;
+  @Field()
+  waiterId: number;
   @Field(() => Waiter)
   waiter?: Waiter;
   @Field(() => Table)

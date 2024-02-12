@@ -8,9 +8,9 @@ import {
   mixin,
 } from "@nestjs/common";
 import { Observable, tap } from "rxjs";
-import { TaskService } from "../services/task.service";
+import { TaskService } from "../resources/task/services/task.service";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { WAITER } from "../../../role";
+import { WAITER } from "../role";
 
 export const CREATE_WAITER_ACTION = "waiter.create";
 export const CREATE_ORDER_ACTION = "order.create";

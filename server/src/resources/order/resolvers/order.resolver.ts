@@ -21,12 +21,12 @@ import { GetOrder } from "../../../decorators";
 import {
   CREATE_ORDER_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
+} from "../../../interceptors/task.inteceptor";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { AddWID } from "../../../pipes/wid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
@@ -35,6 +35,7 @@ import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { PermissionDeniedException } from "../../../error";
 import { VictualService } from "../../victual/services/victual.service";
+import { SUCCESS } from "../../../response";
 
 const OrderCacheInterceptor = CacheInterceptor({
   prefix: "orders",
@@ -124,7 +125,7 @@ export class OrderResolver {
       ...orders.map((order) => ({ ...order, action: this.CREATE }))
     );
 
-    return { message: "success" };
+    return SUCCESS;
   }
 
   @Mutation(() => Order, { name: "updateOrder" })

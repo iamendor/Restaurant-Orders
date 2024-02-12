@@ -8,8 +8,8 @@ import { RESTAURANT } from "../../../role";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { TaskFilter } from "../../../models/filter.model";
-import { CacheInterceptor } from "../../../cache/interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+import { CacheInterceptor } from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
 
 const TaskCacheInterceptor = CacheInterceptor({ prefix: "tasks" });
 

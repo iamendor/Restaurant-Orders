@@ -18,14 +18,15 @@ import { IdGuard } from "../../../auth/guard/id.guard";
 import {
   CREATE_OPENHOUR_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
+} from "../../../interceptors/task.inteceptor";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
+} from "../../../interceptors/cache.interceptor";
 import { OpenHourGuard } from "../../../guard";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
+import { SUCCESS } from "../../../response";
 
 const OpenHourCacheInterceptor = CacheInterceptor({
   prefix: "openhours",
@@ -85,7 +86,7 @@ export class OpenHourResolver {
     }
     await this.openHourService.createMany(data);
 
-    return { message: "success" };
+    return SUCCESS;
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })

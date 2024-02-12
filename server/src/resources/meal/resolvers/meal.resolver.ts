@@ -14,13 +14,13 @@ import { MealFilter } from "../../../models/filter.model";
 import {
   CREATE_MEAL_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
+} from "../../../interceptors/task.inteceptor";
 import { GetMeal } from "../../../decorators";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { FieldService } from "../../table/services/field.service";
 import { MinArrayPipe } from "../../../pipes/array.pipe";

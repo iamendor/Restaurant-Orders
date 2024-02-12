@@ -6,10 +6,10 @@ import {
   NestInterceptor,
   mixin,
 } from "@nestjs/common";
-import { CacheService } from "../services/cache.service";
+import { CacheService } from "../cache/services/cache.service";
 import { Observable, of, tap } from "rxjs";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { getRIDFRomUser } from "../../guard/helper";
+import { getRIDFRomUser } from "../guard/helper";
 
 export interface ICacheInterceptor {
   prefix?: string;

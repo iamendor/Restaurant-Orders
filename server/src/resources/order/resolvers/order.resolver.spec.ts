@@ -88,6 +88,7 @@ describe("OrderResolver", () => {
         isReady: false,
         quantity: 1,
         restaurantId: 1,
+        waiterId: 1,
       }
     );
     expect(deleted.message).toBe(SUCCESS);

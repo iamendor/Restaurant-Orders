@@ -7,6 +7,7 @@ import {
 } from "../../../../models/openhour.model";
 import { Success } from "../../../../models/success.model";
 import { mockOpenHour } from "../../../../../test/helper/mock.unit";
+import { SUCCESS } from "../../../../response";
 
 @Injectable()
 export class OpenHourServiceMock {
@@ -20,7 +21,7 @@ export class OpenHourServiceMock {
   }
 
   createMany(data: CreateOpenHour[]): Success {
-    return { message: "success" };
+    return SUCCESS;
   }
 
   list(restaurantId: number) {
@@ -36,7 +37,7 @@ export class OpenHourServiceMock {
   }
 
   delete() {
-    return { message: "success" };
+    return SUCCESS;
   }
   isAlreadyCreated() {
     return false;

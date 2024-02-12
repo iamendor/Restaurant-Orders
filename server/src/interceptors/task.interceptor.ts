@@ -6,7 +6,7 @@ import {
   mixin,
 } from "@nestjs/common";
 import { Observable, map } from "rxjs";
-import { FilterService } from "../services/filter.service";
+import { FilterService } from "../filter/services/filter.service";
 import { GqlExecutionContext } from "@nestjs/graphql";
 
 type FilterInterceptorOptions =

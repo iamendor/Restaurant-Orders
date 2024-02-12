@@ -8,6 +8,7 @@ import {
 } from "../../../models/category.model";
 import { Success } from "../../../models/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class CategoryService {
@@ -41,7 +42,7 @@ export class CategoryService {
       data: mapped,
       skipDuplicates: true,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async update(data: UpdateCategory): Promise<Category> {
@@ -63,7 +64,7 @@ export class CategoryService {
         id: where.id,
       },
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async find(where: WhereCategory): Promise<Category> {

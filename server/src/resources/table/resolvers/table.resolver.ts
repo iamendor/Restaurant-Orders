@@ -21,12 +21,12 @@ import { GetTable } from "../../../decorators";
 import {
   CREATE_TABLE_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
+} from "../../../interceptors/task.inteceptor";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/task.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
 import { UniqueFieldFailedException } from "../../../error";
