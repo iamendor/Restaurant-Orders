@@ -17,3 +17,9 @@ model Currency{
   name String @unique
   symbol String
 }
+
+model Task{
+  id Int @id @default(autoincrement())
+  name String @unique
+  action String @unique
+}

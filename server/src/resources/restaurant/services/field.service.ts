@@ -104,13 +104,8 @@ export class FieldService {
   async getTasks(restaurantId: number) {
     const tasks = await this.prismaService.task.findMany({
       where: { restaurantId },
-      include: { base: true },
     });
-    return tasks.map(({ id, base, done }) => ({
-      id,
-      name: base.name,
-      done,
-    }));
+    return tasks;
   }
 
   getSettings(restaurantId: number) {
