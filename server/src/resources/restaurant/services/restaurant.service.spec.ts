@@ -5,6 +5,8 @@ import * as bcrypt from "bcrypt";
 import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { SecurityModule } from "../../../security/security.module";
 import { mockRestaurant } from "../../../../test/helper/mock.unit";
+import { CurrencyService } from "../../currency/services/currency.service";
+import { CurrencyServiceMock } from "../../currency/services/mock/currency.service.mock";
 
 describe("RestaurantService", () => {
   let service: RestaurantService;
@@ -14,7 +16,10 @@ describe("RestaurantService", () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaMainModule, SecurityModule],
-      providers: [RestaurantService],
+      providers: [
+        RestaurantService,
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
+      ],
     }).compile();
     prisma = module.get<PrismaMainService>(PrismaMainService);
     service = module.get<RestaurantService>(RestaurantService);
@@ -27,7 +32,10 @@ describe("RestaurantService", () => {
   it("should create a new restaurant", async () => {
     prisma.restaurant.create = jest.fn().mockImplementation(({ data }) => data);
 
-    const restaurant = await service.create(mockRestaurant);
+    const restaurant = await service.create({
+      ...mockRestaurant,
+      currency: { name: "HUF" },
+    });
     expect(restaurant).toBeDefined();
     expect(restaurant.address).toBeDefined();
   });

@@ -1,0 +1,19 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../../node_modules/prisma/client/static"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("STATIC_DATABASE_URL")
+  shadowDatabaseUrl = env("STATIC_SHADOW_DATABASE_URL")
+}
+
+model Currency{
+  id Int @unique @id @default(autoincrement())
+  name String @unique
+  symbol String
+}

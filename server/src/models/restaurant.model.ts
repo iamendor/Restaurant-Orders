@@ -28,6 +28,9 @@ export class Restaurant {
   @Field()
   email: string;
 
+  @Field()
+  currencyId: number;
+
   @Field(() => DateScalar)
   createdAt: Date;
 
@@ -39,9 +42,6 @@ export class Restaurant {
 
   @Field(() => Address)
   address?: Address;
-
-  @Field(() => Currency)
-  currency?: Currency;
 
   @Field(() => [Waiter])
   waiters?: Waiter[];
@@ -85,6 +85,8 @@ export class CreateRestaurant {
   address: CreateAddress;
   @Field(() => WhereCurrency)
   currency: WhereCurrency;
+  @Field({ nullable: true })
+  currencyId?: number;
 }
 
 @InputType()

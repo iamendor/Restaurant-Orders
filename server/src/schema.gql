@@ -83,6 +83,7 @@ input CreateOrder {
 input CreateRestaurant {
   address: CreateAddress!
   currency: WhereCurrency!
+  currencyId: Float
   email: String!
   name: String!
   password: String!
@@ -261,6 +262,7 @@ type Restaurant {
   categories: [Category!]!
   createdAt: Date!
   currency: Currency!
+  currencyId: Float!
   email: String!
   id: Float!
   meals: [Meal!]!

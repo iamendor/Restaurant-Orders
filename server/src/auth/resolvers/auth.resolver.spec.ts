@@ -11,7 +11,13 @@ import { RestaurantService } from "../../resources/restaurant/services/restauran
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { TaskService } from "../../resources/task/services/task.service";
 import { TaskServiceMock } from "../../resources/task/services/mock/task.service.mock";
-import { mockRestaurant, mockWaiter } from "../../../test/helper/mock.unit";
+import {
+  mockCurrency,
+  mockRestaurant,
+  mockWaiter,
+} from "../../../test/helper/mock.unit";
+import { CurrencyService } from "../../resources/currency/services/currency.service";
+import { CurrencyServiceMock } from "../../resources/currency/services/mock/currency.service.mock";
 
 describe("Auth Resolver", () => {
   let resolver: AuthResolver;
@@ -33,6 +39,7 @@ describe("Auth Resolver", () => {
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
         JwtStrategy,
       ],
     }).compile();
@@ -46,7 +53,10 @@ describe("Auth Resolver", () => {
   });
 
   it("signup a restaurant", async () => {
-    const signup = await resolver.signup(restaurant);
+    const signup = await resolver.signup({
+      ...restaurant,
+      currency: mockCurrency,
+    });
     expect(signup).toBeDefined();
     expect(signup.name).toBe(restaurant.name);
   });

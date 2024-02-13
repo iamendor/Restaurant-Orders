@@ -20,8 +20,7 @@ model Restaurant{
   email String @unique
   password String
   address Address?
-  currency Currency? @relation(fields: [currencyId], references: [id], onDelete: SetNull)
-  currencyId Int?
+  currencyId Int
   settings Settings?
   tasks Task[]
   openingHours OpeningHour[]
@@ -41,12 +40,7 @@ model Settings{
   restaurantId Int @unique
 }
 
-model Currency{
-  id Int @unique @id @default(autoincrement())
-  name String @unique
-  symbol String
-  restaurants Restaurant[]
-}
+
 model Address{
   id Int @unique @id @default(autoincrement())
   country String

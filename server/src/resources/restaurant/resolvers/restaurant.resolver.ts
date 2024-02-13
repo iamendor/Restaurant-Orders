@@ -16,6 +16,7 @@ import {
 } from "../../../models/restaurant.model";
 import { Success } from "../../../models/success.model";
 import { GetRestaurant } from "../../../decorators";
+import { CurrencyService } from "../../currency/services/currency.service";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -26,7 +27,7 @@ export class RestaurantResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), RestaurantGuard)
   @Mutation(() => Restaurant, { name: "updateRestaurant" })
-  update(
+  async update(
     @GetRestaurant() { id }: Restaurant,
     @Args("update")
     update: UpdateRestaurant
