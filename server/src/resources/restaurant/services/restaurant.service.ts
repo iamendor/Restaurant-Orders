@@ -29,6 +29,11 @@ export class RestaurantService {
         currency: {
           connect: data.currency,
         },
+        settings: {
+          create: {
+            enableAnalytics: false,
+          },
+        },
       },
     });
     return restaurant;
@@ -60,6 +65,9 @@ export class RestaurantService {
         },
         currency: {
           connect: update.currency && update.currency,
+        },
+        settings: {
+          update: update.settings && update.settings,
         },
       },
     });

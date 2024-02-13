@@ -267,10 +267,16 @@ type Restaurant {
   name: String!
   open: Boolean!
   orders: [Order!]!
+  settings: Settings!
   tables: [Table!]!
   tasks: [Task!]!
   victuals: [Victual!]!
   waiters: [Waiter!]!
+}
+
+type Settings {
+  enableAnalytics: Boolean!
+  id: Float!
 }
 
 type Subscription {
@@ -356,11 +362,16 @@ input UpdateRestaurant {
   currency: WhereCurrency
   email: String
   name: String
+  settings: UpdateSettings
 }
 
 input UpdateRestaurantPassword {
   old: String!
   password: String!
+}
+
+input UpdateSettings {
+  enableAnalytics: Boolean
 }
 
 input UpdateTable {

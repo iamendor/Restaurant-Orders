@@ -105,4 +105,10 @@ export class FieldService {
       done,
     }));
   }
+
+  getSettings(restaurantId: number) {
+    return this.prismaService.settings.findUniqueOrThrow({
+      where: { restaurantId },
+    });
+  }
 }

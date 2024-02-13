@@ -15,6 +15,7 @@ import { Order } from "./order.model";
 import { Meal } from "./meal.model";
 import { DateScalar } from "./date.model";
 import { Task } from "./task.model";
+import { Settings, UpdateSettings } from "./settings.model";
 
 @ObjectType()
 export class Restaurant {
@@ -29,6 +30,9 @@ export class Restaurant {
 
   @Field(() => DateScalar)
   createdAt: Date;
+
+  @Field(() => Settings)
+  settings?: Settings;
 
   @Field(() => [Task])
   tasks?: Task;
@@ -102,6 +106,8 @@ export class UpdateRestaurant extends PartialType(
   address?: UpdateAddress;
   @Field(() => WhereCurrency, { nullable: true })
   currency?: WhereCurrency;
+  @Field(() => UpdateSettings, { nullable: true })
+  settings?: UpdateSettings;
 }
 
 @InputType()

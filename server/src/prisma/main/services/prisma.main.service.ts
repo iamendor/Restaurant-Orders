@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
-import { PrismaClient } from "../../generated/main";
+import { PrismaClient } from "prisma/client/main";
 
 @Injectable()
 export class PrismaMainService

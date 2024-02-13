@@ -22,7 +22,7 @@
     "migrate:main": "prisma migrate dev --schema ./prisma/main/schema.prisma",
     "migrate:analytics": "prisma migrate dev --schema ./prisma/analytics/schema.prisma",
     "generate:main": "prisma generate --schema ./prisma/main/schema.prisma",
-    "generate:analytics": "prisma generate --schema ./prisma/main/schema.prisma"
+    "generate:analytics": "prisma generate --schema ./prisma/analytics/schema.prisma"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",

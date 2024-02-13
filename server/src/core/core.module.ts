@@ -16,7 +16,6 @@ import { RedisModule } from "@nestjs-modules/ioredis";
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
-        DATABASE_URL: Joi.string().required(),
         API_PORT: Joi.number().required(),
         NODE_ENV: Joi.string().default("test"),
       }).options({

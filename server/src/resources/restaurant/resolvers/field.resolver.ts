@@ -10,6 +10,7 @@ import { Victual } from "../../../models/victual.model";
 import { Waiter } from "../../../models/waiter.model";
 import { Restaurant } from "../../../models/restaurant.model";
 import { Task } from "../../../models/task.model";
+import { Settings } from "../../../models/settings.model";
 
 @Resolver((of) => Restaurant)
 export class FieldResolver {
@@ -62,5 +63,10 @@ export class FieldResolver {
   @ResolveField(() => [Task], { name: "tasks" })
   getTasks(@Parent() { id }: Restaurant) {
     return this.fieldService.getTasks(id);
+  }
+
+  @ResolveField(() => Settings, { name: "settings" })
+  getSettings(@Parent() { id }: Restaurant) {
+    return this.fieldService.getSettings(id);
   }
 }
