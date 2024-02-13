@@ -1,21 +1,21 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CurrencyService } from "./currency.service";
-import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
-import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { mockCategory, mockCurrency } from "../../../../test/helper/mock.unit";
+import { PrismaStaticService } from "../../../prisma/static/services/prisma.static.service";
+import { PrismaStaticModule } from "../../../prisma/static/prisma.static.module";
 
 describe("CurrencyService", () => {
   let service: CurrencyService;
-  let prisma: PrismaMainService;
+  let prisma: PrismaStaticService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaMainModule],
+      imports: [PrismaStaticModule],
       providers: [CurrencyService],
     }).compile();
 
     service = module.get<CurrencyService>(CurrencyService);
-    prisma = module.get<PrismaMainService>(PrismaMainService);
+    prisma = module.get<PrismaStaticService>(PrismaStaticService);
   });
 
   it("should be defined", () => {

@@ -23,6 +23,11 @@ type AuthWaiter {
   waiter: Waiter!
 }
 
+type BaseTask {
+  id: Float!
+  name: String!
+}
+
 type Category {
   createdAt: Date!
   id: Float!
@@ -83,6 +88,7 @@ input CreateOrder {
 input CreateRestaurant {
   address: CreateAddress!
   currency: WhereCurrency!
+  currencyId: Float
   email: String!
   name: String!
   password: String!
@@ -261,6 +267,7 @@ type Restaurant {
   categories: [Category!]!
   createdAt: Date!
   currency: Currency!
+  currencyId: Float!
   email: String!
   id: Float!
   meals: [Meal!]!
@@ -303,9 +310,10 @@ input TableFilter {
 }
 
 type Task {
+  base: BaseTask!
+  baseId: Float!
   done: Boolean!
   id: Float!
-  name: String!
   restaurant: Restaurant!
 }
 

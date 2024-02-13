@@ -10,6 +10,11 @@ import {
   mockRestaurant,
   mockRestaurantPayload,
 } from "../../../../test/helper/mock.unit";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { CurrencyService } from "../../currency/services/currency.service";
+import { CurrencyServiceMock } from "../../currency/services/mock/currency.service.mock";
+import { PrismaStaticModule } from "../../../prisma/static/prisma.static.module";
 
 describe("Restaurant Resolver", () => {
   const SUCCESS = "success";
@@ -19,8 +24,10 @@ describe("Restaurant Resolver", () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaMainModule, RestaurantGuardModule],
+      imports: [PrismaMainModule, PrismaStaticModule, RestaurantGuardModule],
       providers: [
+        { provide: CacheService, useClass: CacheServiceMock },
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
         RestaurantResolver,
       ],
