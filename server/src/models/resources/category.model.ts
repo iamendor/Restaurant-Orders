@@ -6,7 +6,7 @@ import {
   PickType,
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";
-import { Victual } from "./victual.model";
+import { Product } from "./product.model";
 import { DateScalar } from "./date.model";
 
 @ObjectType()
@@ -21,8 +21,8 @@ export class Category {
   root: boolean;
   @Field()
   level: number;
-  @Field(() => [Victual])
-  victuals?: Victual[];
+  @Field(() => [Product])
+  products?: Product[];
   @Field(() => Restaurant)
   restaurant?: Restaurant;
   @Field(() => [Category], { nullable: true })

@@ -3,7 +3,7 @@ import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { FieldService } from "../services/field.service";
-import { Victual } from "../../../models/resources/victual.model";
+import { Product } from "../../../models/resources/product.model";
 import { Restaurant } from "../../../models/resources/restaurant.model";
 import { Category } from "../../../models/resources/category.model";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -12,9 +12,9 @@ import { RESTAURANT, WAITER } from "../../../role";
 export class FieldResolver {
   constructor(private readonly fieldService: FieldService) {}
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
-  @ResolveField(() => [Victual], { name: "victuals" })
-  getVictuals(@Parent() category: Category) {
-    return this.fieldService.getVictuals(category.id);
+  @ResolveField(() => [Product], { name: "products" })
+  getProducts(@Parent() category: Category) {
+    return this.fieldService.getProducts(category.id);
   }
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER))
   @ResolveField(() => Restaurant, { name: "restaurant" })

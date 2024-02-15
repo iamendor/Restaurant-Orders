@@ -41,7 +41,7 @@ export class OrderFilter {
 }
 
 @InputType()
-export class VictualFilter {
+export class ProductFilter {
   @Field({ nullable: true })
   name?: string;
   @Field({ nullable: true })

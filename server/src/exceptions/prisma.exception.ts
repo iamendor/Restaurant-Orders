@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch } from "@nestjs/common";
 import { GqlExceptionFilter } from "@nestjs/graphql";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "prisma/client/main";
 import { NotFoundException, UniqueFieldFailedException } from "../error";
 
 @Catch(Prisma.PrismaClientKnownRequestError)

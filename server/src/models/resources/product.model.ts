@@ -11,7 +11,7 @@ import { Order } from "./order.model";
 import { DateScalar } from "./date.model";
 //TODO: rename
 @ObjectType()
-export class Victual {
+export class Product {
   @Field()
   id: number;
   @Field(() => DateScalar)
@@ -31,7 +31,7 @@ export class Victual {
 }
 
 @InputType()
-export class CreateVictual {
+export class CreateProduct {
   @Field()
   name: string;
   @Field()
@@ -43,25 +43,25 @@ export class CreateVictual {
 }
 
 @InputType()
-export class CreateVictualData extends CreateVictual {
+export class CreateProductData extends CreateProduct {
   @Field({ nullable: true })
   restaurantId?: number;
 }
 
 @InputType()
-export class UpdateVictualData extends PartialType(CreateVictual) {}
+export class UpdateProductData extends PartialType(CreateProduct) {}
 
 @InputType()
-export class WhereVictual extends PickType(
-  Victual,
+export class WhereProduct extends PickType(
+  Product,
   ["id"] as const,
   InputType
 ) {}
 
 @InputType()
-export class UpdateVictual {
-  @Field(() => WhereVictual)
-  where: WhereVictual;
-  @Field(() => UpdateVictualData)
-  update: UpdateVictualData;
+export class UpdateProduct {
+  @Field(() => WhereProduct)
+  where: WhereProduct;
+  @Field(() => UpdateProductData)
+  update: UpdateProductData;
 }

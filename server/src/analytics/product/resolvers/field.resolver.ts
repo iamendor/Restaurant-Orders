@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { FieldService } from "../services/field.service";
-import { Victual } from "../../../models/resources/victual.model";
+import { Product } from "../../../models/resources/product.model";
 import { PopularProduct as PPopularProduct } from "prisma/client/analytics";
 import { PopularProduct } from "../../../models/analytics/popularproduct.model";
 
@@ -8,15 +8,15 @@ import { PopularProduct } from "../../../models/analytics/popularproduct.model";
 export class FieldResolver {
   constructor(private readonly fieldService: FieldService) {}
 
-  @ResolveField(() => Victual, { name: "numberOne" })
+  @ResolveField(() => Product, { name: "numberOne" })
   getNumberOne(@Parent() { numberOne }: PPopularProduct) {
     return this.fieldService.getProduct(numberOne);
   }
-  @ResolveField(() => Victual, { name: "numberTwo" })
+  @ResolveField(() => Product, { name: "numberTwo" })
   getNumberTwo(@Parent() { numberTwo }: PPopularProduct) {
     return this.fieldService.getProduct(numberTwo);
   }
-  @ResolveField(() => Victual, { name: "numberThree" })
+  @ResolveField(() => Product, { name: "numberThree" })
   getNumberThree(@Parent() { numberThree }: PPopularProduct) {
     return this.fieldService.getProduct(numberThree);
   }

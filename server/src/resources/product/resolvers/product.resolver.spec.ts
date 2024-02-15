@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { VictualResolver } from "./victual.resolver";
-import { VictualService } from "../services/victual.service";
-import { VictualServiceMock } from "../services/mock/victual.service.mock";
+import { ProductResolver } from "./product.resolver";
+import { ProductService } from "../services/product.service";
+import { ProductServiceMock } from "../services/mock/product.service.mock";
 import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceMock } from "../../category/services/mock/category.service.mock";
@@ -14,12 +14,12 @@ import { TaskService } from "../../task/services/task.service";
 import { ContextIdFactory } from "@nestjs/core";
 import {
   mockRestaurantPayload,
-  mockVictual,
+  mockProduct,
   mockWaiterPayload,
 } from "../../../../test/helper/mock.unit";
 
 describe("MealResolver", () => {
-  let resolver: VictualResolver;
+  let resolver: ProductResolver;
 
   const SUCCESS = "success";
 
@@ -31,16 +31,16 @@ describe("MealResolver", () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaMainModule, FilterModule],
       providers: [
-        VictualResolver,
+        ProductResolver,
         { provide: CacheService, useClass: CacheServiceMock },
-        { provide: VictualService, useClass: VictualServiceMock },
+        { provide: ProductService, useClass: ProductServiceMock },
         { provide: CategoryService, useClass: CategoryServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
         IdGuard,
       ],
     }).compile();
-    resolver = await module.resolve<VictualResolver>(
-      VictualResolver,
+    resolver = await module.resolve<ProductResolver>(
+      ProductResolver,
       contextId
     );
   });
@@ -50,12 +50,12 @@ describe("MealResolver", () => {
   });
 
   it("creates a meal with the category", async () => {
-    const meal = await resolver.create(mockRestaurantPayload, mockVictual);
-    expect(meal.name).toBe(mockVictual.name);
+    const meal = await resolver.create(mockRestaurantPayload, mockProduct);
+    expect(meal.name).toBe(mockProduct.name);
   });
   it("creates two meals", async () => {
     const mls = [1, 2].map(() => ({
-      ...mockVictual,
+      ...mockProduct,
     }));
     const meals = await resolver.createMany(mls);
     expect(meals.message).toBe(SUCCESS);
@@ -81,7 +81,7 @@ describe("MealResolver", () => {
       expect(meals.length).toEqual(2);
     });
     it("returns specific", async () => {
-      const meal = await resolver.find(mockVictual, { id: 1 });
+      const meal = await resolver.find(mockProduct, { id: 1 });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
     });
@@ -92,7 +92,7 @@ describe("MealResolver", () => {
       expect(meals.length).toEqual(2);
     });
     it("returns specific", async () => {
-      const meal = await resolver.find(mockVictual, { id: 1 });
+      const meal = await resolver.find(mockProduct, { id: 1 });
       expect(meal).toBeDefined();
       expect(meal.price).toEqual(1.1);
     });

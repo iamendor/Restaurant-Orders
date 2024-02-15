@@ -48,11 +48,11 @@ type Category {
   name: String!
   parent: Category
   parentId: Float
+  products: [Product!]!
   restaurant: Restaurant!
   restaurantId: Float!
   root: Boolean!
   subCategories: [Category!]!
-  victuals: [Victual!]!
 }
 
 input CategoryFilter {
@@ -91,11 +91,18 @@ input CreateOpenHour {
 input CreateOrder {
   description: String
   isReady: Boolean
+  productId: Float!
   quantity: Float
   restaurantId: Float
   tableId: Float!
-  victualId: Float!
   waiterId: Float
+}
+
+input CreateProduct {
+  categoryId: Float!
+  name: String!
+  price: Float!
+  restaurantId: Float
 }
 
 input CreateRestaurant {
@@ -109,13 +116,6 @@ input CreateRestaurant {
 
 input CreateTable {
   name: String!
-  restaurantId: Float
-}
-
-input CreateVictual {
-  categoryId: Float!
-  name: String!
-  price: Float!
   restaurantId: Float
 }
 
@@ -155,11 +155,11 @@ type ListenOrder {
   description: String
   id: Float!
   isReady: Boolean!
+  product: Product!
   quantity: Float!
   restaurant: Restaurant!
   restaurantId: Float!
   table: Table!
-  victual: Victual!
   waiter: Waiter!
   waiterId: Float!
 }
@@ -202,17 +202,17 @@ type Mutation {
   createOpenHours(data: [CreateOpenHour!]!): Success!
   createOrder(data: CreateOrder!): Order!
   createOrders(data: [CreateOrder!]!): Success!
+  createProduct(data: CreateProduct!): Product!
+  createProducts(data: [CreateProduct!]!): Success!
   createTable(data: CreateTable!): Table!
   createTables(data: [CreateTable!]!): Success!
-  createVictual(data: CreateVictual!): Victual!
-  createVictuals(data: [CreateVictual!]!): Success!
   createWaiter(data: CreateWaiter!): Waiter!
   deleteCategory(where: WhereCategory!): Success!
   deleteOpenHour(where: WhereOpenHour!): Success!
   deleteOrder(where: WhereOrder!): Success!
+  deleteProduct(where: WhereProduct!): Success!
   deleteRestaurant: Success!
   deleteTable(where: WhereTable!): Success!
-  deleteVictual(where: WhereVictual!): Success!
   deleteWaiter(where: WhereWaiter!): Success!
   loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
   loginWaiter(credentials: LoginWaiter!): AuthWaiter!
@@ -220,10 +220,10 @@ type Mutation {
   updateCategory(data: UpdateCategory!): Category!
   updateOpenHour(data: UpdateOpenHour!): OpenHour!
   updateOrder(data: UpdateOrder!): Order!
+  updateProduct(data: UpdateProduct!): Product!
   updateRestaurant(update: UpdateRestaurant!): Restaurant!
   updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
   updateTable(data: UpdateTable!): Table!
-  updateVictual(data: UpdateVictual!): Victual!
   updateWaiter(data: UpdateWaiter!): Waiter!
   updateWaiterPassword(data: UpdateWaiterPassword!): Success!
 }
@@ -244,11 +244,11 @@ type Order {
   description: String
   id: Float!
   isReady: Boolean!
+  product: Product!
   quantity: Float!
   restaurant: Restaurant!
   restaurantId: Float!
   table: Table!
-  victual: Victual!
   waiter: Waiter!
   waiterId: Float!
 }
@@ -265,9 +265,27 @@ input OrderFilter {
 type PopularProduct {
   createdAt: Date!
   id: Float!
-  numberOne: Victual!
-  numberThree: Victual!
-  numberTwo: Victual!
+  numberOne: Product!
+  numberThree: Product!
+  numberTwo: Product!
+}
+
+type Product {
+  category: Category!
+  createdAt: Date!
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  price: Float!
+  restaurant: Category!
+  restaurantId: Float!
+}
+
+input ProductFilter {
+  max: Float
+  maxLength: Float
+  min: Float
+  name: String
 }
 
 type Query {
@@ -281,11 +299,11 @@ type Query {
   openHours: [OpenHour!]!
   order(where: WhereOrder!): Order!
   orders(filter: OrderFilter = {isClosed: "false"}): [Order!]!
+  product(where: WhereProduct!): Product!
+  products(filter: ProductFilter): [Product!]!
   restaurantInfo: Restaurant!
   table(where: WhereTable!): Table!
   tables(filter: TableFilter): [Table!]!
-  victual(where: WhereVictual!): Victual!
-  victuals(filter: VictualFilter): [Victual!]!
   waiterInfo(where: WhereWaiter): Waiter!
   waiters(filter: WaiterFilter): [Waiter!]!
 }
@@ -302,10 +320,10 @@ type Restaurant {
   name: String!
   open: Boolean!
   orders: [Order!]!
+  products: [Product!]!
   settings: Settings!
   tables: [Table!]!
   tasks: [Task!]!
-  victuals: [Victual!]!
   waiters: [Waiter!]!
 }
 
@@ -388,9 +406,21 @@ input UpdateOrder {
 input UpdateOrderData {
   description: String
   isReady: Boolean
+  productId: Float
   quantity: Float
   tableId: Float
-  victualId: Float
+}
+
+input UpdateProduct {
+  update: UpdateProductData!
+  where: WhereProduct!
+}
+
+input UpdateProductData {
+  categoryId: Float
+  name: String
+  price: Float
+  restaurantId: Float
 }
 
 input UpdateRestaurant {
@@ -420,18 +450,6 @@ input UpdateTableData {
   restaurantId: Float
 }
 
-input UpdateVictual {
-  update: UpdateVictualData!
-  where: WhereVictual!
-}
-
-input UpdateVictualData {
-  categoryId: Float
-  name: String
-  price: Float
-  restaurantId: Float
-}
-
 input UpdateWaiter {
   update: UpdateWaiterData!
   where: WhereWaiter
@@ -453,24 +471,6 @@ input UpdateWaiterPassword {
 input UpdateWaiterPasswordData {
   old: String
   password: String!
-}
-
-type Victual {
-  category: Category!
-  createdAt: Date!
-  id: Float!
-  name: String!
-  orders: [Order!]!
-  price: Float!
-  restaurant: Category!
-  restaurantId: Float!
-}
-
-input VictualFilter {
-  max: Float
-  maxLength: Float
-  min: Float
-  name: String
 }
 
 type Waiter {
@@ -522,12 +522,12 @@ input WhereOrder {
   id: Float!
 }
 
-input WhereTable {
-  id: Float
+input WhereProduct {
+  id: Float!
 }
 
-input WhereVictual {
-  id: Float!
+input WhereTable {
+  id: Float
 }
 
 input WhereWaiter {

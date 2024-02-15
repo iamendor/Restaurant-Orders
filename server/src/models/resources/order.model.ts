@@ -8,7 +8,7 @@ import {
 import { Waiter } from "./waiter.model";
 import { Table } from "./table.model";
 import { Restaurant } from "./restaurant.model";
-import { Victual } from "./victual.model";
+import { Product } from "./product.model";
 import { DateScalar } from "./date.model";
 
 @ObjectType()
@@ -33,8 +33,8 @@ export class Order {
   table?: Table;
   @Field(() => Restaurant)
   restaurant?: Restaurant;
-  @Field(() => Victual)
-  victual?: Victual;
+  @Field(() => Product)
+  product?: Product;
   @Field()
   restaurantId: number;
 }
@@ -48,7 +48,7 @@ export class CreateOrder {
   @Field()
   tableId: number;
   @Field()
-  victualId: number;
+  productId: number;
   @Field({ nullable: true })
   restaurantId?: number;
   @Field({ nullable: true })
@@ -67,7 +67,7 @@ export class UpdateOrderData extends PartialType(
   @Field({ nullable: true })
   tableId?: number;
   @Field({ nullable: true })
-  victualId?: number;
+  productId?: number;
 }
 
 @InputType()

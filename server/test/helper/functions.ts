@@ -5,7 +5,7 @@ import {
   mockCurrency,
   mockRestaurant,
   mockTable,
-  mockVictual,
+  mockProduct,
   mockWaiter,
 } from "./mock.unit";
 import req from "./graphql-request";
@@ -56,7 +56,7 @@ export const createTable = ({
   });
 };
 
-export const createVictual = ({
+export const createProduct = ({
   prisma,
   restaurantId,
   categoryId,
@@ -65,10 +65,10 @@ export const createVictual = ({
   restaurantId: number;
   categoryId: number;
 }) => {
-  return prisma.victual.create({
+  return prisma.product.create({
     data: {
-      name: mockVictual.name,
-      price: mockVictual.price,
+      name: mockProduct.name,
+      price: mockProduct.price,
       restaurant: { connect: { id: restaurantId } },
       category: { connect: { id: categoryId } },
     },
@@ -145,9 +145,9 @@ export const mock = {
       createdAt: undefined,
     },
   },
-  victual: {
+  product: {
     create: {
-      ...mockVictual,
+      ...mockProduct,
       id: undefined,
       restaurantId: undefined,
       createdAt: undefined,

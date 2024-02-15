@@ -6,7 +6,7 @@ export class FieldService {
   constructor(private readonly prismaMainService: PrismaMainService) {}
 
   getProduct(productId: number) {
-    return this.prismaMainService.victual.findUnique({
+    return this.prismaMainService.product.findUnique({
       where: {
         id: productId,
       },

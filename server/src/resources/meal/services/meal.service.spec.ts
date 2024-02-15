@@ -4,7 +4,7 @@ import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import {
   mockMeal,
   mockOrder,
-  mockVictual,
+  mockProduct,
 } from "../../../../test/helper/mock.unit";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 
@@ -26,7 +26,7 @@ describe("MealService", () => {
   });
 
   it("formats the table", () => {
-    const orders = [1, 2].map(() => ({ ...mockOrder, victual: mockVictual }));
+    const orders = [1, 2].map(() => ({ ...mockOrder, product: mockProduct }));
 
     const formatTable = service.formatTable(orders);
     expect(formatTable.total).toBe(2.2);

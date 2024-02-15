@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { WaiterRules } from "../rules/waiters.rule";
 import { Waiter } from "../../models/resources/waiter.model";
-import { Victual } from "../../models/resources/victual.model";
+import { Product } from "../../models/resources/product.model";
 import { Category } from "../../models/resources/category.model";
 import { Order } from "../../models/resources/order.model";
 import { Meal } from "../../models/resources/meal.model";
 import { IWaiterFilter } from "../interfaces/waiter.interface";
-import { IVictualFilter } from "../interfaces/victual.interface";
-import { VictualRules } from "../rules/victuals.rule";
+import { IProductFilter } from "../interfaces/product.interface";
+import { VictualRules } from "../rules/products.rule";
 import { ICategoryFilter } from "../interfaces/category.interface";
 import { CategoryRules } from "../rules/categories.rule";
 import { IOrderFilter } from "../interfaces/order.interface";
@@ -19,7 +19,7 @@ import {
   MealFilter,
   OrderFilter,
   TaskFilter,
-  VictualFilter,
+  ProductFilter,
   WaiterFilter,
 } from "../../models/resources/filter.model";
 import { Table } from "../../models/resources/table.model";
@@ -38,7 +38,7 @@ interface IFilter<T> {
     | WaiterFilter
     | CategoryFilter
     | OrderFilter
-    | VictualFilter
+    | ProductFilter
     | MealFilter
     | TaskFilter;
 }
@@ -46,7 +46,7 @@ interface IFilter<T> {
 @Injectable()
 export class FilterService {
   private wRules: IWaiterFilter;
-  private vRules: IVictualFilter;
+  private vRules: IProductFilter;
   private cRules: ICategoryFilter;
   private oRules: IOrderFilter;
   private mRules: IMealFilter;
@@ -77,8 +77,8 @@ export class FilterService {
   waiters(data: IFilter<Waiter>) {
     return this.filter(data, this.wRules) as Waiter[];
   }
-  victuals(data: IFilter<Victual>) {
-    return this.filter(data, this.vRules) as Victual[];
+  victuals(data: IFilter<Product>) {
+    return this.filter(data, this.vRules) as Product[];
   }
   categories(data: IFilter<Category>): Category[] {
     return this.filter(data, this.cRules) as Category[];

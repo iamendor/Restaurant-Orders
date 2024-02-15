@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { VictualService } from "./victual.service";
 import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
-import { mockCategory, mockVictual } from "../../../../test/helper/mock.unit";
+import { mockCategory, mockProduct } from "../../../../test/helper/mock.unit";
+import { ProductService } from "./product.service";
 
 describe("MealService", () => {
-  let service: VictualService;
+  let service: ProductService;
   let prisma: PrismaMainService;
   let catService: CategoryService;
   const SUCCESS = "success";
@@ -15,10 +15,10 @@ describe("MealService", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaMainModule, CategoryServiceModule],
-      providers: [VictualService],
+      providers: [ProductService],
     }).compile();
 
-    service = module.get<VictualService>(VictualService);
+    service = module.get<ProductService>(ProductService);
     prisma = module.get<PrismaMainService>(PrismaMainService);
     catService = module.get<CategoryService>(CategoryService);
   });
@@ -27,26 +27,26 @@ describe("MealService", () => {
     expect(service).toBeDefined();
   });
 
-  it("creates a victual", async () => {
+  it("creates a product", async () => {
     catService.find = jest.fn().mockReturnValue(mockCategory);
-    prisma.victual.create = jest.fn().mockImplementation(() => mockVictual);
+    prisma.product.create = jest.fn().mockImplementation(() => mockProduct);
 
-    const victual = await service.create(mockVictual);
-    expect(victual).toBeDefined();
+    const product = await service.create(mockProduct);
+    expect(product).toBeDefined();
   });
-  it("creates many victual", async () => {
-    prisma.victual.createMany = jest.fn().mockReturnValue({ count: 2 });
+  it("creates many product", async () => {
+    prisma.product.createMany = jest.fn().mockReturnValue({ count: 2 });
 
     const victs = [1, 2].map((id) => ({
-      ...mockVictual,
+      ...mockProduct,
       id,
     }));
-    const victuals = await service.createMany(victs);
-    expect(victuals.message).toBe(SUCCESS);
+    const products = await service.createMany(victs);
+    expect(products.message).toBe(SUCCESS);
   });
-  it("update victual", async () => {
-    prisma.victual.update = jest.fn().mockImplementation(({ where, data }) => ({
-      ...mockVictual,
+  it("update product", async () => {
+    prisma.product.update = jest.fn().mockImplementation(({ where, data }) => ({
+      ...mockProduct,
       ...where,
       ...data,
     }));
@@ -59,26 +59,26 @@ describe("MealService", () => {
     });
     expect(update.name).toBe("UpdatedMeal");
   });
-  it("delete victual", async () => {
-    prisma.victual.delete = jest.fn().mockReturnValue({ message: SUCCESS });
+  it("delete product", async () => {
+    prisma.product.delete = jest.fn().mockReturnValue({ message: SUCCESS });
 
     const deleted = await service.delete({ id: 1 });
     expect(deleted.message).toBe(SUCCESS);
   });
-  it("list victuals", async () => {
-    prisma.victual.findMany = jest
+  it("list products", async () => {
+    prisma.product.findMany = jest
       .fn()
-      .mockImplementation(() => [1, 2].map((id) => ({ ...mockVictual, id })));
+      .mockImplementation(() => [1, 2].map((id) => ({ ...mockProduct, id })));
 
-    const victuals = await service.list(2);
-    expect(victuals.length).toEqual(2);
+    const products = await service.list(2);
+    expect(products.length).toEqual(2);
   });
   it("find by id", async () => {
-    prisma.victual.findUniqueOrThrow = jest
+    prisma.product.findUniqueOrThrow = jest
       .fn()
-      .mockImplementation(({ where }) => ({ ...mockVictual, ...where }));
+      .mockImplementation(({ where }) => ({ ...mockProduct, ...where }));
 
-    const victual = await service.find({ id: 1 });
-    expect(victual).toBeDefined();
+    const product = await service.find({ id: 1 });
+    expect(product).toBeDefined();
   });
 });

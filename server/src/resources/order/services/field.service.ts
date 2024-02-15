@@ -27,16 +27,16 @@ export class FieldService {
     });
     return order.table;
   }
-  async getVictual(id: number) {
+  async getProduct(id: number) {
     const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
         id,
       },
       select: {
-        victual: true,
+        product: true,
       },
     });
-    return order.victual;
+    return order.product;
   }
   async getWaiter(id: number) {
     const order = await this.prismaService.order.findUniqueOrThrow({

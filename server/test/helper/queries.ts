@@ -75,14 +75,14 @@ export const getQueries = () => ({
       }
     `,
   },
-  victual: {
+  product: {
     listAndFind: () => `
-      query listAndFind($where: WhereVictual!){
-        victuals{
+      query listAndFind($where: WhereProduct!){
+        products{
           id
           name
         }
-        victual(where: $where){
+        product(where: $where){
           id
           name
         }

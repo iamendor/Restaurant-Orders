@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { mockVictual } from "../../../../../test/helper/mock.unit";
+import { mockProduct } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
-export class VictualServiceMock {
-  victual;
+export class ProductServiceMock {
+  product;
   SUCCESS = "success";
   constructor() {
-    this.victual = mockVictual;
+    this.product = mockProduct;
   }
 
   create(data) {
@@ -18,7 +18,7 @@ export class VictualServiceMock {
   }
 
   update({ where, update }) {
-    return { ...this.victual, ...where, ...update };
+    return { ...this.product, ...where, ...update };
   }
 
   delete() {
@@ -26,11 +26,11 @@ export class VictualServiceMock {
   }
 
   list() {
-    return [1, 2].map(() => this.victual);
+    return [1, 2].map(() => this.product);
   }
 
   find(where) {
-    return { ...this.victual, ...where };
+    return { ...this.product, ...where };
   }
   validate() {
     return true;

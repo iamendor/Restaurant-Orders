@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
-import { Restaurant as PRestaurant, Prisma } from "@prisma/client";
+import { Restaurant as PRestaurant, Prisma } from "prisma/client/main";
 import { SecurityService } from "../../../security/services/security.service";
 import {
   CreateRestaurant,

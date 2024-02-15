@@ -6,7 +6,7 @@ import { Currency } from "../../../models/resources/currency.model";
 import { Meal } from "../../../models/resources/meal.model";
 import { Order } from "../../../models/resources/order.model";
 import { Table } from "../../../models/resources/table.model";
-import { Victual } from "../../../models/resources/victual.model";
+import { Product } from "../../../models/resources/product.model";
 import { Waiter } from "../../../models/resources/waiter.model";
 import { Restaurant } from "../../../models/resources/restaurant.model";
 import { Task } from "../../../models/resources/task.model";
@@ -35,7 +35,7 @@ export class FieldResolver {
     return this.fieldService.getCategories(id);
   }
 
-  @ResolveField(() => [Victual], { name: "victuals" })
+  @ResolveField(() => [Product], { name: "products" })
   getVictuals(@Parent() { id }: Restaurant) {
     return this.fieldService.getVictuals(id);
   }

@@ -6,7 +6,7 @@ import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RestaurantService } from "../services/restaurant.service";
 import { RestaurantGuard } from "../guard/restaurant.guard";
 import { RESTAURANT, WAITER } from "../../../role";
-import { Restaurant as PRestaurant } from "@prisma/client";
+import { Restaurant as PRestaurant } from "prisma/client/main";
 import { SecurityService } from "../../../security/services/security.service";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
@@ -16,7 +16,6 @@ import {
 } from "../../../models/resources/restaurant.model";
 import { Success } from "../../../models/resources/success.model";
 import { GetRestaurant } from "../../../decorators";
-import { CurrencyService } from "../../currency/services/currency.service";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {

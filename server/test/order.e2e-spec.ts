@@ -9,7 +9,7 @@ import {
   requestNewRestaurant,
   requestNewWaiter,
   createCategory,
-  createVictual,
+  createProduct,
   createTable,
 } from "./helper/functions";
 import { getMutations } from "./helper/mutations";
@@ -31,7 +31,7 @@ describe("Order", () => {
   let restaurantId: number;
   let categoryId: number;
   let tableId: number;
-  let victualId: number;
+  let productId: number;
   let id: number;
 
   beforeAll(async () => {
@@ -81,7 +81,7 @@ describe("Order", () => {
     let create;
     let multiple;
     beforeAll(async () => {
-      const victual = await createVictual({
+      const product = await createProduct({
         prisma: prismaService,
         restaurantId,
         categoryId: categoryId,
@@ -90,14 +90,14 @@ describe("Order", () => {
         prisma: prismaService,
         restaurantId,
       });
-      victualId = victual.id;
+      productId = product.id;
       tableId = table.id;
 
       order = {
         ...mockOrder,
         restaurantId: undefined,
         tableId,
-        victualId,
+        productId,
         createdAt: undefined,
         id: undefined,
         closed: undefined,

@@ -1,22 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import {
-  CreateVictualData,
-  UpdateVictual,
-  WhereVictual,
-  Victual,
-} from "../../../models/resources/victual.model";
+  CreateProductData,
+  UpdateProduct,
+  WhereProduct,
+  Product,
+} from "../../../models/resources/product.model";
 import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 
 @Injectable()
-export class VictualService {
+export class ProductService {
   constructor(private readonly prismaService: PrismaMainService) {}
 
-  async create(data: CreateVictualData): Promise<Victual> {
+  async create(data: CreateProductData): Promise<Product> {
     const { restaurantId, categoryId, ...rest } = data;
-    const meal = await this.prismaService.victual.create({
+    const meal = await this.prismaService.product.create({
       data: {
         ...rest,
         restaurant: {
@@ -34,7 +34,7 @@ export class VictualService {
     return meal;
   }
 
-  async createMany(data: CreateVictualData[]): Promise<Success> {
+  async createMany(data: CreateProductData[]): Promise<Success> {
     const checked = data.map((d) => {
       const { restaurantId, categoryId, ...rest } = d;
       return {
@@ -44,16 +44,16 @@ export class VictualService {
       };
     });
 
-    await this.prismaService.victual.createMany({
+    await this.prismaService.product.createMany({
       data: checked,
       skipDuplicates: true,
     });
     return SUCCESS;
   }
 
-  async update(data: UpdateVictual): Promise<Victual> {
+  async update(data: UpdateProduct): Promise<Product> {
     const { where, update } = data;
-    const updated = await this.prismaService.victual.update({
+    const updated = await this.prismaService.product.update({
       where: {
         id: where.id,
       },
@@ -64,8 +64,8 @@ export class VictualService {
     return updated;
   }
 
-  async delete(where: WhereVictual): Promise<Success> {
-    await this.prismaService.victual.delete({
+  async delete(where: WhereProduct): Promise<Success> {
+    await this.prismaService.product.delete({
       where: {
         id: where.id,
       },
@@ -73,17 +73,17 @@ export class VictualService {
     return SUCCESS;
   }
 
-  async list(restaurantId: number): Promise<Victual[]> {
-    const victuals = await this.prismaService.victual.findMany({
+  async list(restaurantId: number): Promise<Product[]> {
+    const products = await this.prismaService.product.findMany({
       where: {
         restaurantId: restaurantId,
       },
     });
-    return victuals;
+    return products;
   }
 
-  async find(where: WhereVictual): Promise<Victual> {
-    const meal = await this.prismaService.victual.findUniqueOrThrow({
+  async find(where: WhereProduct): Promise<Product> {
+    const meal = await this.prismaService.product.findUniqueOrThrow({
       where: {
         id: where.id,
       },
@@ -92,7 +92,7 @@ export class VictualService {
   }
 
   async validate({ id, restaurantId }: VerifyResource) {
-    const victual = await this.find({ id });
-    return victual.restaurantId == restaurantId;
+    const product = await this.find({ id });
+    return product.restaurantId == restaurantId;
   }
 }

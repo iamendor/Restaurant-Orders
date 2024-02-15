@@ -26,7 +26,7 @@ model Restaurant{
   openingHours OpeningHour[]
   waiters Waiter[]
   orders Order[]
-  victuals Victual[]
+  products Product[]
   categories Category[]
   tables Table[]
   meals Meal[]
@@ -85,16 +85,16 @@ model Order{
   waiter Waiter @relation(fields: [waiterId], references: [id])
   table Table? @relation(fields: [tableId], references: [id])
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  victual Victual @relation(fields: [victualId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   meal Meal? @relation(fields: [mealId], references: [id], onDelete: SetNull)
   mealId Int? 
-  victualId Int
+  productId Int
   restaurantId Int
   tableId Int?
   waiterId Int
 }
 
-model Victual{
+model Product{
   id Int @unique @id @default(autoincrement())
   createdAt DateTime @default(now())
   name String
@@ -109,7 +109,7 @@ model Category{
   id Int @unique @id @default(autoincrement())
   createdAt DateTime @default(now())
   name String
-  victuals Victual[]
+  products Product[]
   parent Category? @relation("ParentToCategory", fields: [parentId], references: [id], onDelete: SetNull)
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
