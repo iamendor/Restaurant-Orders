@@ -26,6 +26,11 @@ input AnalyticsFilter {
   min: Date
 }
 
+type AnalyticsSummary {
+  createdAt: Date!
+  income: IncomeSummary!
+}
+
 type AuthRestaurant {
   access_token: String!
   restaurant: Restaurant!
@@ -145,6 +150,18 @@ scalar DateTime
 type Income {
   createdAt: Date!
   id: Float!
+  total: Float!
+}
+
+type IncomeRange {
+  bottom: Income!
+  top: Income!
+}
+
+type IncomeSummary {
+  average: Float!
+  median: Float!
+  range: IncomeRange!
   total: Float!
 }
 
@@ -290,6 +307,7 @@ input ProductFilter {
 
 type Query {
   analytics(filter: AnalyticsFilter): [Analytics!]!
+  analyticsSummary(range: String! = "week"): AnalyticsSummary!
   categories(filter: CategoryFilter): [Category!]!
   category(where: WhereCategory!): Category!
   listCurrencies: [Currency!]!
