@@ -3,7 +3,6 @@ import {
   InputType,
   ObjectType,
   OmitType,
-  PartialType,
   PickType,
 } from "@nestjs/graphql";
 import { Restaurant } from "./restaurant.model";

@@ -6,8 +6,8 @@ import {
   CreateOrder,
   UpdateOrder,
   WhereOrder,
-} from "../../../models/order.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/order.model";
+import { Success } from "../../../models/resources/success.model";
 import { Prisma } from "@prisma/client";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";

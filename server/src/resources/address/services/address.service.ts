@@ -1,4 +1,4 @@
-import { Address, WhereAddress } from "../../../models/address.model";
+import { Address, WhereAddress } from "../../../models/resources/address.model";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { Injectable } from "@nestjs/common";
 

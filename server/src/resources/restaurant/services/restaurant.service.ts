@@ -9,9 +9,10 @@ import {
   UpdateRestaurantData,
   Restaurant,
   WhereRestaurant,
-} from "../../../models/restaurant.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/restaurant.model";
+import { Success } from "../../../models/resources/success.model";
 import { CurrencyService } from "../../currency/services/currency.service";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class RestaurantService {
@@ -50,9 +51,7 @@ export class RestaurantService {
         password: encrypted,
       },
     });
-    return {
-      message: "success",
-    };
+    return SUCCESS;
   }
 
   async update({
@@ -82,9 +81,7 @@ export class RestaurantService {
     await this.prismaService.restaurant.delete({
       where: where as Prisma.RestaurantWhereUniqueInput,
     });
-    return {
-      message: "success",
-    };
+    return SUCCESS;
   }
 
   async find(where: WhereRestaurant): Promise<PRestaurant> {

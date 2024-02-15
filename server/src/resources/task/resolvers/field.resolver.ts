@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
-import { BaseTask, Task } from "../../../models/task.model";
-import { Restaurant } from "../../../models/restaurant.model";
+import { BaseTask, Task } from "../../../models/resources/task.model";
+import { Restaurant } from "../../../models/resources/restaurant.model";
 import { FieldService } from "../services/field.service";
 
 @Resolver((of) => Task)

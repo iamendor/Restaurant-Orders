@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Task } from "../../../../models/task.model";
+import { Task } from "../../../../models/resources/task.model";
 import { BaseTask, Task as PTask } from "@prisma/client";
 import { SUCCESS } from "../../../../response";
 

@@ -1,9 +1,9 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { RESTAURANT } from "../../../role";
 import { FieldService } from "../services/field.service";
-import { Category } from "../../../models/category.model";
-import { Order } from "../../../models/order.model";
-import { Victual } from "../../../models/victual.model";
+import { Category } from "../../../models/resources/category.model";
+import { Order } from "../../../models/resources/order.model";
+import { Victual } from "../../../models/resources/victual.model";
 
 @Resolver((of) => Victual)
 export class FieldResolver {

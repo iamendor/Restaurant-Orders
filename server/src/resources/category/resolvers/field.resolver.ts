@@ -3,9 +3,9 @@ import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { FieldService } from "../services/field.service";
-import { Victual } from "../../../models/victual.model";
-import { Restaurant } from "../../../models/restaurant.model";
-import { Category } from "../../../models/category.model";
+import { Victual } from "../../../models/resources/victual.model";
+import { Restaurant } from "../../../models/resources/restaurant.model";
+import { Category } from "../../../models/resources/category.model";
 import { RESTAURANT, WAITER } from "../../../role";
 
 @Resolver((of) => Category)

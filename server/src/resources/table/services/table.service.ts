@@ -5,8 +5,8 @@ import {
   WhereTable,
   Table,
   CreateTable,
-} from "../../../models/table.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/table.model";
+import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 

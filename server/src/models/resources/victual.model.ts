@@ -9,7 +9,7 @@ import { Restaurant } from "./restaurant.model";
 import { Category } from "./category.model";
 import { Order } from "./order.model";
 import { DateScalar } from "./date.model";
-
+//TODO: rename
 @ObjectType()
 export class Victual {
   @Field()

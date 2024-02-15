@@ -3,7 +3,8 @@ import { ASTNode } from "graphql";
 
 @Scalar("Date")
 export class DateScalar implements CustomScalar<number, Date> {
-  parseValue(value: number): Date {
+  parseValue(value: number | string): Date {
+    console.log(new Date(value));
     return new Date(value);
   }
 
@@ -11,8 +12,8 @@ export class DateScalar implements CustomScalar<number, Date> {
     return value.getTime();
   }
 
-  parseLiteral(ast: ASTNode): Date {
-    if (ast.kind) return new Date();
+  parseLiteral(ast: any): Date {
+    if (ast.kind) return new Date(ast.value);
     return null;
   }
 }

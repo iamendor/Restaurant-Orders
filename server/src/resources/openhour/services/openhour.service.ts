@@ -5,8 +5,8 @@ import {
   OpenHour,
   UpdateOpenHour,
   WhereOpenHour,
-} from "../../../models/openhour.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/openhour.model";
+import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 

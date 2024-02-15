@@ -6,8 +6,8 @@ import {
   CreateRestaurant,
   AuthRestaurant,
   LoginRestaurant,
-} from "../../models/restaurant.model";
-import { AuthWaiter, LoginWaiter } from "../../models/waiter.model";
+} from "../../models/resources/restaurant.model";
+import { AuthWaiter, LoginWaiter } from "../../models/resources/waiter.model";
 import { TaskService } from "../../resources/task/services/task.service";
 import { CurrencyService } from "../../resources/currency/services/currency.service";
 

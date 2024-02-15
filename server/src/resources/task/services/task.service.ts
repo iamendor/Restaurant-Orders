@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
-import { Success } from "../../../models/success.model";
+import { Success } from "../../../models/resources/success.model";
 import { WhereTask } from "../../../interfaces/task.interface";
-import { Task } from "../../../models/task.model";
+import { Task } from "../../../models/resources/task.model";
 import { SUCCESS } from "../../../response";
 import { PrismaStaticService } from "../../../prisma/static/services/prisma.static.service";
 import { SomethingWentWrongException } from "../../../error";

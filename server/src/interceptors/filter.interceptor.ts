@@ -17,7 +17,8 @@ type FilterInterceptorOptions =
   | "categories"
   | "orders"
   | "tables"
-  | "tasks";
+  | "tasks"
+  | "analytics";
 
 export const FilterInterceptor = (resource: FilterInterceptorOptions) => {
   @Injectable()

@@ -9,6 +9,7 @@ migrations/
 schema.gql
 
 generated/
+backup/
 
 # Logs
 logs

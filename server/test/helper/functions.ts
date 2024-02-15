@@ -10,9 +10,19 @@ import {
 } from "./mock.unit";
 import req from "./graphql-request";
 import { getMutations } from "./mutations";
+import { PrismaAnalyticsService } from "../../src/prisma/analytics/services/prisma.analytics.service";
+import { mockAnalytics } from "./mock.analytics";
 
 export const clearMocks = async ({ prisma }: { prisma: PrismaMainService }) => {
   await prisma.restaurant.deleteMany();
+};
+
+export const clearAnalytics = async ({
+  prisma,
+}: {
+  prisma: PrismaAnalyticsService;
+}) => {
+  await prisma.analytics.deleteMany();
 };
 
 export const excludeId = ({ id, ...rest }) => ({ ...rest });
@@ -144,4 +154,31 @@ export const mock = {
       categoryId: undefined,
     },
   },
+};
+
+export const createAnalytics = async ({
+  prisma,
+  restaurantId,
+}: {
+  prisma: PrismaAnalyticsService;
+  restaurantId: number;
+}) => {
+  for (let i = 0; i < mockAnalytics.length; i++) {
+    const mock = mockAnalytics[i];
+    await prisma.analytics.create({
+      data: {
+        ...mock,
+        restaurantId,
+        income: {
+          create: mock.income,
+        },
+        popularProduct: {
+          create: mock.popularProduct,
+        },
+        waiterOfTheDay: {
+          create: mock.waiterOfTheDay,
+        },
+      },
+    });
+  }
 };

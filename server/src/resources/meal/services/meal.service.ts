@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
-import { Success } from "../../../models/success.model";
-import { Meal, WhereMeal } from "../../../models/meal.model";
+import { Success } from "../../../models/resources/success.model";
+import { Meal, WhereMeal } from "../../../models/resources/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
-import { Order } from "../../../models/order.model";
+import { Order } from "../../../models/resources/order.model";
 
 @Injectable()
 export class MealService {

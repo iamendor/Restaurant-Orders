@@ -10,8 +10,12 @@ import {
   LoginRestaurant,
   AuthRestaurant,
   Restaurant,
-} from "../../models/restaurant.model";
-import { LoginWaiter, AuthWaiter, Waiter } from "../../models/waiter.model";
+} from "../../models/resources/restaurant.model";
+import {
+  LoginWaiter,
+  AuthWaiter,
+  Waiter,
+} from "../../models/resources/waiter.model";
 import { AuthException } from "../../error";
 
 @Injectable()

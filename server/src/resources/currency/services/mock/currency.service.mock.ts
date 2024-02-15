@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { WhereCurrency } from "../../../../models/currency.model";
+import { WhereCurrency } from "../../../../models/resources/currency.model";
 import { mockCurrency } from "../../../../../test/helper/mock.unit";
 
 @Injectable()

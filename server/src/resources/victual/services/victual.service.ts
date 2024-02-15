@@ -5,8 +5,8 @@ import {
   UpdateVictual,
   WhereVictual,
   Victual,
-} from "../../../models/victual.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/victual.model";
+import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 

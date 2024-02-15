@@ -1,4 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
+import { DateScalar } from "./date.model";
 
 @InputType()
 export class CategoryFilter {
@@ -75,4 +76,13 @@ export class TableFilter {
 export class TaskFilter {
   @Field({ nullable: true })
   done?: "true" | "false" | "all";
+}
+
+@InputType()
+export class AnalyticsFilter {
+  @Field(() => DateScalar, { nullable: true })
+  min?: Date;
+
+  @Field(() => DateScalar, { nullable: true })
+  max?: Date;
 }

@@ -13,8 +13,8 @@ import {
   Restaurant,
   UpdateRestaurant,
   UpdateRestaurantPassword,
-} from "../../../models/restaurant.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/restaurant.model";
+import { Success } from "../../../models/resources/success.model";
 import { GetRestaurant } from "../../../decorators";
 import { CurrencyService } from "../../currency/services/currency.service";
 

@@ -8,7 +8,7 @@ import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.moc
 import { SecurityModule } from "../../../security/security.module";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { SubscriptionServiceMock } from "../../../subscription/services/mock/subscription.service";
-import { CreateOrder } from "../../../models/order.model";
+import { CreateOrder } from "../../../models/resources/order.model";
 import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheService } from "../../../cache/services/cache.service";
