@@ -14,14 +14,14 @@ export class FieldService {
     return category.restaurant;
   }
 
-  async getVictuals(id: number) {
+  async getProducts(id: number) {
     const category = await this.prismaService.category.findUniqueOrThrow({
       where: { id },
       select: {
-        victuals: true,
+        products: true,
       },
     });
-    return category.victuals;
+    return category.products;
   }
 
   async getSubCategories(id: number) {

@@ -3,23 +3,23 @@ import { RESTAURANT } from "../../../role";
 import { FieldService } from "../services/field.service";
 import { Category } from "../../../models/resources/category.model";
 import { Order } from "../../../models/resources/order.model";
-import { Victual } from "../../../models/resources/victual.model";
+import { Product } from "../../../models/resources/product.model";
 
-@Resolver((of) => Victual)
+@Resolver((of) => Product)
 export class FieldResolver {
   constructor(private readonly victualService: FieldService) {}
   @ResolveField(() => Category, { name: "category" })
-  getCategory(@Parent() meal: Victual) {
+  getCategory(@Parent() meal: Product) {
     return this.victualService.getCategory(meal.id);
   }
 
   @ResolveField(() => Category, { name: RESTAURANT })
-  getRestaurant(@Parent() meal: Victual) {
+  getRestaurant(@Parent() meal: Product) {
     return this.victualService.getRestaurant(meal.id);
   }
 
   @ResolveField(() => [Order], { name: "orders" })
-  getOrders(@Parent() meal: Victual) {
+  getOrders(@Parent() meal: Product) {
     return this.victualService.getOrders(meal.id);
   }
 }

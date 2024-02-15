@@ -80,9 +80,9 @@ export class CreateAnalyticsService {
   }
   async createPopularProduct(restaurantId: number) {
     const { start, end } = this.currentDate();
-    const victuals = (
+    const products = (
       await this.prismaMainService.order.groupBy({
-        by: "victualId",
+        by: "productId",
         where: {
           restaurantId,
           createdAt: {
@@ -91,20 +91,20 @@ export class CreateAnalyticsService {
           },
         },
         _count: {
-          victualId: true,
+          productId: true,
         },
 
         orderBy: {
           _count: {
-            victualId: "desc",
+            productId: "desc",
           },
         },
       })
-    ).map((order) => order.victualId);
+    ).map((order) => order.productId);
     return {
-      numberOne: victuals[0],
-      numberTwo: victuals[1] || null,
-      numberThree: victuals[2] || null,
+      numberOne: products[0],
+      numberTwo: products[1] || null,
+      numberThree: products[2] || null,
     };
   }
   async createWaiterOfTheDay(restaurantId: number) {

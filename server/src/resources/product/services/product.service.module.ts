@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { VictualService } from "./victual.service";
+import { ProductService } from "./product.service";
 import { FieldService } from "./field.service";
 
 @Module({
-  providers: [VictualService, FieldService],
-  exports: [VictualService, FieldService],
+  providers: [ProductService, FieldService],
+  exports: [ProductService, FieldService],
 })
 export class VictualServiceModule {}

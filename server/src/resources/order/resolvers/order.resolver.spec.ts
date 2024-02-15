@@ -22,8 +22,8 @@ import {
 } from "../../../../test/helper/mock.unit";
 import { TableService } from "../../table/services/table.service";
 import { TableServiceMock } from "../../table/services/mock/table.service.mock";
-import { VictualService } from "../../victual/services/victual.service";
-import { VictualServiceMock } from "../../victual/services/mock/victual.service.mock";
+import { ProductService } from "../../product/services/product.service";
+import { ProductServiceMock } from "../../product/services/mock/product.service.mock";
 
 describe("OrderResolver", () => {
   let resolver: OrderResolver;
@@ -52,7 +52,7 @@ describe("OrderResolver", () => {
         { provide: CacheService, useClass: CacheServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
         { provide: TableService, useClass: TableServiceMock },
-        { provide: VictualService, useClass: VictualServiceMock },
+        { provide: ProductService, useClass: ProductServiceMock },
         OrderResolver,
       ],
     }).compile();

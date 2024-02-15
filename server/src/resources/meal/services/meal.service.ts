@@ -28,7 +28,7 @@ export class MealService {
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;
     const total = sorted.reduce(
-      (acc, c) => acc + c.victual.price * c.quantity,
+      (acc, c) => acc + c.product.price * c.quantity,
       0
     );
     return { sorted, start, end, waiterId, total };

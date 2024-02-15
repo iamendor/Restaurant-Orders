@@ -5,7 +5,7 @@ import { PrismaMainService } from "../../../prisma/main/services/prisma.main.ser
 export class FieldService {
   constructor(private readonly prismaService: PrismaMainService) {}
   async getCategory(id: number) {
-    const meal = await this.prismaService.victual.findFirstOrThrow({
+    const meal = await this.prismaService.product.findFirstOrThrow({
       where: {
         id,
       },
@@ -17,7 +17,7 @@ export class FieldService {
   }
 
   async getRestaurant(id: number) {
-    const meal = await this.prismaService.victual.findFirstOrThrow({
+    const meal = await this.prismaService.product.findFirstOrThrow({
       where: {
         id,
       },
@@ -29,7 +29,7 @@ export class FieldService {
   }
 
   async getOrders(id: number) {
-    const meal = await this.prismaService.victual.findFirstOrThrow({
+    const meal = await this.prismaService.product.findFirstOrThrow({
       where: {
         id,
       },

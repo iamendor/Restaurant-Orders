@@ -4,7 +4,7 @@ import { CategoryModule } from "./category/category.module";
 import { CurrencyModule } from "./currency/currency.module";
 import { RestaurantModule } from "./restaurant/restaurant.module";
 import { TableModule } from "./table/table.module";
-import { VictualModule } from "./victual/victual.module";
+import { ProductModule } from "./product/product.module";
 import { WaiterModule } from "./waiter/waiter.module";
 import { OpenHourModule } from "./openhour/openhour.module";
 import { OrderModule } from "./order/order.module";
@@ -18,7 +18,7 @@ import { TaskModule } from "./task/task.module";
     CurrencyModule,
     RestaurantModule,
     TableModule,
-    VictualModule,
+    ProductModule,
     WaiterModule,
     OpenHourModule,
     OrderModule,

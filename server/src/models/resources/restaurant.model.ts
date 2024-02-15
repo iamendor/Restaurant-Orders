@@ -9,7 +9,7 @@ import { Address, CreateAddress, UpdateAddress } from "./address.model";
 import { Currency, WhereCurrency } from "./currency.model";
 import { Waiter } from "./waiter.model";
 import { Table } from "./table.model";
-import { Victual } from "./victual.model";
+import { Product } from "./product.model";
 import { Category } from "./category.model";
 import { Order } from "./order.model";
 import { Meal } from "./meal.model";
@@ -49,8 +49,8 @@ export class Restaurant {
   @Field(() => [Order])
   orders?: Order[];
 
-  @Field(() => [Victual])
-  victuals?: Victual[];
+  @Field(() => [Product])
+  products?: Product[];
 
   @Field(() => [Category])
   categories?: Category[];

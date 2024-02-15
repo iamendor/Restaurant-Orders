@@ -17,7 +17,7 @@ export class FieldResolver {
   }
 
   private getTotalOfOrders(orders: Order[]) {
-    return orders.reduce((acc, c) => acc + c.victual.price * c.quantity, 0);
+    return orders.reduce((acc, c) => acc + c.product.price * c.quantity, 0);
   }
 
   @ResolveField(() => Restaurant, { name: "restaurant" })

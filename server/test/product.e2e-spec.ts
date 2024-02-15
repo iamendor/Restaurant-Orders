@@ -13,10 +13,10 @@ import {
 import { getMutations } from "./helper/mutations";
 import { getQueries } from "./helper/queries";
 import req from "./helper/graphql-request";
-import { mockVictual } from "./helper/mock.unit";
+import { mockProduct } from "./helper/mock.unit";
 import { mock } from "./helper/functions";
 
-describe("Victual", () => {
+describe("Product", () => {
   let app: NestApplication;
   let server;
   let prismaService: PrismaMainService;
@@ -60,38 +60,38 @@ describe("Victual", () => {
 
     beforeAll(async () => {
       const { body } = await req(server, {
-        query: mutations.victual.create(),
+        query: mutations.product.create(),
         variables: {
           data: {
-            ...mock.victual.create,
+            ...mock.product.create,
             categoryId,
           },
-          dataVictuals: [
+          dataProducts: [
             ...[1, 2].map((i) => ({
-              ...mock.victual.create,
+              ...mock.product.create,
               categoryId,
-              name: `MockVictual${i}`,
+              name: `MockProduct${i}`,
             })),
           ],
         },
       }).set("Authorization", restaurantToken);
-      create = body.data.createVictual;
-      createMultiple = body.data.createVictuals;
+      create = body.data.createProduct;
+      createMultiple = body.data.createProducts;
     });
 
-    it("creates a victual", () => {
-      expect(create.name).toBe(mockVictual.name);
+    it("creates a product", () => {
+      expect(create.name).toBe(mockProduct.name);
       id = create.id;
     });
-    it("creates multiple victual", () => {
+    it("creates multiple product", () => {
       expect(createMultiple.message).toBe("success");
     });
   });
 
-  it("updates victual", async () => {
+  it("updates product", async () => {
     const update = "updated";
     const { body } = await req(server, {
-      query: mutations.victual.update(),
+      query: mutations.product.update(),
       variables: {
         data: {
           where: {
@@ -105,7 +105,7 @@ describe("Victual", () => {
     }).set("Authorization", restaurantToken);
     const {
       data: {
-        updateVictual: { name },
+        updateProduct: { name },
       },
     } = body;
     expect(name).toBe(update);
@@ -115,15 +115,15 @@ describe("Victual", () => {
     let find;
     beforeAll(async () => {
       const { body } = await req(server, {
-        query: queries.victual.listAndFind(),
+        query: queries.product.listAndFind(),
         variables: {
           where: {
             id,
           },
         },
       }).set("Authorization", restaurantToken);
-      list = body.data.victuals;
-      find = body.data.victual;
+      list = body.data.products;
+      find = body.data.product;
     });
     it("list", async () => {
       expect(list.length).toEqual(3);
@@ -137,15 +137,15 @@ describe("Victual", () => {
     let find;
     beforeAll(async () => {
       const { body } = await req(server, {
-        query: queries.victual.listAndFind(),
+        query: queries.product.listAndFind(),
         variables: {
           where: {
             id,
           },
         },
       }).set("Authorization", waiterToken);
-      list = body.data.victuals;
-      find = body.data.victual;
+      list = body.data.products;
+      find = body.data.product;
     });
     it("list", async () => {
       expect(list.length).toEqual(3);
@@ -154,9 +154,9 @@ describe("Victual", () => {
       expect(find.name).toBe("updated");
     });
   });
-  it("deletes victual", async () => {
+  it("deletes product", async () => {
     const { body } = await req(server, {
-      query: mutations.victual.delete(),
+      query: mutations.product.delete(),
       variables: {
         where: {
           id,
@@ -164,10 +164,10 @@ describe("Victual", () => {
       },
     }).set("Authorization", restaurantToken);
     const {
-      data: { deleteVictual },
+      data: { deleteProduct },
     } = body;
-    expect(deleteVictual).toBeDefined();
-    expect(deleteVictual.message).toBe("success");
+    expect(deleteProduct).toBeDefined();
+    expect(deleteProduct.message).toBe("success");
   });
 
   afterAll(async () => await prismaService.$disconnect(), 10_000);

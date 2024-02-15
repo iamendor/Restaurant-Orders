@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Victual } from "../resources/victual.model";
+import { Product } from "../resources/product.model";
 import { DateScalar } from "../resources/date.model";
 
 @ObjectType()
@@ -8,10 +8,10 @@ export class PopularProduct {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field(() => Victual)
-  numberOne: Victual;
-  @Field(() => Victual)
-  numberTwo: Victual;
-  @Field(() => Victual)
-  numberThree: Victual;
+  @Field(() => Product)
+  numberOne: Product;
+  @Field(() => Product)
+  numberTwo: Product;
+  @Field(() => Product)
+  numberThree: Product;
 }

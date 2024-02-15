@@ -24,7 +24,7 @@ export class FieldService {
       include: {
         orders: {
           include: {
-            victual: forTotal,
+            product: forTotal,
           },
         },
       },

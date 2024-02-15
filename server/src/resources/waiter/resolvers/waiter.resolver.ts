@@ -14,7 +14,7 @@ import {
   NotSpecifiedException,
   PermissionDeniedException,
 } from "../../../error";
-import { Waiter as PWaiter } from "@prisma/client";
+import { Waiter as PWaiter } from "prisma/client/main";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Waiter,

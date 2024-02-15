@@ -46,9 +46,9 @@ export class FieldService {
     return (
       await this.prismaService.restaurant.findFirst({
         where: { id: restaurantId },
-        include: { victuals: true },
+        include: { products: true },
       })
-    ).victuals;
+    ).products;
   }
   async getOrders(restaurantId: number) {
     return (

@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
-import { Waiter, Table, Restaurant, Order, Currency } from "@prisma/client";
+import { Waiter } from "../../../models/resources/waiter.model";
+import { Table } from "../../../models/resources/table.model";
+import { Restaurant } from "../../../models/resources/restaurant.model";
+import { Order } from "../../../models/resources/order.model";
 
 @Injectable()
 export class FieldService {

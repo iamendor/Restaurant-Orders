@@ -11,7 +11,7 @@ import {
   CreateWaiter,
 } from "../../../models/resources/waiter.model";
 import { Success } from "../../../models/resources/success.model";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "prisma/client/main";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 

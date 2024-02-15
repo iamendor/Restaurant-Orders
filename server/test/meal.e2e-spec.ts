@@ -10,7 +10,7 @@ import {
   requestNewWaiter,
   createCategory,
   createTable,
-  createVictual,
+  createProduct,
 } from "./helper/functions";
 import { getMutations } from "./helper/mutations";
 import { getQueries } from "./helper/queries";
@@ -48,7 +48,7 @@ describe("Meal", () => {
       restaurantId: restaurant.id,
     });
 
-    const victual = await createVictual({
+    const product = await createProduct({
       prisma: prismaService,
       restaurantId: restaurant.id,
       categoryId: category.id,
@@ -62,7 +62,7 @@ describe("Meal", () => {
       data: {
         restaurant: { connect: { id: restaurant.id } },
         table: { connect: { id: table.id } },
-        victual: { connect: { id: victual.id } },
+        product: { connect: { id: product.id } },
         waiter: { connect: { id: waiter.id } },
       },
     });

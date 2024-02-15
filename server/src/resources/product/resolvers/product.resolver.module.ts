@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { FieldResolver } from "./field.resolver";
-import { VictualResolver } from "./victual.resolver";
-import { VictualServiceModule } from "../services/victual.service.module";
+import { ProductResolver } from "./product.resolver";
+import { VictualServiceModule } from "../services/product.service.module";
 import { CategoryServiceModule } from "../../category/services/category.service.module";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheModule } from "../../../cache/cache.module";
@@ -16,6 +16,6 @@ import { TaskServiceModule } from "../../task/services/task.service.module";
     CacheModule,
     TaskServiceModule,
   ],
-  providers: [IdGuard, FieldResolver, VictualResolver],
+  providers: [IdGuard, FieldResolver, ProductResolver],
 })
-export class VictualResolverModule {}
+export class ProductResolverModule {}
