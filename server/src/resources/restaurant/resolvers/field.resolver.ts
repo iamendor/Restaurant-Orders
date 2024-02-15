@@ -1,15 +1,16 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { FieldService } from "../services/field.service";
-import { Address } from "../../../models/address.model";
-import { Category } from "../../../models/category.model";
-import { Currency } from "../../../models/currency.model";
-import { Meal } from "../../../models/meal.model";
-import { Order } from "../../../models/order.model";
-import { Table } from "../../../models/table.model";
-import { Victual } from "../../../models/victual.model";
-import { Waiter } from "../../../models/waiter.model";
-import { Restaurant } from "../../../models/restaurant.model";
-import { Task } from "../../../models/task.model";
+import { Address } from "../../../models/resources/address.model";
+import { Category } from "../../../models/resources/category.model";
+import { Currency } from "../../../models/resources/currency.model";
+import { Meal } from "../../../models/resources/meal.model";
+import { Order } from "../../../models/resources/order.model";
+import { Table } from "../../../models/resources/table.model";
+import { Victual } from "../../../models/resources/victual.model";
+import { Waiter } from "../../../models/resources/waiter.model";
+import { Restaurant } from "../../../models/resources/restaurant.model";
+import { Task } from "../../../models/resources/task.model";
+import { Settings } from "../../../models/resources/settings.model";
 
 @Resolver((of) => Restaurant)
 export class FieldResolver {
@@ -62,5 +63,10 @@ export class FieldResolver {
   @ResolveField(() => [Task], { name: "tasks" })
   getTasks(@Parent() { id }: Restaurant) {
     return this.fieldService.getTasks(id);
+  }
+
+  @ResolveField(() => Settings, { name: "settings" })
+  getSettings(@Parent() { id }: Restaurant) {
+    return this.fieldService.getSettings(id);
   }
 }

@@ -1,21 +1,21 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { WaiterService } from "./waiter.service";
 import { SecurityModule } from "../../../security/security.module";
 import { mockRestaurant, mockWaiter } from "../../../../test/helper/mock.unit";
 
 describe("WaiterService", () => {
   let service: WaiterService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
   const SUCCESS = "success";
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, SecurityModule],
+      imports: [PrismaMainModule, SecurityModule],
       providers: [WaiterService],
     }).compile();
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
 
     prisma.waiter.delete = jest.fn().mockReturnValue(true);
 

@@ -14,9 +14,9 @@ import {
   CreateVictual,
   UpdateVictual,
   WhereVictual,
-} from "../../../models/victual.model";
-import { Success } from "../../../models/success.model";
-import { VictualFilter } from "../../../models/filter.model";
+} from "../../../models/resources/victual.model";
+import { Success } from "../../../models/resources/success.model";
+import { VictualFilter } from "../../../models/resources/filter.model";
 import { VictualGuard } from "../../../guard";
 import { GetVictual } from "../../../decorators";
 import {
@@ -28,7 +28,7 @@ import {
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
 import { PermissionDeniedException } from "../../../error";
 

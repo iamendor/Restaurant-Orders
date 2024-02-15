@@ -6,16 +6,18 @@ import {
   CreateRestaurant,
   AuthRestaurant,
   LoginRestaurant,
-} from "../../models/restaurant.model";
-import { AuthWaiter, LoginWaiter } from "../../models/waiter.model";
+} from "../../models/resources/restaurant.model";
+import { AuthWaiter, LoginWaiter } from "../../models/resources/waiter.model";
 import { TaskService } from "../../resources/task/services/task.service";
+import { CurrencyService } from "../../resources/currency/services/currency.service";
 
 @Resolver("Auth")
 export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
     private readonly restaurantService: RestaurantService,
-    private readonly taskService: TaskService
+    private readonly taskService: TaskService,
+    private readonly currencyService: CurrencyService
   ) {}
 
   @Mutation(() => Restaurant)
@@ -23,8 +25,11 @@ export class AuthResolver {
     @Args("data", { type: () => CreateRestaurant })
     data: CreateRestaurant
   ) {
+    const currency = await this.currencyService.find(data.currency);
+
     const restaurant = await this.restaurantService.create({
       ...data,
+      currencyId: currency.id,
     });
 
     this.taskService.init(restaurant.id);

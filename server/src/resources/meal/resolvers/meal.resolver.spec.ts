@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { MealResolver } from "./meal.resolver";
 import { MealService } from "../services/meal.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { MealGuardModule } from "../guard/meal.guard.module";
 import { MealServiceMock } from "../services/mock/meal.service.mock";
 import { FilterModule } from "../../../filter/filter.module";
@@ -30,7 +30,7 @@ describe("MealResolver", () => {
       .mockImplementation(() => contextId);
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, MealGuardModule, FilterModule],
+      imports: [PrismaMainModule, MealGuardModule, FilterModule],
       providers: [
         MealResolver,
         { provide: MealService, useClass: MealServiceMock },

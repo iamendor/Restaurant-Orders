@@ -1,4 +1,4 @@
-import { Order } from "../../models/order.model";
+import { Order } from "../../models/resources/order.model";
 import { IOrderFilter } from "../interfaces/order.interface";
 import { Rule } from "../interfaces/rule.interface";
 import { MaxLength } from "./max.rule";

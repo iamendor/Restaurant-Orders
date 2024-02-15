@@ -1,5 +1,5 @@
 import { Resolver, Subscription } from "@nestjs/graphql";
-import { ListenOrder, Order } from "../../../models/order.model";
+import { ListenOrder, Order } from "../../../models/resources/order.model";
 import { UseGuards } from "@nestjs/common";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { IdGuard } from "../../../auth/guard/id.guard";

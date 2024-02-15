@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { Restaurant as PRestaurant, Prisma } from "@prisma/client";
 import { SecurityService } from "../../../security/services/security.service";
 import {
@@ -9,16 +9,19 @@ import {
   UpdateRestaurantData,
   Restaurant,
   WhereRestaurant,
-} from "../../../models/restaurant.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/restaurant.model";
+import { Success } from "../../../models/resources/success.model";
+import { CurrencyService } from "../../currency/services/currency.service";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class RestaurantService {
   constructor(
-    private readonly prismaService: PrismaService,
-    private readonly securityService: SecurityService
+    private readonly prismaService: PrismaMainService,
+    private readonly securityService: SecurityService,
+    private readonly currencyService: CurrencyService
   ) {}
-  async create(data: CreateRestaurant): Promise<Restaurant> {
+  async create({ currency, ...data }: CreateRestaurant): Promise<Restaurant> {
     const restaurant = await this.prismaService.restaurant.create({
       data: {
         ...data,
@@ -26,8 +29,11 @@ export class RestaurantService {
         address: {
           create: data.address,
         },
-        currency: {
-          connect: data.currency,
+        currencyId: data.currencyId,
+        settings: {
+          create: {
+            enableAnalytics: false,
+          },
         },
       },
     });
@@ -45,12 +51,16 @@ export class RestaurantService {
         password: encrypted,
       },
     });
-    return {
-      message: "success",
-    };
+    return SUCCESS;
   }
 
-  async update({ where, update }: UpdateRestaurantData): Promise<Restaurant> {
+  async update({
+    where,
+    update: { currency: _currency, ...update },
+  }: UpdateRestaurantData): Promise<Restaurant> {
+    const currency = _currency
+      ? await this.currencyService.find(_currency)
+      : null;
     const restaurant = await this.prismaService.restaurant.update({
       where: where as Prisma.RestaurantWhereUniqueInput,
       data: {
@@ -58,8 +68,9 @@ export class RestaurantService {
         address: {
           update: update.address && update.address,
         },
-        currency: {
-          connect: update.currency && update.currency,
+        currencyId: _currency && currency.id,
+        settings: {
+          update: update.settings && update.settings,
         },
       },
     });
@@ -70,9 +81,7 @@ export class RestaurantService {
     await this.prismaService.restaurant.delete({
       where: where as Prisma.RestaurantWhereUniqueInput,
     });
-    return {
-      message: "success",
-    };
+    return SUCCESS;
   }
 
   async find(where: WhereRestaurant): Promise<PRestaurant> {

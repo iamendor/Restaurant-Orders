@@ -22,9 +22,9 @@ import {
   UpdateWaiter,
   WhereWaiter,
   UpdateWaiterPassword,
-} from "../../../models/waiter.model";
-import { Success } from "../../../models/success.model";
-import { WaiterFilter } from "../../../models/filter.model";
+} from "../../../models/resources/waiter.model";
+import { Success } from "../../../models/resources/success.model";
+import { WaiterFilter } from "../../../models/resources/filter.model";
 import {
   CREATE_WAITER_ACTION,
   TaskInterceptor,
@@ -33,7 +33,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { WaiterGuard } from "../../../guard";
 

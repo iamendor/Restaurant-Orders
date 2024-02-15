@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 import { WaiterResolver } from "./waiter.resolver";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { WaiterService } from "../services/waiter.service";
 import { SecurityModule } from "../../../security/security.module";
 import { WaiterServiceMock } from "../services/mock/waiter.service.mock";
@@ -29,7 +29,7 @@ describe("Waiter Resolver", () => {
       .mockImplementation(() => contextId);
 
     const module = await Test.createTestingModule({
-      imports: [SecurityModule, PrismaModule, FilterModule],
+      imports: [SecurityModule, PrismaMainModule, FilterModule],
       providers: [
         { provide: WaiterService, useClass: WaiterServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },

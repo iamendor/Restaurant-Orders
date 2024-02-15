@@ -4,14 +4,20 @@ import { Test } from "@nestjs/testing";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "../services/auth.service";
 import { JwtStrategy } from "../strategies/jwt.strategy";
-import { PrismaModule } from "../../prisma/prisma.module";
+import { PrismaMainModule } from "../../prisma/main/prisma.main.module";
 import { SecurityModule } from "../../security/security.module";
 import { AuthServiceMock } from "../services/mock/auth.service.mock";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { TaskService } from "../../resources/task/services/task.service";
 import { TaskServiceMock } from "../../resources/task/services/mock/task.service.mock";
-import { mockRestaurant, mockWaiter } from "../../../test/helper/mock.unit";
+import {
+  mockCurrency,
+  mockRestaurant,
+  mockWaiter,
+} from "../../../test/helper/mock.unit";
+import { CurrencyService } from "../../resources/currency/services/currency.service";
+import { CurrencyServiceMock } from "../../resources/currency/services/mock/currency.service.mock";
 
 describe("Auth Resolver", () => {
   let resolver: AuthResolver;
@@ -26,13 +32,14 @@ describe("Auth Resolver", () => {
         ConfigModule.forRoot({ isGlobal: true }),
         JwtModule.register({ secret: "test" }),
         SecurityModule,
-        PrismaModule,
+        PrismaMainModule,
       ],
       providers: [
         AuthResolver,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
         JwtStrategy,
       ],
     }).compile();
@@ -46,7 +53,10 @@ describe("Auth Resolver", () => {
   });
 
   it("signup a restaurant", async () => {
-    const signup = await resolver.signup(restaurant);
+    const signup = await resolver.signup({
+      ...restaurant,
+      currency: mockCurrency,
+    });
     expect(signup).toBeDefined();
     expect(signup.name).toBe(restaurant.name);
   });

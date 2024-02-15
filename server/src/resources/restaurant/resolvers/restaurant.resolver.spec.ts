@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 import { RestaurantResolver } from "./restaurant.resolver";
 import { RestaurantService } from "../services/restaurant.service";
 import { RestaurantGuardModule } from "../guard/restaurant.guard.module";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { Restaurant } from "@prisma/client";
 import { RestaurantServiceMock } from "../services/mock/restaurant.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
@@ -10,6 +10,11 @@ import {
   mockRestaurant,
   mockRestaurantPayload,
 } from "../../../../test/helper/mock.unit";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { CurrencyService } from "../../currency/services/currency.service";
+import { CurrencyServiceMock } from "../../currency/services/mock/currency.service.mock";
+import { PrismaStaticModule } from "../../../prisma/static/prisma.static.module";
 
 describe("Restaurant Resolver", () => {
   const SUCCESS = "success";
@@ -19,8 +24,10 @@ describe("Restaurant Resolver", () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule, RestaurantGuardModule],
+      imports: [PrismaMainModule, PrismaStaticModule, RestaurantGuardModule],
       providers: [
+        { provide: CacheService, useClass: CacheServiceMock },
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
         RestaurantResolver,
       ],

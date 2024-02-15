@@ -115,4 +115,13 @@ export const getQueries = () => ({
       }
     `,
   },
+  analytics: {
+    list: () => `
+      query list{
+        analytics{
+          id
+        }
+      }
+    `,
+  },
 });

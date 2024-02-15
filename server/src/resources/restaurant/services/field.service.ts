@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
+import { PrismaStaticService } from "../../../prisma/static/services/prisma.static.service";
 
 @Injectable()
 export class FieldService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaMainService,
+    private readonly prismaStaticService: PrismaStaticService
+  ) {}
 
   async getAddress(restaurantId: number) {
     return (
@@ -63,12 +67,15 @@ export class FieldService {
     ).meals;
   }
   async getCurrency(restaurantId: number) {
-    return (
+    const currencyId = (
       await this.prismaService.restaurant.findFirst({
         where: { id: restaurantId },
-        include: { currency: true },
       })
-    ).currency;
+    ).currencyId;
+
+    return this.prismaStaticService.currency.findFirst({
+      where: { id: currencyId },
+    });
   }
 
   async isOpen(restaurantId: number) {
@@ -97,12 +104,13 @@ export class FieldService {
   async getTasks(restaurantId: number) {
     const tasks = await this.prismaService.task.findMany({
       where: { restaurantId },
-      include: { base: true },
     });
-    return tasks.map(({ id, base, done }) => ({
-      id,
-      name: base.name,
-      done,
-    }));
+    return tasks;
+  }
+
+  getSettings(restaurantId: number) {
+    return this.prismaService.settings.findUniqueOrThrow({
+      where: { restaurantId },
+    });
   }
 }

@@ -1,21 +1,21 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
-import { Success } from "../../../models/success.model";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
+import { Success } from "../../../models/resources/success.model";
 import { WhereTask } from "../../../interfaces/task.interface";
-import { BaseTask, Task as PTask } from "@prisma/client";
-import { Task } from "../../../models/task.model";
+import { Task } from "../../../models/resources/task.model";
 import { SUCCESS } from "../../../response";
+import { PrismaStaticService } from "../../../prisma/static/services/prisma.static.service";
+import { SomethingWentWrongException } from "../../../error";
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly prismaService: PrismaService) {}
-
-  private format({ id, base, done }: PTask & { base: BaseTask }): Task {
-    return { id, name: base.name, done };
-  }
+  constructor(
+    private readonly prismaService: PrismaMainService,
+    private readonly prismaStaticService: PrismaStaticService
+  ) {}
 
   private getBase() {
-    return this.prismaService.baseTask.findMany();
+    return this.prismaStaticService.task.findMany();
   }
   async init(restaurantId: number): Promise<Success> {
     const base = await this.getBase();
@@ -28,12 +28,9 @@ export class TaskService {
   }
 
   async list(restaurantId: number): Promise<Task[]> {
-    const tasks = await this.prismaService.task.findMany({
+    return this.prismaService.task.findMany({
       where: { restaurantId },
-      include: { base: true },
     });
-
-    return tasks.map(this.format);
   }
   async tick(where: WhereTask) {
     await this.prismaService.task.update({ where, data: { done: true } });
@@ -42,14 +39,15 @@ export class TaskService {
   clear(restaurantId: number) {
     return this.prismaService.task.deleteMany({ where: { restaurantId } });
   }
-  findByAction({ restaurantId, action }) {
-    return this.prismaService.task.findFirst({
-      where: {
-        restaurantId,
-        base: {
-          action,
-        },
-      },
+  async findByAction({ restaurantId, action }) {
+    const base = await this.prismaStaticService.task.findUnique({
+      where: { action },
     });
+    if (!base) return null;
+    const task = (await this.list(restaurantId)).find(
+      (t) => t.baseId == base.id
+    );
+    if (!task) return null;
+    return task;
   }
 }

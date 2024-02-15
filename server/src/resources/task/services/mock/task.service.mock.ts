@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Task } from "../../../../models/task.model";
+import { Task } from "../../../../models/resources/task.model";
 import { BaseTask, Task as PTask } from "@prisma/client";
 import { SUCCESS } from "../../../../response";
 
@@ -7,7 +7,12 @@ import { SUCCESS } from "../../../../response";
 export class TaskServiceMock {
   task: Task;
   constructor() {
-    this.task = { name: "Test application", id: 1, done: false };
+    this.task = {
+      id: 1,
+      done: false,
+      baseId: 1,
+      base: { name: "Test app!", id: 1 },
+    };
   }
   init() {
     return SUCCESS;

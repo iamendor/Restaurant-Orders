@@ -18,7 +18,13 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand"
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "migrate:main": "prisma migrate dev --schema ./prisma/main/schema.prisma",
+    "migrate:static": "prisma migrate dev --schema ./prisma/static/schema.prisma",
+    "migrate:analytics": "prisma migrate dev --schema ./prisma/analytics/schema.prisma",
+    "generate:main": "prisma generate --schema ./prisma/main/schema.prisma",
+    "generate:static": "prisma generate --schema ./prisma/static/schema.prisma",
+    "generate:analytics": "prisma generate --schema ./prisma/analytics/schema.prisma"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
@@ -46,7 +52,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "reflect-metadata": "^0.2.1",
+    "reflect-metadata": "^0.1.14",
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
     "subscriptions-transport-ws": "^0.11.0"

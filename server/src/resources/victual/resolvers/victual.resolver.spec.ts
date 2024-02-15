@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { VictualResolver } from "./victual.resolver";
 import { VictualService } from "../services/victual.service";
 import { VictualServiceMock } from "../services/mock/victual.service.mock";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { CategoryService } from "../../category/services/category.service";
 import { CategoryServiceMock } from "../../category/services/mock/category.service.mock";
 import { FilterModule } from "../../../filter/filter.module";
@@ -29,7 +29,7 @@ describe("MealResolver", () => {
       .spyOn(ContextIdFactory, "getByRequest")
       .mockImplementation(() => contextId);
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, FilterModule],
+      imports: [PrismaMainModule, FilterModule],
       providers: [
         VictualResolver,
         { provide: CacheService, useClass: CacheServiceMock },

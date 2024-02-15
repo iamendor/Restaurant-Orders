@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { WaiterRules } from "../rules/waiters.rule";
-import { Waiter } from "../../models/waiter.model";
-import { Victual } from "../../models/victual.model";
-import { Category } from "../../models/category.model";
-import { Order } from "../../models/order.model";
-import { Meal } from "../../models/meal.model";
+import { Waiter } from "../../models/resources/waiter.model";
+import { Victual } from "../../models/resources/victual.model";
+import { Category } from "../../models/resources/category.model";
+import { Order } from "../../models/resources/order.model";
+import { Meal } from "../../models/resources/meal.model";
 import { IWaiterFilter } from "../interfaces/waiter.interface";
 import { IVictualFilter } from "../interfaces/victual.interface";
 import { VictualRules } from "../rules/victuals.rule";
@@ -21,13 +21,16 @@ import {
   TaskFilter,
   VictualFilter,
   WaiterFilter,
-} from "../../models/filter.model";
-import { Table } from "../../models/table.model";
+} from "../../models/resources/filter.model";
+import { Table } from "../../models/resources/table.model";
 import { ITableFilter } from "../interfaces/table.interface";
 import { TableRules } from "../rules/tables.rule";
 import { ITaskFilter } from "../interfaces/task.interface";
 import { TaskRules } from "../rules/tasks.rule";
-import { Task } from "../../models/task.model";
+import { Task } from "../../models/resources/task.model";
+import { IAnalyticsFilter } from "../interfaces/analytics/analytics.interface";
+import { AnalyticsRules } from "../rules/analytics/analytics.rule";
+import { Analytics } from "../../models/analytics/analytics.model";
 
 interface IFilter<T> {
   data: T[];
@@ -49,6 +52,7 @@ export class FilterService {
   private mRules: IMealFilter;
   private tRules: ITableFilter;
   private tkRules: ITaskFilter;
+  private aRules: IAnalyticsFilter;
 
   constructor() {
     this.wRules = WaiterRules();
@@ -58,6 +62,7 @@ export class FilterService {
     this.mRules = MealRules();
     this.tRules = TableRules();
     this.tkRules = TaskRules();
+    this.aRules = AnalyticsRules();
   }
   private filter({ data, filters }, rules) {
     let filtered = data;
@@ -89,5 +94,8 @@ export class FilterService {
   }
   tasks(data: IFilter<Task>) {
     return this.filter(data, this.tkRules) as Task[];
+  }
+  analytics(data: IFilter<Analytics>) {
+    return this.filter(data, this.aRules) as Analytics[];
   }
 }

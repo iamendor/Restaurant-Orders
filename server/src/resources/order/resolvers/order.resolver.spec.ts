@@ -1,14 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { OrderResolver } from "./order.resolver";
 import { OrderService } from "../services/order.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { OrderServiceMock } from "../services/mock/order.service.mock";
 import { WaiterService } from "../../waiter/services/waiter.service";
 import { WaiterServiceMock } from "../../waiter/services/mock/waiter.service.mock";
 import { SecurityModule } from "../../../security/security.module";
 import { SubscriptionService } from "../../../subscription/services/subscription.service";
 import { SubscriptionServiceMock } from "../../../subscription/services/mock/subscription.service";
-import { CreateOrder } from "../../../models/order.model";
+import { CreateOrder } from "../../../models/resources/order.model";
 import { FilterModule } from "../../../filter/filter.module";
 import { OpenGuardModule } from "../../openhour/guard/open.guard.module";
 import { CacheService } from "../../../cache/services/cache.service";
@@ -39,7 +39,12 @@ describe("OrderResolver", () => {
       .mockImplementation(() => contextId);
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [SecurityModule, PrismaModule, FilterModule, OpenGuardModule],
+      imports: [
+        SecurityModule,
+        PrismaMainModule,
+        FilterModule,
+        OpenGuardModule,
+      ],
       providers: [
         { provide: SubscriptionService, useClass: SubscriptionServiceMock },
         { provide: OrderService, useClass: OrderServiceMock },

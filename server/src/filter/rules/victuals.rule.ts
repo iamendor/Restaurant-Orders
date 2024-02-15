@@ -1,4 +1,4 @@
-import { Victual } from "../../models/victual.model";
+import { Victual } from "../../models/resources/victual.model";
 import { Rule } from "../interfaces/rule.interface";
 import { IVictualFilter } from "../interfaces/victual.interface";
 import { MaxLength } from "./max.rule";

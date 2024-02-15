@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TableResolver } from "./table.resolver";
 import { TableService } from "../services/table.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { TableServiceMock } from "../services/mock/table.service.mock";
 import { FilterModule } from "../../../filter/filter.module";
 import { CacheService } from "../../../cache/services/cache.service";
@@ -26,7 +26,7 @@ describe("TableResolver", () => {
       .spyOn(ContextIdFactory, "getByRequest")
       .mockImplementation(() => contextId);
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, FilterModule],
+      imports: [PrismaMainModule, FilterModule],
       providers: [
         TableResolver,
         { provide: TableService, useClass: TableServiceMock },

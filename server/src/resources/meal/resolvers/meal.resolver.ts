@@ -8,9 +8,13 @@ import { RESTAURANT, WAITER } from "../../../role";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { CreateMealGuard, MealGuard } from "../guard/meal.guard";
-import { CreateMeal, Meal, WhereMeal } from "../../../models/meal.model";
-import { Success } from "../../../models/success.model";
-import { MealFilter } from "../../../models/filter.model";
+import {
+  CreateMeal,
+  Meal,
+  WhereMeal,
+} from "../../../models/resources/meal.model";
+import { Success } from "../../../models/resources/success.model";
+import { MealFilter } from "../../../models/resources/filter.model";
 import {
   CREATE_MEAL_ACTION,
   TaskInterceptor,
@@ -20,7 +24,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { FieldService } from "../../table/services/field.service";
 import { MinArrayPipe } from "../../../pipes/array.pipe";

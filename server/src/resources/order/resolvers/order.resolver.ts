@@ -13,9 +13,9 @@ import {
   CreateOrder,
   UpdateOrder,
   WhereOrder,
-} from "../../../models/order.model";
-import { Success } from "../../../models/success.model";
-import { OrderFilter } from "../../../models/filter.model";
+} from "../../../models/resources/order.model";
+import { Success } from "../../../models/resources/success.model";
+import { OrderFilter } from "../../../models/resources/filter.model";
 import { OpenGuard } from "../../openhour/guard/open.guard";
 import { GetOrder } from "../../../decorators";
 import {
@@ -26,7 +26,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { AddWID } from "../../../pipes/wid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";

@@ -30,7 +30,6 @@ export class WaiterServiceMock {
       ...where,
     };
   }
-
   list() {
     return [this.waiter];
   }

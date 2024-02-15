@@ -1,4 +1,4 @@
-import { PrismaService } from "../../src/prisma/services/prisma.service";
+import { PrismaMainService } from "../../src/prisma/main/services/prisma.main.service";
 import {
   mockAddress,
   mockCategory,
@@ -10,9 +10,19 @@ import {
 } from "./mock.unit";
 import req from "./graphql-request";
 import { getMutations } from "./mutations";
+import { PrismaAnalyticsService } from "../../src/prisma/analytics/services/prisma.analytics.service";
+import { mockAnalytics } from "./mock.analytics";
 
-export const clearMocks = async ({ prisma }: { prisma: PrismaService }) => {
+export const clearMocks = async ({ prisma }: { prisma: PrismaMainService }) => {
   await prisma.restaurant.deleteMany();
+};
+
+export const clearAnalytics = async ({
+  prisma,
+}: {
+  prisma: PrismaAnalyticsService;
+}) => {
+  await prisma.analytics.deleteMany();
 };
 
 export const excludeId = ({ id, ...rest }) => ({ ...rest });
@@ -21,7 +31,7 @@ export const createCategory = ({
   prisma,
   restaurantId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
 }) => {
   return prisma.category.create({
@@ -35,7 +45,7 @@ export const createTable = ({
   prisma,
   restaurantId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
 }) => {
   return prisma.table.create({
@@ -51,7 +61,7 @@ export const createVictual = ({
   restaurantId,
   categoryId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
   categoryId: number;
 }) => {
@@ -144,4 +154,31 @@ export const mock = {
       categoryId: undefined,
     },
   },
+};
+
+export const createAnalytics = async ({
+  prisma,
+  restaurantId,
+}: {
+  prisma: PrismaAnalyticsService;
+  restaurantId: number;
+}) => {
+  for (let i = 0; i < mockAnalytics.length; i++) {
+    const mock = mockAnalytics[i];
+    await prisma.analytics.create({
+      data: {
+        ...mock,
+        restaurantId,
+        income: {
+          create: mock.income,
+        },
+        popularProduct: {
+          create: mock.popularProduct,
+        },
+        waiterOfTheDay: {
+          create: mock.waiterOfTheDay,
+        },
+      },
+    });
+  }
 };

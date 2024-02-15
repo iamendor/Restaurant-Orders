@@ -1,23 +1,24 @@
 import { Injectable } from "@nestjs/common";
 
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { SecurityService } from "../../../security/services/security.service";
-import { WhereRestaurant } from "../../../models/restaurant.model";
+import { WhereRestaurant } from "../../../models/resources/restaurant.model";
 import {
   UpdateWaiterPassword,
   UpdateWaiter,
   WhereWaiter,
   Waiter,
   CreateWaiter,
-} from "../../../models/waiter.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/waiter.model";
+import { Success } from "../../../models/resources/success.model";
 import { Prisma } from "@prisma/client";
 import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class WaiterService {
   constructor(
-    private readonly prismaService: PrismaService,
+    private readonly prismaService: PrismaMainService,
     private readonly securityService: SecurityService
   ) {}
 
@@ -45,9 +46,8 @@ export class WaiterService {
       },
     });
 
-    return {
-      message: "success",
-    };
+    return SUCCESS;
+    0;
   }
 
   async update({ update, where }: UpdateWaiter): Promise<Waiter> {
@@ -66,9 +66,8 @@ export class WaiterService {
         id: where.id,
       },
     });
-    return {
-      message: "success",
-    };
+    return SUCCESS;
+    0;
   }
 
   async find(where: WhereWaiter): Promise<Waiter> {

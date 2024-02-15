@@ -1,18 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import {
   CreateVictualData,
   UpdateVictual,
   WhereVictual,
   Victual,
-} from "../../../models/victual.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/victual.model";
+import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class VictualService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   async create(data: CreateVictualData): Promise<Victual> {
     const { restaurantId, categoryId, ...rest } = data;

@@ -1,0 +1,537 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Address {
+  address1: String!
+  address2: String
+  city: String!
+  country: String!
+  id: Float!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  zip: String!
+}
+
+type Analytics {
+  createdAt: Date!
+  id: Float!
+  income: Income!
+  popularProduct: PopularProduct!
+  waiterOfTheDay: WaiterOfTheDay!
+}
+
+input AnalyticsFilter {
+  max: Date
+  min: Date
+}
+
+type AuthRestaurant {
+  access_token: String!
+  restaurant: Restaurant!
+}
+
+type AuthWaiter {
+  access_token: String!
+  waiter: Waiter!
+}
+
+type BaseTask {
+  id: Float!
+  name: String!
+}
+
+type Category {
+  createdAt: Date!
+  id: Float!
+  level: Float!
+  name: String!
+  parent: Category
+  parentId: Float
+  restaurant: Restaurant!
+  restaurantId: Float!
+  root: Boolean!
+  subCategories: [Category!]!
+  victuals: [Victual!]!
+}
+
+input CategoryFilter {
+  maxLength: Float
+  name: String
+  root: Boolean
+}
+
+input CreateAddress {
+  address1: String!
+  address2: String
+  city: String!
+  country: String!
+  zip: String!
+}
+
+input CreateCategory {
+  level: Float
+  name: String!
+  parentId: Float
+  restaurantId: Float
+}
+
+input CreateMeal {
+  restaurantId: Float
+  tableId: Float!
+}
+
+input CreateOpenHour {
+  end: String!
+  name: String!
+  restaurantId: Float
+  start: String!
+}
+
+input CreateOrder {
+  description: String
+  isReady: Boolean
+  quantity: Float
+  restaurantId: Float
+  tableId: Float!
+  victualId: Float!
+  waiterId: Float
+}
+
+input CreateRestaurant {
+  address: CreateAddress!
+  currency: WhereCurrency!
+  currencyId: Float
+  email: String!
+  name: String!
+  password: String!
+}
+
+input CreateTable {
+  name: String!
+  restaurantId: Float
+}
+
+input CreateVictual {
+  categoryId: Float!
+  name: String!
+  price: Float!
+  restaurantId: Float
+}
+
+input CreateWaiter {
+  email: String!
+  gender: String!
+  name: String!
+  password: String!
+  profileIcon: String
+  restaurantId: Float
+}
+
+type Currency {
+  id: Float!
+  name: String!
+  restaurantId: Float
+  symbol: String!
+}
+
+scalar Date
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Income {
+  createdAt: Date!
+  id: Float!
+  total: Float!
+}
+
+type ListenOrder {
+  action: String
+  closed: Boolean!
+  createdAt: Date!
+  description: String
+  id: Float!
+  isReady: Boolean!
+  quantity: Float!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  table: Table!
+  victual: Victual!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+input LoginRestaurant {
+  email: String!
+  password: String!
+}
+
+input LoginWaiter {
+  email: String!
+  password: String!
+}
+
+type Meal {
+  end: Date!
+  id: Float!
+  orders: [Order!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  start: Date!
+  table: Table!
+  total: Float!
+  waiter: Waiter!
+}
+
+input MealFilter {
+  maxDate: DateTime
+  maxLength: Float
+  maxPrice: Float
+  minDate: DateTime
+  minPrice: Float
+}
+
+type Mutation {
+  createCategories(data: [CreateCategory!]!): Success!
+  createCategory(data: CreateCategory!): Category!
+  createMeal(data: CreateMeal!): Meal!
+  createOpenHour(data: CreateOpenHour!): OpenHour!
+  createOpenHours(data: [CreateOpenHour!]!): Success!
+  createOrder(data: CreateOrder!): Order!
+  createOrders(data: [CreateOrder!]!): Success!
+  createTable(data: CreateTable!): Table!
+  createTables(data: [CreateTable!]!): Success!
+  createVictual(data: CreateVictual!): Victual!
+  createVictuals(data: [CreateVictual!]!): Success!
+  createWaiter(data: CreateWaiter!): Waiter!
+  deleteCategory(where: WhereCategory!): Success!
+  deleteOpenHour(where: WhereOpenHour!): Success!
+  deleteOrder(where: WhereOrder!): Success!
+  deleteRestaurant: Success!
+  deleteTable(where: WhereTable!): Success!
+  deleteVictual(where: WhereVictual!): Success!
+  deleteWaiter(where: WhereWaiter!): Success!
+  loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
+  loginWaiter(credentials: LoginWaiter!): AuthWaiter!
+  signup(data: CreateRestaurant!): Restaurant!
+  updateCategory(data: UpdateCategory!): Category!
+  updateOpenHour(data: UpdateOpenHour!): OpenHour!
+  updateOrder(data: UpdateOrder!): Order!
+  updateRestaurant(update: UpdateRestaurant!): Restaurant!
+  updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
+  updateTable(data: UpdateTable!): Table!
+  updateVictual(data: UpdateVictual!): Victual!
+  updateWaiter(data: UpdateWaiter!): Waiter!
+  updateWaiterPassword(data: UpdateWaiterPassword!): Success!
+}
+
+type OpenHour {
+  createdAt: Date!
+  end: String!
+  id: Float!
+  name: String!
+  restaurant: Restaurant
+  restaurantId: Float!
+  start: String!
+}
+
+type Order {
+  closed: Boolean!
+  createdAt: Date!
+  description: String
+  id: Float!
+  isReady: Boolean!
+  quantity: Float!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  table: Table!
+  victual: Victual!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+input OrderFilter {
+  description: String
+  isClosed: String = "false"
+  isReady: Boolean
+  max: DateTime
+  maxLength: Float
+  min: DateTime
+}
+
+type PopularProduct {
+  createdAt: Date!
+  id: Float!
+  numberOne: Victual!
+  numberThree: Victual!
+  numberTwo: Victual!
+}
+
+type Query {
+  analytics(filter: AnalyticsFilter): [Analytics!]!
+  categories(filter: CategoryFilter): [Category!]!
+  category(where: WhereCategory!): Category!
+  listCurrencies: [Currency!]!
+  listTasks(filter: TaskFilter): [Task!]!
+  meal(where: WhereMeal!): Meal!
+  meals(filter: MealFilter): [Meal!]!
+  openHours: [OpenHour!]!
+  order(where: WhereOrder!): Order!
+  orders(filter: OrderFilter = {isClosed: "false"}): [Order!]!
+  restaurantInfo: Restaurant!
+  table(where: WhereTable!): Table!
+  tables(filter: TableFilter): [Table!]!
+  victual(where: WhereVictual!): Victual!
+  victuals(filter: VictualFilter): [Victual!]!
+  waiterInfo(where: WhereWaiter): Waiter!
+  waiters(filter: WaiterFilter): [Waiter!]!
+}
+
+type Restaurant {
+  address: Address!
+  categories: [Category!]!
+  createdAt: Date!
+  currency: Currency!
+  currencyId: Float!
+  email: String!
+  id: Float!
+  meals: [Meal!]!
+  name: String!
+  open: Boolean!
+  orders: [Order!]!
+  settings: Settings!
+  tables: [Table!]!
+  tasks: [Task!]!
+  victuals: [Victual!]!
+  waiters: [Waiter!]!
+}
+
+type Settings {
+  enableAnalytics: Boolean!
+  id: Float!
+}
+
+type Subscription {
+  listenOrders: [ListenOrder!]!
+}
+
+type Success {
+  message: String!
+}
+
+type Table {
+  createdAt: Date!
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  total: Float!
+}
+
+input TableFilter {
+  maxLength: Float
+  name: String
+}
+
+type Task {
+  base: BaseTask!
+  baseId: Float!
+  done: Boolean!
+  id: Float!
+  restaurant: Restaurant!
+}
+
+input TaskFilter {
+  done: String
+}
+
+input UpdateAddress {
+  address1: String!
+  address2: String!
+  city: String!
+  country: String!
+  zip: String!
+}
+
+input UpdateCategory {
+  update: UpdateCategoryData!
+  where: WhereCategory!
+}
+
+input UpdateCategoryData {
+  level: Float
+  name: String
+  parentId: Float
+  restaurantId: Float
+}
+
+input UpdateOpenHour {
+  update: UpdateOpenHourData!
+  where: WhereOpenHour!
+}
+
+input UpdateOpenHourData {
+  end: String
+  name: String
+  start: String
+}
+
+input UpdateOrder {
+  update: UpdateOrderData!
+  where: WhereOrder!
+}
+
+input UpdateOrderData {
+  description: String
+  isReady: Boolean
+  quantity: Float
+  tableId: Float
+  victualId: Float
+}
+
+input UpdateRestaurant {
+  address: UpdateAddress
+  currency: WhereCurrency
+  email: String
+  name: String
+  settings: UpdateSettings
+}
+
+input UpdateRestaurantPassword {
+  old: String!
+  password: String!
+}
+
+input UpdateSettings {
+  enableAnalytics: Boolean
+}
+
+input UpdateTable {
+  update: UpdateTableData!
+  where: WhereTable!
+}
+
+input UpdateTableData {
+  name: String
+  restaurantId: Float
+}
+
+input UpdateVictual {
+  update: UpdateVictualData!
+  where: WhereVictual!
+}
+
+input UpdateVictualData {
+  categoryId: Float
+  name: String
+  price: Float
+  restaurantId: Float
+}
+
+input UpdateWaiter {
+  update: UpdateWaiterData!
+  where: WhereWaiter
+}
+
+input UpdateWaiterData {
+  email: String
+  gender: String
+  name: String
+  profileIcon: String
+  restaurantId: Float
+}
+
+input UpdateWaiterPassword {
+  update: UpdateWaiterPasswordData!
+  where: WhereWaiter
+}
+
+input UpdateWaiterPasswordData {
+  old: String
+  password: String!
+}
+
+type Victual {
+  category: Category!
+  createdAt: Date!
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  price: Float!
+  restaurant: Category!
+  restaurantId: Float!
+}
+
+input VictualFilter {
+  max: Float
+  maxLength: Float
+  min: Float
+  name: String
+}
+
+type Waiter {
+  createdAt: Date!
+  email: String!
+  gender: String!
+  id: Float!
+  meals: [Meal!]!
+  name: String!
+  orders: [Order!]!
+  profileIcon: String
+  restaurant: Restaurant!
+  restaurantId: Float!
+}
+
+input WaiterFilter {
+  email: String
+  gender: String
+  maxLength: Float
+  name: String
+}
+
+type WaiterOfTheDay {
+  createdAt: Date!
+  id: Float!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+input WhereCategory {
+  id: Float!
+  root: Boolean
+}
+
+input WhereCurrency {
+  name: String!
+}
+
+input WhereMeal {
+  id: Float!
+  restaurantId: Float
+}
+
+input WhereOpenHour {
+  id: Float!
+}
+
+input WhereOrder {
+  id: Float!
+}
+
+input WhereTable {
+  id: Float
+}
+
+input WhereVictual {
+  id: Float!
+}
+
+input WhereWaiter {
+  email: String
+  id: Float
+  restaurantId: Float
+}

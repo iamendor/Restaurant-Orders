@@ -1,5 +1,5 @@
 import { Query, Resolver } from "@nestjs/graphql";
-import { Currency } from "../../../models/currency.model";
+import { Currency } from "../../../models/resources/currency.model";
 import { CurrencyService } from "../services/currency.service";
 import { CacheInterceptor } from "../../../interceptors/cache.interceptor";
 import { UseInterceptors } from "@nestjs/common";
