@@ -4,7 +4,6 @@ import { ASTNode } from "graphql";
 @Scalar("Date")
 export class DateScalar implements CustomScalar<number, Date> {
   parseValue(value: number | string): Date {
-    console.log(new Date(value));
     return new Date(value);
   }
 

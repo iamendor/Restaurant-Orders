@@ -15,21 +15,21 @@ import { DateScalar } from "./date.model";
 export class Waiter {
   @Field()
   id: number;
-  @Field()
+  @Field({ description: "Name" })
   name: string;
-  @Field()
+  @Field({ description: "Email" })
   email: string;
-  @Field()
+  @Field({ description: "Gender" })
   gender: string;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: "Profile icon" })
   profileIcon?: string;
-  @Field(() => [Order])
+  @Field(() => [Order], { description: "Orders of the waiter" })
   orders?: Order[];
-  @Field(() => [Meal])
+  @Field(() => [Meal], { description: "Meals closed by waiter" })
   meals?: Meal[];
-  @Field(() => Restaurant)
+  @Field(() => Restaurant, { description: "The restaurant of the waiter" })
   restaurant?: Restaurant;
   @Field()
   restaurantId: number;
@@ -39,7 +39,7 @@ export class Waiter {
 export class AuthWaiter {
   @Field(() => Waiter)
   waiter: Waiter;
-  @Field()
+  @Field({ description: "The JWT token for authorization" })
   access_token: string;
 }
 

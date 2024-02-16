@@ -7,26 +7,26 @@ export class Income {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "The total made" })
   total: number;
 }
 
 @ObjectType()
 export class IncomeRange {
-  @Field(() => Income)
+  @Field(() => Income, { description: "The highest income" })
   top: Income;
-  @Field(() => Income)
+  @Field(() => Income, { description: "The lowest income" })
   bottom: Income;
 }
 
 @ObjectType()
 export class IncomeSummary {
-  @Field()
+  @Field({ description: "The total made at the date" })
   total: number;
-  @Field()
+  @Field({ description: "The average of the incomes" })
   average: number;
-  @Field()
+  @Field({ description: "The median of the incomes" })
   median: number;
-  @Field(() => IncomeRange)
+  @Field(() => IncomeRange, { description: "The highest and lowest income" })
   range: IncomeRange;
 }

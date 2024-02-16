@@ -8,16 +8,18 @@ export class PopularProduct {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field(() => Product)
+  @Field(() => Product, { description: "No. 1 product" })
   numberOne: Product;
-  @Field(() => Product)
+  @Field(() => Product, { description: "No. 2 product" })
   numberTwo: Product;
-  @Field(() => Product)
+  @Field(() => Product, { description: "No. 3 product" })
   numberThree: Product;
 }
 
 @ObjectType()
 export class PopularProductSummary {
-  @Field(() => PopularProduct)
+  @Field(() => PopularProduct, {
+    description: "Toplist of the popular products",
+  })
   toplist: PopularProduct;
 }

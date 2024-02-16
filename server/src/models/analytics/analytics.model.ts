@@ -10,11 +10,11 @@ export class Analytics {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field(() => Income)
+  @Field(() => Income, { description: "List of income" })
   income?: Income;
-  @Field(() => PopularProduct)
+  @Field(() => PopularProduct, { description: "List of popular products" })
   popularProduct?: PopularProduct;
-  @Field(() => WaiterOfTheDay)
+  @Field(() => WaiterOfTheDay, { description: "List of best waiters" })
   waiterOfTheDay?: WaiterOfTheDay;
 }
 
@@ -22,12 +22,16 @@ export class Analytics {
 export class AnalyticsSummary {
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "The range of the summary" })
   range: string;
-  @Field(() => IncomeSummary)
+  @Field(() => IncomeSummary, { description: "The summary of the income" })
   income: IncomeSummary;
-  @Field(() => PopularProductSummary)
+  @Field(() => PopularProductSummary, {
+    description: "The summary of the popular products",
+  })
   popularProduct: PopularProductSummary;
-  @Field(() => WaiterOfTheDaySummary)
+  @Field(() => WaiterOfTheDaySummary, {
+    description: "The summary of the best waiters",
+  })
   waiter: WaiterOfTheDaySummary;
 }

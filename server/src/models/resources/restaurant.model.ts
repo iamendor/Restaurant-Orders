@@ -22,10 +22,10 @@ export class Restaurant {
   @Field()
   id: number;
 
-  @Field()
+  @Field({ description: "Name" })
   name: string;
 
-  @Field()
+  @Field({ description: "Email" })
   email: string;
 
   @Field()
@@ -34,34 +34,37 @@ export class Restaurant {
   @Field(() => DateScalar)
   createdAt: Date;
 
-  @Field(() => Settings)
+  @Field(() => Settings, { description: "The settings of the restaurant" })
   settings?: Settings;
 
-  @Field(() => [Task])
+  @Field(() => [Task], { description: "Tasks of the restaurant" })
   tasks?: Task;
 
-  @Field(() => Address)
+  @Field(() => Address, { description: "Address" })
   address?: Address;
 
-  @Field(() => [Waiter])
+  @Field(() => [Waiter], { description: "Waiters under the restaurant" })
   waiters?: Waiter[];
 
-  @Field(() => [Order])
+  @Field(() => [Order], { description: "Orders under the restaurant" })
   orders?: Order[];
 
-  @Field(() => [Product])
+  @Field(() => [Product], { description: "Products under the restaurant" })
   products?: Product[];
 
-  @Field(() => [Category])
+  @Field(() => [Category], { description: "Categories of the restaurant" })
   categories?: Category[];
 
-  @Field(() => [Table])
+  @Field(() => [Table], { description: "Tables under the restaurant" })
   tables?: Table[];
 
-  @Field(() => [Meal])
+  @Field(() => [Meal], { description: "Meals of the restaurant" })
   meals?: Meal[];
 
-  @Field(() => Boolean, { nullable: true })
+  @Field(() => Boolean, {
+    nullable: true,
+    description: "Returns if restaurant is open currently",
+  })
   open?: boolean;
 }
 
@@ -69,7 +72,7 @@ export class Restaurant {
 export class AuthRestaurant {
   @Field(() => Restaurant)
   restaurant: Restaurant;
-  @Field()
+  @Field({ description: "The JWT token for authorization" })
   access_token: string;
 }
 

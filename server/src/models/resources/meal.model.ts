@@ -10,19 +10,23 @@ import { DateScalar } from "./date.model";
 export class Meal {
   @Field()
   id: number;
-  @Field(() => DateScalar)
+  @Field(() => DateScalar, {
+    description: "The first order's date created in the meal",
+  })
   start: Date;
-  @Field(() => DateScalar)
+  @Field(() => DateScalar, {
+    description: "The last order's date created in the meal",
+  })
   end: Date;
-  @Field()
+  @Field({ description: "The total income of the meal" })
   total: number;
-  @Field(() => Waiter)
+  @Field(() => Waiter, { description: "The waiter who served" })
   waiter?: Waiter;
-  @Field(() => Table)
+  @Field(() => Table, { description: "The table of the meal" })
   table?: Table;
-  @Field(() => [Order])
+  @Field(() => [Order], { description: "Orders created under the meal" })
   orders?: Order[];
-  @Field(() => Restaurant)
+  @Field(() => Restaurant, { description: "The restaurant of the meal" })
   restaurant?: Restaurant;
   @Field()
   restaurantId: number;

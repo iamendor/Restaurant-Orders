@@ -4,11 +4,14 @@ import { Field, InputType, ObjectType, PickType } from "@nestjs/graphql";
 export class Currency {
   @Field()
   id: number;
-  @Field()
+  @Field({ description: "Name" })
   name: string;
-  @Field()
+  @Field({ description: "Symbol" })
   symbol: string;
-  @Field({ nullable: true })
+  @Field({
+    nullable: true,
+    description: "This is only used inside api, always returns null!",
+  })
   restaurantId?: number;
 }
 

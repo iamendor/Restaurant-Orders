@@ -9,24 +9,23 @@ import { Restaurant } from "./restaurant.model";
 import { Category } from "./category.model";
 import { Order } from "./order.model";
 import { DateScalar } from "./date.model";
-//TODO: rename
 @ObjectType()
 export class Product {
   @Field()
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "Name" })
   name: string;
-  @Field()
+  @Field({ description: "Price" })
   price: number;
-  @Field(() => Restaurant)
+  @Field(() => Restaurant, { description: "The restaurant of the product" })
   restaurant?: Restaurant;
   @Field()
   restaurantId: number;
-  @Field(() => Category)
+  @Field(() => Category, { description: "The category of the product" })
   category?: Category;
-  @Field(() => [Order])
+  @Field(() => [Order], { description: "The orders with the product" })
   orders?: Order[];
 }
 

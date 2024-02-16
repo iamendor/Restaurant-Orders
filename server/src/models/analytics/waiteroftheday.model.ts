@@ -8,7 +8,7 @@ export class WaiterOfTheDay {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field(() => Waiter)
+  @Field(() => Waiter, { description: "The waiter of the day" })
   waiter?: Waiter;
   @Field()
   waiterId: number;
@@ -16,6 +16,6 @@ export class WaiterOfTheDay {
 
 @ObjectType()
 export class WaiterOfTheDaySummary {
-  @Field(() => Number)
+  @Field(() => Number, { description: "The best waiter" })
   best: number;
 }

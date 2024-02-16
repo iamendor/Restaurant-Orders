@@ -11,15 +11,18 @@ import { Restaurant } from "./restaurant.model";
 export class Address {
   @Field()
   id: number;
-  @Field()
+  @Field({ description: "Country" })
   country: string;
-  @Field()
+  @Field({ description: "Zip code" })
   zip: string;
-  @Field()
+  @Field({ description: "City" })
   city: string;
-  @Field()
+  @Field({ description: "The first line of address" })
   address1: string;
-  @Field({ nullable: true })
+  @Field({
+    nullable: true,
+    description: "The second line of address(optional)",
+  })
   address2?: string;
   @Field(() => Restaurant)
   restaurant?: Restaurant;

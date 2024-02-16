@@ -15,15 +15,18 @@ export class Table {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "Name" })
   name: string;
-  @Field(() => [Order])
+  @Field(() => [Order], { description: "Orders of the table" })
   orders?: Order[];
-  @Field(() => Restaurant)
+  @Field(() => Restaurant, { description: "Restaurant of the table" })
   restaurant?: Restaurant;
   @Field()
   restaurantId: number;
-  @Field({ nullable: true })
+  @Field({
+    nullable: true,
+    description: "Returns the current total of the order",
+  })
   total?: number;
 }
 

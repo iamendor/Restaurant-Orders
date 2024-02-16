@@ -15,25 +15,25 @@ import { DateScalar } from "./date.model";
 export class Order {
   @Field()
   id: number;
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: "Additonal description" })
   description?: string;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "Quantity" })
   quantity: number;
-  @Field()
+  @Field({ description: "The order's status" })
   isReady: boolean;
-  @Field()
+  @Field({ description: "Returns true if it is closed and added to meal" })
   closed: boolean;
   @Field()
   waiterId: number;
-  @Field(() => Waiter)
+  @Field(() => Waiter, { description: "The waiter of the order" })
   waiter?: Waiter;
-  @Field(() => Table)
+  @Field(() => Table, { description: "The table of the order" })
   table?: Table;
-  @Field(() => Restaurant)
+  @Field(() => Restaurant, { description: "The restaurant of the order" })
   restaurant?: Restaurant;
-  @Field(() => Product)
+  @Field(() => Product, { description: "The product of the waiter" })
   product?: Product;
   @Field()
   restaurantId: number;

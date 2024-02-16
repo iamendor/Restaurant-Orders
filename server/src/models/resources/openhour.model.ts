@@ -14,13 +14,16 @@ export class OpenHour {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "The day of the opening hour" })
   name: string;
-  @Field()
+  @Field({ description: "The start of the shift" })
   start: string;
-  @Field()
+  @Field({ description: "The end of the shift" })
   end: string;
-  @Field(() => Restaurant, { nullable: true })
+  @Field(() => Restaurant, {
+    nullable: true,
+    description: "The restaurant of the opening hour",
+  })
   restaurant?: Restaurant;
   @Field()
   restaurantId: number;

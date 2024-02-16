@@ -15,19 +15,25 @@ export class Category {
   id: number;
   @Field(() => DateScalar)
   createdAt: Date;
-  @Field()
+  @Field({ description: "Name" })
   name: string;
   @Field()
   root: boolean;
-  @Field()
+  @Field({ description: "The level of the category" })
   level: number;
-  @Field(() => [Product])
+  @Field(() => [Product], { description: "The products of the category" })
   products?: Product[];
   @Field(() => Restaurant)
   restaurant?: Restaurant;
-  @Field(() => [Category], { nullable: true })
+  @Field(() => [Category], {
+    nullable: true,
+    description: "The subcategories under the category",
+  })
   subCategories?: Category[];
-  @Field(() => Category, { nullable: true })
+  @Field(() => Category, {
+    nullable: true,
+    description: "The parent of the category(optional)",
+  })
   parent?: Category;
   @Field({ nullable: true })
   parentId?: number;

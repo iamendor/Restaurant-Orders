@@ -10,7 +10,7 @@ import {
 export class Settings {
   @Field()
   id: number;
-  @Field()
+  @Field({ description: "Enable analytics" })
   enableAnalytics: boolean;
 }
 

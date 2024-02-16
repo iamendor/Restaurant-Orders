@@ -6,7 +6,7 @@ export class BaseTask {
   @Field()
   id: number;
 
-  @Field()
+  @Field({ description: "Name" })
   name: string;
 }
 
@@ -15,13 +15,13 @@ export class Task {
   @Field()
   id: number;
 
-  @Field()
+  @Field({ description: "Returns if task is done" })
   done: boolean;
 
   @Field(() => Restaurant)
   restaurant?: Restaurant;
 
-  @Field(() => BaseTask)
+  @Field(() => BaseTask, { description: "Description" })
   base?: BaseTask;
 
   @Field()
