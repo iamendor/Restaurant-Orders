@@ -16,6 +16,8 @@ import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IncomeService } from "../../income/services/income.service";
 import { PopularProductSummary } from "../../../models/analytics/popularproduct.model";
 import { PopularProductService } from "../../product/services/product.service";
+import { WaiterOfTheDaySummary } from "../../../models/analytics/waiteroftheday.model";
+import { WaiterOfTheDayService } from "../../waiter/services/waiter.service";
 
 export interface SummaryContext {
   analytics: number[];
@@ -27,7 +29,8 @@ export class AnalyticsSummaryResolver {
     private readonly analyticsService: ReadAnalyticsService,
     private readonly rangeService: RangeService,
     private readonly incomeService: IncomeService,
-    private readonly productService: PopularProductService
+    private readonly productService: PopularProductService,
+    private readonly waiterService: WaiterOfTheDayService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
@@ -61,5 +64,12 @@ export class AnalyticsSummaryResolver {
   async popularProductSummary(@Context() { analytics }: SummaryContext) {
     const products = await this.productService.findMany(analytics);
     return this.productService.createSummary(products);
+  }
+
+  @ResolveField(() => WaiterOfTheDaySummary, { name: "waiter" })
+  async waiterOfTheDaySummary(@Context() { analytics }: SummaryContext) {
+    const bestWaiters = await this.waiterService.findMany(analytics);
+    console.log(bestWaiters);
+    return this.waiterService.createSummary(bestWaiters);
   }
 }

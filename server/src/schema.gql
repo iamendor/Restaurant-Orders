@@ -30,6 +30,7 @@ type AnalyticsSummary {
   createdAt: Date!
   income: IncomeSummary!
   popularProduct: PopularProductSummary!
+  waiter: WaiterOfTheDaySummary!
 }
 
 type AuthRestaurant {
@@ -521,6 +522,10 @@ type WaiterOfTheDay {
   id: Float!
   waiter: Waiter!
   waiterId: Float!
+}
+
+type WaiterOfTheDaySummary {
+  best: Waiter!
 }
 
 input WhereCategory {

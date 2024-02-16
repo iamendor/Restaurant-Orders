@@ -1,8 +1,8 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Income, IncomeSummary } from "./income.model";
-import { WaiterOfTheDay } from "./waiteroftheday.model";
+import { WaiterOfTheDay, WaiterOfTheDaySummary } from "./waiteroftheday.model";
 import { DateScalar } from "../resources/date.model";
-import { PopularProduct } from "./popularproduct.model";
+import { PopularProduct, PopularProductSummary } from "./popularproduct.model";
 
 @ObjectType()
 export class Analytics {
@@ -24,6 +24,8 @@ export class AnalyticsSummary {
   createdAt: Date;
   @Field(() => IncomeSummary)
   income: IncomeSummary;
+  @Field(() => PopularProductSummary)
   popularProduct;
-  waiterOfTheDay;
+  @Field(() => WaiterOfTheDaySummary)
+  waiter;
 }

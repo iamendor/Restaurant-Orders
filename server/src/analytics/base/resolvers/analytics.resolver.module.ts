@@ -8,6 +8,7 @@ import { AnalyticsSummaryResolver } from "./analytics.summary.resolver";
 import { AnalyticsHelperModule } from "../../services/analytics.helper.module";
 import { IncomeServiceModule } from "../../income/services/income.service.module";
 import { PopularProductServiceModule } from "../../product/services/product.service.module";
+import { WaiterOfTheDayServiceModule } from "../../waiter/services/waiter.service.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PopularProductServiceModule } from "../../product/services/product.serv
     AnalyticsHelperModule,
     IncomeServiceModule,
     PopularProductServiceModule,
+    WaiterOfTheDayServiceModule,
   ],
   providers: [AnalyticsResolver, AnalyticsSummaryResolver, FieldResolver],
 })
