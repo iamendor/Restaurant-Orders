@@ -55,7 +55,7 @@ export class PopularProductService {
       .map((p) => p.id)
       .map(Number)
       .reduce((a, p, i) => {
-        const keys = ["numberOne", "numbeTwo", "numberThree"];
+        const keys = ["numberOne", "numberTwo", "numberThree"];
         return { ...a, [keys[i]]: p };
       }, {});
   }
