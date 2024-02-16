@@ -15,7 +15,7 @@ describe("AnalyticsService", () => {
   let prismaAnalytics: PrismaAnalyticsService;
   let prismaMain: PrismaMainService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaMainModule, PrismaAnalyticsModule],
       providers: [CreateAnalyticsService],

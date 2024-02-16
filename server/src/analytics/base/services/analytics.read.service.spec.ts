@@ -10,7 +10,7 @@ describe("AnalyticsService", () => {
 
   const mockData = mockAnalytics;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaAnalyticsModule],
       providers: [ReadAnalyticsService],
@@ -24,5 +24,10 @@ describe("AnalyticsService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("should list analytics", async () => {
+    const list = await service.list(1);
+    expect(list.length).toBe(mockData.length);
   });
 });
