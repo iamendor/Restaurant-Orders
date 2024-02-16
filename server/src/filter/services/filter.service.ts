@@ -21,6 +21,7 @@ import {
   TaskFilter,
   ProductFilter,
   WaiterFilter,
+  AnalyticsFilter,
 } from "../../models/resources/filter.model";
 import { Table } from "../../models/resources/table.model";
 import { ITableFilter } from "../interfaces/table.interface";
@@ -40,7 +41,8 @@ interface IFilter<T> {
     | OrderFilter
     | ProductFilter
     | MealFilter
-    | TaskFilter;
+    | TaskFilter
+    | AnalyticsFilter;
 }
 
 @Injectable()

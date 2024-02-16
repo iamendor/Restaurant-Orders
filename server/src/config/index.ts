@@ -12,6 +12,7 @@ export class Config {
       playground: config.get("GRAPHQL_PLAYGROUND") || false,
       installSubscriptionHandlers: true,
       includeStacktraceInErrorResponses: false,
+      fieldResolverEnhancers: ["interceptors"],
 
       subscriptions: {
         "graphql-ws": true,

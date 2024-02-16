@@ -10,3 +10,23 @@ export class Income {
   @Field()
   total: number;
 }
+
+@ObjectType()
+export class IncomeRange {
+  @Field(() => Income)
+  top: Income;
+  @Field(() => Income)
+  bottom: Income;
+}
+
+@ObjectType()
+export class IncomeSummary {
+  @Field()
+  total: number;
+  @Field()
+  average: number;
+  @Field()
+  median: number;
+  @Field(() => IncomeRange)
+  range: IncomeRange;
+}

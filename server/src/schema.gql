@@ -26,6 +26,14 @@ input AnalyticsFilter {
   min: Date
 }
 
+type AnalyticsSummary {
+  createdAt: Date!
+  income: IncomeSummary!
+  popularProduct: PopularProductSummary!
+  range: String!
+  waiter: WaiterOfTheDaySummary!
+}
+
 type AuthRestaurant {
   access_token: String!
   restaurant: Restaurant!
@@ -145,6 +153,18 @@ scalar DateTime
 type Income {
   createdAt: Date!
   id: Float!
+  total: Float!
+}
+
+type IncomeRange {
+  bottom: Income!
+  top: Income!
+}
+
+type IncomeSummary {
+  average: Float!
+  median: Float!
+  range: IncomeRange!
   total: Float!
 }
 
@@ -270,6 +290,10 @@ type PopularProduct {
   numberTwo: Product!
 }
 
+type PopularProductSummary {
+  toplist: PopularProduct!
+}
+
 type Product {
   category: Category!
   createdAt: Date!
@@ -290,6 +314,7 @@ input ProductFilter {
 
 type Query {
   analytics(filter: AnalyticsFilter): [Analytics!]!
+  analyticsSummary(range: String! = "week"): AnalyticsSummary!
   categories(filter: CategoryFilter): [Category!]!
   category(where: WhereCategory!): Category!
   listCurrencies: [Currency!]!
@@ -498,6 +523,10 @@ type WaiterOfTheDay {
   id: Float!
   waiter: Waiter!
   waiterId: Float!
+}
+
+type WaiterOfTheDaySummary {
+  best: Waiter!
 }
 
 input WhereCategory {

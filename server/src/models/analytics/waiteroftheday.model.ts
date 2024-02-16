@@ -9,7 +9,13 @@ export class WaiterOfTheDay {
   @Field(() => DateScalar)
   createdAt: Date;
   @Field(() => Waiter)
-  waiter: Waiter;
+  waiter?: Waiter;
   @Field()
   waiterId: number;
+}
+
+@ObjectType()
+export class WaiterOfTheDaySummary {
+  @Field(() => Number)
+  best: number;
 }
