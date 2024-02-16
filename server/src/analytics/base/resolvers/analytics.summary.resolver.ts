@@ -1,10 +1,7 @@
 import { Args, Context, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import {
-  Analytics,
-  AnalyticsSummary,
-} from "../../../models/analytics/analytics.model";
+import { AnalyticsSummary } from "../../../models/analytics/analytics.model";
 import { IncomeSummary } from "../../../models/analytics/income.model";
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RESTAURANT } from "../../../role";
@@ -18,6 +15,10 @@ import { PopularProductSummary } from "../../../models/analytics/popularproduct.
 import { PopularProductService } from "../../product/services/product.service";
 import { WaiterOfTheDaySummary } from "../../../models/analytics/waiteroftheday.model";
 import { WaiterOfTheDayService } from "../../waiter/services/waiter.service";
+import {
+  AnalyticsResourceSummaryInterceptor,
+  AnalyticsSummaryCacheInterceptor,
+} from "../../../interceptors/cache.interceptor";
 
 export interface SummaryContext {
   analytics: number[];
@@ -34,6 +35,7 @@ export class AnalyticsSummaryResolver {
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @UseInterceptors(AnalyticsSummaryCacheInterceptor)
   @Query(() => AnalyticsSummary, { name: "analyticsSummary" })
   async summary(
     @User() { id }: JwtPayload,
@@ -51,25 +53,27 @@ export class AnalyticsSummaryResolver {
         : analytics;
 
     ctx.analytics = filtered.map((a) => a.id);
-    return { createdAt: new Date() };
+    return { range };
   }
 
   @ResolveField(() => IncomeSummary, { name: "income" })
+  @UseInterceptors(AnalyticsResourceSummaryInterceptor("income"))
   async incomeSummary(@Context() { analytics }: SummaryContext) {
     const incomes = await this.incomeService.findMany(analytics);
     return this.incomeService.createSummary(incomes);
   }
 
   @ResolveField(() => PopularProductSummary, { name: "popularProduct" })
+  @UseInterceptors(AnalyticsResourceSummaryInterceptor("popularProduct"))
   async popularProductSummary(@Context() { analytics }: SummaryContext) {
     const products = await this.productService.findMany(analytics);
     return this.productService.createSummary(products);
   }
 
   @ResolveField(() => WaiterOfTheDaySummary, { name: "waiter" })
+  @UseInterceptors(AnalyticsResourceSummaryInterceptor("waiter"))
   async waiterOfTheDaySummary(@Context() { analytics }: SummaryContext) {
     const bestWaiters = await this.waiterService.findMany(analytics);
-    console.log(bestWaiters);
     return this.waiterService.createSummary(bestWaiters);
   }
 }

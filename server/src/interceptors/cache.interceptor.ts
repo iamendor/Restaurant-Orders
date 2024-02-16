@@ -92,3 +92,87 @@ export const CacheInterceptor = ({
 
   return interceptor;
 };
+
+@Injectable()
+export class AnalyticsSummaryCacheInterceptor implements NestInterceptor {
+  constructor(private readonly cacheService: CacheService) {}
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler<any>
+  ): Promise<Observable<any>> {
+    const ctx = GqlExecutionContext.create(context);
+    const { range } = ctx.getArgs();
+    const req = ctx.getContext();
+    const restaurantId = getRIDFRomUser(ctx);
+    const key = `analytics_summary:${range}:${restaurantId}`;
+    const cached = await this.cacheService.get({ key, json: true });
+    if (cached) {
+      req.analytics = cached;
+      return of({ createdAt: new Date(), range });
+    }
+
+    return next.handle().pipe(
+      tap(() =>
+        this.cacheService.set({
+          key,
+          value: JSON.stringify(req.analytics),
+          ttl: 60,
+        })
+      )
+    );
+  }
+}
+
+export const AnalyticsResourceSummaryInterceptor = (
+  resource: "income" | "waiter" | "popularProduct"
+) => {
+  @Injectable()
+  class CI implements NestInterceptor {
+    constructor(public readonly cacheService: CacheService) {}
+    //map functions
+    income(stats) {
+      return {
+        ...stats,
+        createdAt: new Date(stats.createdAt),
+        range: {
+          top: {
+            ...stats.range.top,
+            createdAt: new Date(stats.range.top.createdAt),
+          },
+          bottom: {
+            ...stats.range.bottom,
+            createdAt: new Date(stats.range.bottom.createdAt),
+          },
+        },
+      };
+    }
+    waiter(stats) {
+      return stats;
+    }
+    popularProduct(stats) {
+      return stats;
+    }
+
+    async intercept(
+      context: ExecutionContext,
+      next: CallHandler<any>
+    ): Promise<Observable<any>> {
+      const ctx = GqlExecutionContext.create(context);
+      const range = ctx.getRoot().range;
+      const restaurantId = getRIDFRomUser(ctx);
+      const key = `analytics_summary:${resource}:${range}:${restaurantId}`;
+      const cached = await this.cacheService.get({ key, json: true });
+      if (cached) return of(this[resource](cached));
+
+      return next
+        .handle()
+        .pipe(
+          tap((data) =>
+            this.cacheService.set({ key, value: JSON.stringify(data), ttl: 60 })
+          )
+        );
+    }
+  }
+  const interceptor = mixin(CI);
+  return interceptor;
+};

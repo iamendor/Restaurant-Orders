@@ -22,10 +22,12 @@ export class Analytics {
 export class AnalyticsSummary {
   @Field(() => DateScalar)
   createdAt: Date;
+  @Field()
+  range: string;
   @Field(() => IncomeSummary)
   income: IncomeSummary;
   @Field(() => PopularProductSummary)
-  popularProduct;
+  popularProduct: PopularProductSummary;
   @Field(() => WaiterOfTheDaySummary)
-  waiter;
+  waiter: WaiterOfTheDaySummary;
 }
