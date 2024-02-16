@@ -1,4 +1,4 @@
-import { Module, ModuleMetadata } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { RestaurantResolver } from "./restaurant.resolver";
 import { RestaurantServiceModule } from "../services/restaurant.service.module";
 import { RestaurantGuardModule } from "../guard/restaurant.guard.module";

@@ -1,32 +1,34 @@
 import { Injectable } from "@nestjs/common";
 
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { SecurityService } from "../../../security/services/security.service";
-import { WhereRestaurant } from "../../../models/restaurant.model";
+import { WhereRestaurant } from "../../../models/resources/restaurant.model";
 import {
-  CreateWaiterData,
   UpdateWaiterPassword,
   UpdateWaiter,
   WhereWaiter,
   Waiter,
-} from "../../../models/waiter.model";
-import { Success } from "../../../models/success.model";
-import { Prisma } from "@prisma/client";
+  CreateWaiter,
+} from "../../../models/resources/waiter.model";
+import { Success } from "../../../models/resources/success.model";
+import { Prisma } from "prisma/client/main";
+import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class WaiterService {
   constructor(
-    private readonly prismaService: PrismaService,
+    private readonly prismaService: PrismaMainService,
     private readonly securityService: SecurityService
   ) {}
 
-  async create(waiter: CreateWaiterData): Promise<Waiter> {
+  async create({ restaurantId, ...waiter }: CreateWaiter): Promise<Waiter> {
     const waiterCreated = await this.prismaService.waiter.create({
       data: {
-        ...waiter.data,
-        password: this.securityService.hash(waiter.data.password),
+        ...waiter,
+        password: this.securityService.hash(waiter.password),
         restaurant: {
-          connect: { id: waiter.restaurantId },
+          connect: { id: restaurantId },
         },
       },
     });
@@ -44,9 +46,8 @@ export class WaiterService {
       },
     });
 
-    return {
-      message: "success",
-    };
+    return SUCCESS;
+    0;
   }
 
   async update({ update, where }: UpdateWaiter): Promise<Waiter> {
@@ -65,9 +66,8 @@ export class WaiterService {
         id: where.id,
       },
     });
-    return {
-      message: "success",
-    };
+    return SUCCESS;
+    0;
   }
 
   async find(where: WhereWaiter): Promise<Waiter> {
@@ -84,5 +84,10 @@ export class WaiterService {
       },
     });
     return waiters;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const waiter = await this.find({ id });
+    return waiter.restaurantId == restaurantId;
   }
 }

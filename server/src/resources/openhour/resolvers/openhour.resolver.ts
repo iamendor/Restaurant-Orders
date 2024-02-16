@@ -4,26 +4,29 @@ import {
   OpenHour,
   UpdateOpenHour,
   WhereOpenHour,
-} from "../../../models/openhour.model";
+} from "../../../models/resources/openhour.model";
 import { OpenHourService } from "../services/openhour.service";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { Success } from "../../../models/success.model";
+import { Success } from "../../../models/resources/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import {
   CREATE_OPENHOUR_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
+} from "../../../interceptors/task.inteceptor";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
-import { OpenHourGuard } from "../../guard";
+} from "../../../interceptors/cache.interceptor";
+import { OpenHourGuard } from "../../../guard";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
+import { SUCCESS } from "../../../response";
 
 const OpenHourCacheInterceptor = CacheInterceptor({
   prefix: "openhours",
@@ -35,26 +38,16 @@ const OpenHourClearCacheInterceptor = ClearCacheInterceptor("openhours");
 export class OpenHourResolver {
   constructor(private readonly openHourService: OpenHourService) {}
 
-  private async isAlreadyCreated(
-    data: CreateOpenHour,
-    restaurantId: number,
-    list?: OpenHour[]
-  ): Promise<OpenHour> {
-    if (!list) {
-      list = await this.openHourService.list(restaurantId);
-    }
-    return list.find((oh) => oh.name == data.name);
-  }
+  private;
 
-  //TODO: pipe
   @Mutation(() => OpenHour, { name: "createOpenHour" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
     TaskInterceptor(CREATE_OPENHOUR_ACTION)
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  async create(@Args("data") data: CreateOpenHour, @User() { id }: JwtPayload) {
-    const isCreated = await this.isAlreadyCreated(data, id);
+  async create(@Args("data", AddRID) data: CreateOpenHour) {
+    const isCreated = await this.openHourService.isAlreadyCreated(data);
     if (isCreated) {
       return await this.openHourService.update({
         where: { id: isCreated.id },
@@ -62,10 +55,9 @@ export class OpenHourResolver {
       });
     }
 
-    return this.openHourService.create(data, id);
+    return this.openHourService.create(data);
   }
 
-  //TODO: pipe
   @Mutation(() => Success, { name: "createOpenHours" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
@@ -73,12 +65,16 @@ export class OpenHourResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
-    @Args("data", { type: () => [CreateOpenHour] }) data: CreateOpenHour[],
+    @Args("data", { type: () => [CreateOpenHour] }, MinArrayPipe, AddRID)
+    data: Required<CreateOpenHour>[],
     @User() { id }: JwtPayload
   ) {
     const current = await this.openHourService.list(id);
     for (let i = 0; i < data.length; i++) {
-      const today = await this.isAlreadyCreated(data[i], id, current);
+      const today = await this.openHourService.isAlreadyCreated(
+        data[i],
+        current
+      );
       if (today) {
         const update = { start: data[i].start, end: data[i].end };
         await this.openHourService.update({
@@ -88,9 +84,9 @@ export class OpenHourResolver {
         data.splice(i, 1);
       }
     }
-    await this.openHourService.createMany(data, id);
+    await this.openHourService.createMany(data);
 
-    return { message: "success" };
+    return SUCCESS;
   }
 
   @Mutation(() => OpenHour, { name: "updateOpenHour" })

@@ -1,4 +1,4 @@
-import { Meal } from "../../models/meal.model";
+import { Meal } from "../../models/resources/meal.model";
 import { IMealFilter } from "../interfaces/meal.interface";
 import { Rule } from "../interfaces/rule.interface";
 import { MaxLength } from "./max.rule";

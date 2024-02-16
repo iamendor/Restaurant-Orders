@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { getMocks } from "../../../../test/helper/mocks";
 import { RESTAURANT, WAITER } from "../../../role";
+import { mockRestaurant, mockWaiter } from "../../../../test/helper/mock.unit";
 
 @Injectable()
 export class AuthServiceMock {
   restaurant;
   waiter;
   constructor(private readonly jwtService: JwtService) {
-    this.restaurant = getMocks().restaurantModel;
-    this.waiter = getMocks().waiter;
+    this.restaurant = mockRestaurant;
+    this.waiter = mockWaiter;
   }
   validateRestaurant() {
     return this.restaurant;

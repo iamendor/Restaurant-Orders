@@ -3,25 +3,31 @@ import { MealService } from "../services/meal.service";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
-import { EmptyTableException, PermissionDeniedException } from "../../../error";
+import { EmptyTableException } from "../../../error";
 import { RESTAURANT, WAITER } from "../../../role";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { MealGuard } from "../guard/meal.guard";
-import { CreateMeal, Meal, WhereMeal } from "../../../models/meal.model";
-import { Success } from "../../../models/success.model";
-import { FilterService } from "../../../filter/services/filter.service";
-import { MealFilter } from "../../../models/filter.model";
+import { CreateMealGuard, MealGuard } from "../guard/meal.guard";
+import {
+  CreateMeal,
+  Meal,
+  WhereMeal,
+} from "../../../models/resources/meal.model";
+import { Success } from "../../../models/resources/success.model";
+import { MealFilter } from "../../../models/resources/filter.model";
 import {
   CREATE_MEAL_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
-import { GetMeal } from "../../decorators";
+} from "../../../interceptors/task.inteceptor";
+import { GetMeal } from "../../../decorators";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { FieldService } from "../../table/services/field.service";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
 
 const MealCacheInterceptor = CacheInterceptor({
   prefix: "meals",
@@ -37,7 +43,7 @@ const MealClearCacheInterceptor = ClearCacheInterceptor("meals");
 export class MealResolver {
   constructor(
     private readonly mealService: MealService,
-    private readonly filterService: FilterService
+    private readonly fieldService: FieldService
   ) {}
 
   @Mutation(() => Meal, { name: "createMeal" })
@@ -45,22 +51,19 @@ export class MealResolver {
     MealClearCacheInterceptor,
     TaskInterceptor(CREATE_MEAL_ACTION)
   )
-  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(WAITER), CreateMealGuard)
   async create(
-    @RID() restaurantId: number,
-    @Args("data") { tableId }: CreateMeal
-  ) {
-    const tableWithOrders = await this.mealService.getOrdersOfTable(tableId);
+    @Args("data", { type: () => CreateMeal }, AddRID)
+    { tableId, restaurantId }: Required<CreateMeal>
+  ): Promise<Meal> {
+    const orders = await this.fieldService.getOrders(tableId, true);
 
-    if (tableWithOrders.restaurantId != restaurantId)
-      throw new PermissionDeniedException();
-    if (tableWithOrders.orders.length == 0) throw new EmptyTableException();
+    if (orders.length == 0) throw new EmptyTableException();
 
-    const { sorted, ...formatTable } =
-      this.mealService.formatTable(tableWithOrders);
+    const { sorted, ...data } = this.mealService.formatTable(orders);
 
     const meal = this.mealService.create({
-      ...formatTable,
+      ...data,
       restaurantId,
       tableId,
       orderIds: sorted.map((ord) => ({ id: ord.id })),
@@ -69,14 +72,6 @@ export class MealResolver {
     this.mealService.clearTable(tableId);
 
     return meal;
-  }
-
-  @Mutation(() => Success, { name: "deleteMeal" })
-  @UseInterceptors(MealClearCacheInterceptor)
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), MealGuard)
-  async delete(@Args("where") where: WhereMeal) {
-    const deleted = await this.mealService.delete({ ...where });
-    return deleted;
   }
 
   @Query(() => [Meal], { name: "meals" })

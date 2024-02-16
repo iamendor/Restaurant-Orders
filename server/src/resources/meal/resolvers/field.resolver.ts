@@ -1,11 +1,10 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { FieldService } from "../services/field.service";
-import { Order } from "../../../models/order.model";
-import { Currency } from "../../../models/currency.model";
-import { Restaurant } from "../../../models/restaurant.model";
-import { Table } from "../../../models/table.model";
-import { Waiter } from "../../../models/waiter.model";
-import { Meal } from "../../../models/meal.model";
+import { Order } from "../../../models/resources/order.model";
+import { Restaurant } from "../../../models/resources/restaurant.model";
+import { Table } from "../../../models/resources/table.model";
+import { Waiter } from "../../../models/resources/waiter.model";
+import { Meal } from "../../../models/resources/meal.model";
 
 @Resolver((of) => Meal)
 export class FieldResolver {

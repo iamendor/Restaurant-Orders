@@ -1,8 +1,8 @@
 import { OrderId } from "./order.interface";
 
 export interface CreateMealData {
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
   total: number;
   tableId: number;
   restaurantId: number;

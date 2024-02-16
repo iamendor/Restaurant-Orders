@@ -1,24 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
-import { Success } from "../../../models/success.model";
-import { Meal, WhereMeal } from "../../../models/meal.model";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
+import { Success } from "../../../models/resources/success.model";
+import { Meal, WhereMeal } from "../../../models/resources/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
+import { Order } from "../../../models/resources/order.model";
 
 @Injectable()
 export class MealService {
-  constructor(private readonly prismaService: PrismaService) {}
-  getOrdersOfTable(tableId: number) {
-    return this.prismaService.table.findFirst({
-      where: { id: tableId },
-      include: {
-        orders: {
-          include: {
-            victual: true,
-          },
-        },
-      },
-    });
-  }
+  constructor(private readonly prismaService: PrismaMainService) {}
   async clearTable(tableId: number) {
     await this.prismaService.order.updateMany({
       where: {
@@ -30,13 +19,16 @@ export class MealService {
       },
     });
   }
-  formatTable(table: any) {
-    const sorted = table.orders.sort((a, b) => a.createdAt - b.createdAt);
+
+  formatTable(orders: Order[]) {
+    const sorted = orders.sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+    );
     const start = sorted[0].createdAt;
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;
     const total = sorted.reduce(
-      (acc, c) => acc + c.victual.price * c.quantity,
+      (acc, c) => acc + c.product.price * c.quantity,
       0
     );
     return { sorted, start, end, waiterId, total };
@@ -88,10 +80,5 @@ export class MealService {
       },
     });
     return meal;
-  }
-
-  async delete(where: WhereMeal): Promise<Success> {
-    await this.prismaService.meal.delete({ where: { id: where.id } });
-    return { message: "success" };
   }
 }

@@ -4,41 +4,47 @@ import { Test } from "@nestjs/testing";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "../services/auth.service";
 import { JwtStrategy } from "../strategies/jwt.strategy";
-import { PrismaService } from "../../prisma/services/prisma.service";
-import { PrismaModule } from "../../prisma/prisma.module";
-import { getMocks } from "../../../test/helper/mocks";
+import { PrismaMainModule } from "../../prisma/main/prisma.main.module";
 import { SecurityModule } from "../../security/security.module";
 import { AuthServiceMock } from "../services/mock/auth.service.mock";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { TaskService } from "../../resources/task/services/task.service";
 import { TaskServiceMock } from "../../resources/task/services/mock/task.service.mock";
+import {
+  mockCurrency,
+  mockRestaurant,
+  mockWaiter,
+} from "../../../test/helper/mock.unit";
+import { CurrencyService } from "../../resources/currency/services/currency.service";
+import { CurrencyServiceMock } from "../../resources/currency/services/mock/currency.service.mock";
 
 describe("Auth Resolver", () => {
   let resolver: AuthResolver;
-  let prisma: PrismaService;
   let jwt: JwtService;
-  let restaurantId: number;
-  const mocks = getMocks();
+
+  const restaurant = mockRestaurant;
+  const waiter = mockWaiter;
+
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         JwtModule.register({ secret: "test" }),
         SecurityModule,
-        PrismaModule,
+        PrismaMainModule,
       ],
       providers: [
         AuthResolver,
         { provide: AuthService, useClass: AuthServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
         { provide: TaskService, useClass: TaskServiceMock },
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
         JwtStrategy,
       ],
     }).compile();
 
     resolver = module.get<AuthResolver>(AuthResolver);
-    prisma = module.get<PrismaService>(PrismaService);
     jwt = module.get<JwtService>(JwtService);
   });
 
@@ -48,17 +54,17 @@ describe("Auth Resolver", () => {
 
   it("signup a restaurant", async () => {
     const signup = await resolver.signup({
-      ...mocks.restaurant,
+      ...restaurant,
+      currency: mockCurrency,
     });
     expect(signup).toBeDefined();
-    expect(signup.name).toBe(mocks.restaurant.name);
-    restaurantId = signup.id;
+    expect(signup.name).toBe(restaurant.name);
   });
 
   it("login the restaurant", async () => {
     const login = await resolver.loginRestaurant({
-      email: mocks.restaurant.email,
-      password: mocks.restaurant.password,
+      email: restaurant.email,
+      password: restaurant.password,
     });
     expect(login).toBeDefined();
     expect(login.access_token).toBeDefined();
@@ -67,13 +73,15 @@ describe("Auth Resolver", () => {
 
   describe("Waiter", () => {
     it("login waiter", async () => {
-      const { waiter, access_token } = await resolver.loginWaiter({
-        email: mocks.waiter.email,
-        password: mocks.waiter.password,
+      const {
+        waiter: { email, name },
+        access_token,
+      } = await resolver.loginWaiter({
+        email: waiter.email,
+        password: waiter.password,
       });
-      expect(waiter).toBeDefined();
-      expect(waiter.email).toBe(mocks.waiter.email);
-      expect(waiter.name).toBe(mocks.waiter.name);
+      expect(email).toBe(waiter.email);
+      expect(name).toBe(waiter.name);
       expect(access_token).toBeDefined();
       expect(jwt.verify(access_token)).toBeTruthy();
     });

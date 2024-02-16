@@ -6,7 +6,6 @@ import { expectedExceptions } from "../error";
 export class UnExpectedException implements GqlExceptionFilter {
   logger: Logger = new Logger();
   catch(exception: any, host: ArgumentsHost) {
-    this.logger.error(exception);
     for (let i = 0; i < expectedExceptions.length; i++) {
       if (exception instanceof expectedExceptions[i]) return exception;
     }

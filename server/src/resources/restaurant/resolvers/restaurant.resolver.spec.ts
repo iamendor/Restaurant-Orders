@@ -1,40 +1,38 @@
 import { Test } from "@nestjs/testing";
 import { RestaurantResolver } from "./restaurant.resolver";
 import { RestaurantService } from "../services/restaurant.service";
-import { PrismaService } from "../../../prisma/services/prisma.service";
-import { getMocks } from "../../../../test/helper/mocks";
 import { RestaurantGuardModule } from "../guard/restaurant.guard.module";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { Restaurant } from "@prisma/client";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { RestaurantServiceMock } from "../services/mock/restaurant.service.mock";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
+import {
+  mockRestaurant,
+  mockRestaurantPayload,
+} from "../../../../test/helper/mock.unit";
+import { CacheService } from "../../../cache/services/cache.service";
+import { CacheServiceMock } from "../../../cache/services/mock/cache.service.mock";
+import { CurrencyService } from "../../currency/services/currency.service";
+import { CurrencyServiceMock } from "../../currency/services/mock/currency.service.mock";
+import { PrismaStaticModule } from "../../../prisma/static/prisma.static.module";
+import { Restaurant } from "prisma/client/main";
 
 describe("Restaurant Resolver", () => {
   const SUCCESS = "success";
   let resolver: RestaurantResolver;
-  let service: RestaurantService;
-  let payload: JwtPayload;
-  let prisma: PrismaService;
-  const mocks = getMocks();
-  const rst: Restaurant = {
-    ...mocks.restaurantModel,
-    id: 1,
-    currencyId: undefined,
-  };
+  let payload: JwtPayload = mockRestaurantPayload;
+  const rst: Restaurant = { ...mockRestaurant, currencyId: 1 };
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule, RestaurantGuardModule],
+      imports: [PrismaMainModule, PrismaStaticModule, RestaurantGuardModule],
       providers: [
+        { provide: CacheService, useClass: CacheServiceMock },
+        { provide: CurrencyService, useClass: CurrencyServiceMock },
         { provide: RestaurantService, useClass: RestaurantServiceMock },
         RestaurantResolver,
       ],
     }).compile();
     resolver = module.get<RestaurantResolver>(RestaurantResolver);
-    service = module.get<RestaurantService>(RestaurantService);
-    prisma = module.get<PrismaService>(PrismaService);
-
-    payload = mocks.restaurantPayload(rst);
   });
 
   it("should be defined", () => {
@@ -60,13 +58,11 @@ describe("Restaurant Resolver", () => {
 
   it("return restaurant info", () => {
     const info = resolver.info(rst);
-    expect(info.email).toBe(mocks.restaurant.email);
+    expect(info.email).toBe(mockRestaurant.email);
   });
 
   it("deletes restaurant", async () => {
     const deleteRestaurant = await resolver.delete(payload);
     expect(deleteRestaurant.message).toBe(SUCCESS);
   });
-
-  afterAll(async () => await prisma.$disconnect());
 });

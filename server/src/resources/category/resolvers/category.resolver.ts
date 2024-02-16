@@ -4,7 +4,7 @@ import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { User } from "../../../auth/decorators/user.decorator";
-import { CategoryGuard } from "../../guard";
+import { CategoryGuard } from "../../../guard";
 import { IdGuard } from "../../../auth/guard/id.guard";
 import { RID } from "../../../auth/decorators/role.decorator";
 import { RESTAURANT, WAITER } from "../../../role";
@@ -13,20 +13,27 @@ import {
   CreateCategory,
   UpdateCategory,
   WhereCategory,
-} from "../../../models/category.model";
+} from "../../../models/resources/category.model";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
-import { Success } from "../../../models/success.model";
-import { CategoryFilter } from "../../../models/filter.model";
-import { GetCategory } from "../../decorators";
+import { Success } from "../../../models/resources/success.model";
+import { CategoryFilter } from "../../../models/resources/filter.model";
+import { GetCategory } from "../../../decorators";
 import {
   CREATE_CATEGORY_ACTION,
   TaskInterceptor,
-} from "../../task/interceptors/task.inteceptor";
+} from "../../../interceptors/task.inteceptor";
 import {
   CacheInterceptor,
   ClearCacheInterceptor,
-} from "../../../cache/interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../filter/interceptors/task.interceptor";
+} from "../../../interceptors/cache.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
+import { AddRID } from "../../../pipes/rid.pipe";
+import { MinArrayPipe } from "../../../pipes/array.pipe";
+import {
+  NestedCategoryException,
+  PermissionDeniedException,
+  UniqueFieldFailedException,
+} from "../../../error";
 
 const CategoryCacheInterceptor = CacheInterceptor({
   prefix: "categories",
@@ -38,40 +45,93 @@ const CategoryClearCacheInterceptor = ClearCacheInterceptor("categories");
 export class CategoryResolver {
   constructor(private readonly categoryService: CategoryService) {}
 
-  //TODO: pipe
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
     CategoryClearCacheInterceptor
   )
   @Mutation(() => Category, { name: "createCategory" })
-  create(@User() { id }: JwtPayload, @Args("data") data: CreateCategory) {
-    return this.categoryService.create({
-      ...data,
+  async create(
+    @Args("data", AddRID) data: CreateCategory,
+    @User() { id }: JwtPayload
+  ) {
+    const isUnique = await this.categoryService.validateUnique({
+      restaurantId: id,
+      name: data.name,
+    });
+    if (!isUnique) throw new UniqueFieldFailedException();
+
+    if (!data.parentId) return this.categoryService.create(data);
+    const { parentId } = data;
+
+    const isParentValid = await this.categoryService.validate({
+      id: parentId,
       restaurantId: id,
     });
+    if (!isParentValid) throw new PermissionDeniedException();
+
+    const parentLevel = await this.categoryService.validateNesting(parentId);
+    if (!parentLevel) throw new NestedCategoryException(parentId);
+
+    return this.categoryService.create({ ...data, level: parentLevel + 1 });
   }
 
-  //TODO: pipe
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
     CategoryClearCacheInterceptor
   )
   @Mutation(() => Success, { name: "createCategories" })
-  createMany(
-    @User() { id }: JwtPayload,
-    @Args("data", { type: () => [CreateCategory] }) data: CreateCategory[]
+  async createMany(
+    @Args("data", { type: () => [CreateCategory] }, MinArrayPipe, AddRID)
+    data: Required<CreateCategory>[],
+    @User() { id }: JwtPayload
   ): Promise<Success> {
+    const categories = (await this.categoryService.list(id)).map(
+      (cat) => cat.name
+    );
+    for (let i = 0; i < data.length; i++) {
+      if (categories.includes(data[i].name))
+        throw new UniqueFieldFailedException();
+    }
+
+    const parents = [
+      ...new Set(data.map((parent) => parent.parentId).filter(Number)),
+    ];
+    let parentsLevel = {};
+
+    for (let i = 0; i < parents.length; i++) {
+      const isParentValid = await this.categoryService.validate({
+        id: parents[i],
+        restaurantId: id,
+      });
+      if (!isParentValid) throw new PermissionDeniedException();
+
+      const parentLevel = await this.categoryService.validateNesting(
+        parents[i]
+      );
+      if (!parentLevel) throw new NestedCategoryException(parents[i]);
+      parentsLevel[parents[i]] = parentLevel;
+    }
+
     return this.categoryService.createMany(
-      data.map((cat) => ({ ...cat, restaurantId: id }))
+      data.map((cat) =>
+        cat.parentId ? { ...cat, level: parentsLevel[cat.parentId] } : cat
+      )
     );
   }
 
   @Mutation(() => Category, { name: "updateCategory" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), CategoryGuard)
   @UseInterceptors(CategoryClearCacheInterceptor)
-  update(@Args("data") data: UpdateCategory, @User() { id }: JwtPayload) {
+  async update(@Args("data") data: UpdateCategory, @User() { id }: JwtPayload) {
+    if (data.update.name) {
+      const isUnique = await this.categoryService.validateUnique({
+        restaurantId: id,
+        name: data.update.name,
+      });
+      if (!isUnique) throw new UniqueFieldFailedException();
+    }
     return this.categoryService.update(data);
   }
 

@@ -6,16 +6,16 @@ import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RestaurantService } from "../services/restaurant.service";
 import { RestaurantGuard } from "../guard/restaurant.guard";
 import { RESTAURANT, WAITER } from "../../../role";
-import { Restaurant as PRestaurant } from "@prisma/client";
+import { Restaurant as PRestaurant } from "prisma/client/main";
 import { SecurityService } from "../../../security/services/security.service";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Restaurant,
   UpdateRestaurant,
   UpdateRestaurantPassword,
-} from "../../../models/restaurant.model";
-import { Success } from "../../../models/success.model";
-import { GetRestaurant } from "../../decorators";
+} from "../../../models/resources/restaurant.model";
+import { Success } from "../../../models/resources/success.model";
+import { GetRestaurant } from "../../../decorators";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -26,7 +26,7 @@ export class RestaurantResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), RestaurantGuard)
   @Mutation(() => Restaurant, { name: "updateRestaurant" })
-  update(
+  async update(
     @GetRestaurant() { id }: Restaurant,
     @Args("update")
     update: UpdateRestaurant
@@ -46,8 +46,10 @@ export class RestaurantResolver {
     const { password } = (await this.restaurantService.find({
       id,
     })) as PRestaurant;
-    if (!this.securityService.compare({ str: update.old, hash: password }))
+
+    if (!this.securityService.compare({ str: update.old, hash: password })) {
       throw new UnauthorizedException();
+    }
     return this.restaurantService.updatePassword({
       where: { id },
       update,
@@ -56,9 +58,8 @@ export class RestaurantResolver {
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Mutation(() => Success, { name: "deleteRestaurant" })
-  async delete(@User() restaurant: JwtPayload) {
-    const deleted = await this.restaurantService.delete({ id: restaurant.id });
-    return deleted;
+  delete(@User() restaurant: JwtPayload) {
+    return this.restaurantService.delete({ id: restaurant.id });
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), RestaurantGuard)

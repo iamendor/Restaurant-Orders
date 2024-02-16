@@ -1,19 +1,30 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import {
   CreateOpenHour,
   OpenHour,
   UpdateOpenHour,
   WhereOpenHour,
-} from "../../../models/openhour.model";
-import { SomethingWentWrongException } from "../../../error";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/openhour.model";
+import { Success } from "../../../models/resources/success.model";
+import { VerifyResource } from "../../../interfaces/verify.interface";
+import { SUCCESS } from "../../../response";
 
 @Injectable()
 export class OpenHourService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
-  async create(data: CreateOpenHour, restaurantId: number): Promise<OpenHour> {
+  async isAlreadyCreated(
+    data: CreateOpenHour,
+    list?: OpenHour[]
+  ): Promise<OpenHour> {
+    if (!list) {
+      list = await this.list(data.restaurantId);
+    }
+    return list.find((oh) => oh.name == data.name);
+  }
+
+  async create({ restaurantId, ...data }: CreateOpenHour): Promise<OpenHour> {
     const openHour = await this.prismaService.openingHour.create({
       data: {
         ...data,
@@ -27,15 +38,12 @@ export class OpenHourService {
     return openHour;
   }
 
-  async createMany(
-    data: CreateOpenHour[],
-    restaurantId: number
-  ): Promise<Success> {
+  async createMany(data: Required<CreateOpenHour>[]): Promise<Success> {
     await this.prismaService.openingHour.createMany({
-      data: data.map((oh) => ({ ...oh, restaurantId })),
+      data,
       skipDuplicates: true,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   list(restaurantId: number) {
@@ -58,7 +66,7 @@ export class OpenHourService {
     await this.prismaService.openingHour.delete({
       where,
     });
-    return { message: "success" };
+    return SUCCESS;
   }
 
   async find(where: WhereOpenHour): Promise<OpenHour> {
@@ -66,5 +74,10 @@ export class OpenHourService {
       where,
     });
     return openHour;
+  }
+
+  async validate({ id, restaurantId }: VerifyResource) {
+    const oh = await this.find({ id });
+    return oh.restaurantId == restaurantId;
   }
 }

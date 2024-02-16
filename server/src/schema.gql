@@ -1,0 +1,565 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Address {
+  address1: String!
+  address2: String
+  city: String!
+  country: String!
+  id: Float!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  zip: String!
+}
+
+type Analytics {
+  createdAt: Date!
+  id: Float!
+  income: Income!
+  popularProduct: PopularProduct!
+  waiterOfTheDay: WaiterOfTheDay!
+}
+
+input AnalyticsFilter {
+  max: Date
+  min: Date
+}
+
+type AnalyticsSummary {
+  createdAt: Date!
+  income: IncomeSummary!
+  popularProduct: PopularProductSummary!
+  waiter: WaiterOfTheDaySummary!
+}
+
+type AuthRestaurant {
+  access_token: String!
+  restaurant: Restaurant!
+}
+
+type AuthWaiter {
+  access_token: String!
+  waiter: Waiter!
+}
+
+type BaseTask {
+  id: Float!
+  name: String!
+}
+
+type Category {
+  createdAt: Date!
+  id: Float!
+  level: Float!
+  name: String!
+  parent: Category
+  parentId: Float
+  products: [Product!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  root: Boolean!
+  subCategories: [Category!]!
+}
+
+input CategoryFilter {
+  maxLength: Float
+  name: String
+  root: Boolean
+}
+
+input CreateAddress {
+  address1: String!
+  address2: String
+  city: String!
+  country: String!
+  zip: String!
+}
+
+input CreateCategory {
+  level: Float
+  name: String!
+  parentId: Float
+  restaurantId: Float
+}
+
+input CreateMeal {
+  restaurantId: Float
+  tableId: Float!
+}
+
+input CreateOpenHour {
+  end: String!
+  name: String!
+  restaurantId: Float
+  start: String!
+}
+
+input CreateOrder {
+  description: String
+  isReady: Boolean
+  productId: Float!
+  quantity: Float
+  restaurantId: Float
+  tableId: Float!
+  waiterId: Float
+}
+
+input CreateProduct {
+  categoryId: Float!
+  name: String!
+  price: Float!
+  restaurantId: Float
+}
+
+input CreateRestaurant {
+  address: CreateAddress!
+  currency: WhereCurrency!
+  currencyId: Float
+  email: String!
+  name: String!
+  password: String!
+}
+
+input CreateTable {
+  name: String!
+  restaurantId: Float
+}
+
+input CreateWaiter {
+  email: String!
+  gender: String!
+  name: String!
+  password: String!
+  profileIcon: String
+  restaurantId: Float
+}
+
+type Currency {
+  id: Float!
+  name: String!
+  restaurantId: Float
+  symbol: String!
+}
+
+scalar Date
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Income {
+  createdAt: Date!
+  id: Float!
+  total: Float!
+}
+
+type IncomeRange {
+  bottom: Income!
+  top: Income!
+}
+
+type IncomeSummary {
+  average: Float!
+  median: Float!
+  range: IncomeRange!
+  total: Float!
+}
+
+type ListenOrder {
+  action: String
+  closed: Boolean!
+  createdAt: Date!
+  description: String
+  id: Float!
+  isReady: Boolean!
+  product: Product!
+  quantity: Float!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  table: Table!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+input LoginRestaurant {
+  email: String!
+  password: String!
+}
+
+input LoginWaiter {
+  email: String!
+  password: String!
+}
+
+type Meal {
+  end: Date!
+  id: Float!
+  orders: [Order!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  start: Date!
+  table: Table!
+  total: Float!
+  waiter: Waiter!
+}
+
+input MealFilter {
+  maxDate: DateTime
+  maxLength: Float
+  maxPrice: Float
+  minDate: DateTime
+  minPrice: Float
+}
+
+type Mutation {
+  createCategories(data: [CreateCategory!]!): Success!
+  createCategory(data: CreateCategory!): Category!
+  createMeal(data: CreateMeal!): Meal!
+  createOpenHour(data: CreateOpenHour!): OpenHour!
+  createOpenHours(data: [CreateOpenHour!]!): Success!
+  createOrder(data: CreateOrder!): Order!
+  createOrders(data: [CreateOrder!]!): Success!
+  createProduct(data: CreateProduct!): Product!
+  createProducts(data: [CreateProduct!]!): Success!
+  createTable(data: CreateTable!): Table!
+  createTables(data: [CreateTable!]!): Success!
+  createWaiter(data: CreateWaiter!): Waiter!
+  deleteCategory(where: WhereCategory!): Success!
+  deleteOpenHour(where: WhereOpenHour!): Success!
+  deleteOrder(where: WhereOrder!): Success!
+  deleteProduct(where: WhereProduct!): Success!
+  deleteRestaurant: Success!
+  deleteTable(where: WhereTable!): Success!
+  deleteWaiter(where: WhereWaiter!): Success!
+  loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
+  loginWaiter(credentials: LoginWaiter!): AuthWaiter!
+  signup(data: CreateRestaurant!): Restaurant!
+  updateCategory(data: UpdateCategory!): Category!
+  updateOpenHour(data: UpdateOpenHour!): OpenHour!
+  updateOrder(data: UpdateOrder!): Order!
+  updateProduct(data: UpdateProduct!): Product!
+  updateRestaurant(update: UpdateRestaurant!): Restaurant!
+  updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
+  updateTable(data: UpdateTable!): Table!
+  updateWaiter(data: UpdateWaiter!): Waiter!
+  updateWaiterPassword(data: UpdateWaiterPassword!): Success!
+}
+
+type OpenHour {
+  createdAt: Date!
+  end: String!
+  id: Float!
+  name: String!
+  restaurant: Restaurant
+  restaurantId: Float!
+  start: String!
+}
+
+type Order {
+  closed: Boolean!
+  createdAt: Date!
+  description: String
+  id: Float!
+  isReady: Boolean!
+  product: Product!
+  quantity: Float!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  table: Table!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+input OrderFilter {
+  description: String
+  isClosed: String = "false"
+  isReady: Boolean
+  max: DateTime
+  maxLength: Float
+  min: DateTime
+}
+
+type PopularProduct {
+  createdAt: Date!
+  id: Float!
+  numberOne: Product!
+  numberThree: Product!
+  numberTwo: Product!
+}
+
+type PopularProductSummary {
+  toplist: PopularProduct!
+}
+
+type Product {
+  category: Category!
+  createdAt: Date!
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  price: Float!
+  restaurant: Category!
+  restaurantId: Float!
+}
+
+input ProductFilter {
+  max: Float
+  maxLength: Float
+  min: Float
+  name: String
+}
+
+type Query {
+  analytics(filter: AnalyticsFilter): [Analytics!]!
+  analyticsSummary(range: String! = "week"): AnalyticsSummary!
+  categories(filter: CategoryFilter): [Category!]!
+  category(where: WhereCategory!): Category!
+  listCurrencies: [Currency!]!
+  listTasks(filter: TaskFilter): [Task!]!
+  meal(where: WhereMeal!): Meal!
+  meals(filter: MealFilter): [Meal!]!
+  openHours: [OpenHour!]!
+  order(where: WhereOrder!): Order!
+  orders(filter: OrderFilter = {isClosed: "false"}): [Order!]!
+  product(where: WhereProduct!): Product!
+  products(filter: ProductFilter): [Product!]!
+  restaurantInfo: Restaurant!
+  table(where: WhereTable!): Table!
+  tables(filter: TableFilter): [Table!]!
+  waiterInfo(where: WhereWaiter): Waiter!
+  waiters(filter: WaiterFilter): [Waiter!]!
+}
+
+type Restaurant {
+  address: Address!
+  categories: [Category!]!
+  createdAt: Date!
+  currency: Currency!
+  currencyId: Float!
+  email: String!
+  id: Float!
+  meals: [Meal!]!
+  name: String!
+  open: Boolean!
+  orders: [Order!]!
+  products: [Product!]!
+  settings: Settings!
+  tables: [Table!]!
+  tasks: [Task!]!
+  waiters: [Waiter!]!
+}
+
+type Settings {
+  enableAnalytics: Boolean!
+  id: Float!
+}
+
+type Subscription {
+  listenOrders: [ListenOrder!]!
+}
+
+type Success {
+  message: String!
+}
+
+type Table {
+  createdAt: Date!
+  id: Float!
+  name: String!
+  orders: [Order!]!
+  restaurant: Restaurant!
+  restaurantId: Float!
+  total: Float!
+}
+
+input TableFilter {
+  maxLength: Float
+  name: String
+}
+
+type Task {
+  base: BaseTask!
+  baseId: Float!
+  done: Boolean!
+  id: Float!
+  restaurant: Restaurant!
+}
+
+input TaskFilter {
+  done: String
+}
+
+input UpdateAddress {
+  address1: String!
+  address2: String!
+  city: String!
+  country: String!
+  zip: String!
+}
+
+input UpdateCategory {
+  update: UpdateCategoryData!
+  where: WhereCategory!
+}
+
+input UpdateCategoryData {
+  level: Float
+  name: String
+  parentId: Float
+  restaurantId: Float
+}
+
+input UpdateOpenHour {
+  update: UpdateOpenHourData!
+  where: WhereOpenHour!
+}
+
+input UpdateOpenHourData {
+  end: String
+  name: String
+  start: String
+}
+
+input UpdateOrder {
+  update: UpdateOrderData!
+  where: WhereOrder!
+}
+
+input UpdateOrderData {
+  description: String
+  isReady: Boolean
+  productId: Float
+  quantity: Float
+  tableId: Float
+}
+
+input UpdateProduct {
+  update: UpdateProductData!
+  where: WhereProduct!
+}
+
+input UpdateProductData {
+  categoryId: Float
+  name: String
+  price: Float
+  restaurantId: Float
+}
+
+input UpdateRestaurant {
+  address: UpdateAddress
+  currency: WhereCurrency
+  email: String
+  name: String
+  settings: UpdateSettings
+}
+
+input UpdateRestaurantPassword {
+  old: String!
+  password: String!
+}
+
+input UpdateSettings {
+  enableAnalytics: Boolean
+}
+
+input UpdateTable {
+  update: UpdateTableData!
+  where: WhereTable!
+}
+
+input UpdateTableData {
+  name: String
+  restaurantId: Float
+}
+
+input UpdateWaiter {
+  update: UpdateWaiterData!
+  where: WhereWaiter
+}
+
+input UpdateWaiterData {
+  email: String
+  gender: String
+  name: String
+  profileIcon: String
+  restaurantId: Float
+}
+
+input UpdateWaiterPassword {
+  update: UpdateWaiterPasswordData!
+  where: WhereWaiter
+}
+
+input UpdateWaiterPasswordData {
+  old: String
+  password: String!
+}
+
+type Waiter {
+  createdAt: Date!
+  email: String!
+  gender: String!
+  id: Float!
+  meals: [Meal!]!
+  name: String!
+  orders: [Order!]!
+  profileIcon: String
+  restaurant: Restaurant!
+  restaurantId: Float!
+}
+
+input WaiterFilter {
+  email: String
+  gender: String
+  maxLength: Float
+  name: String
+}
+
+type WaiterOfTheDay {
+  createdAt: Date!
+  id: Float!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+type WaiterOfTheDaySummary {
+  best: Waiter!
+}
+
+input WhereCategory {
+  id: Float!
+  root: Boolean
+}
+
+input WhereCurrency {
+  name: String!
+}
+
+input WhereMeal {
+  id: Float!
+  restaurantId: Float
+}
+
+input WhereOpenHour {
+  id: Float!
+}
+
+input WhereOrder {
+  id: Float!
+}
+
+input WhereProduct {
+  id: Float!
+}
+
+input WhereTable {
+  id: Float
+}
+
+input WhereWaiter {
+  email: String
+  id: Float
+  restaurantId: Float
+}

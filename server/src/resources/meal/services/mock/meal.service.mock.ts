@@ -1,30 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { getMocks } from "../../../../../test/helper/mocks";
+import { mockMeal, mockOrder } from "../../../../../test/helper/mock.unit";
 
 @Injectable()
 export class MealServiceMock {
   meal;
   order;
   constructor() {
-    this.meal = getMocks().meal();
-    this.order = getMocks().order({
-      restaurantId: 1,
-      victualId: 1,
-      tableId: 1,
-      waiterId: 1,
-    });
-  }
-
-  getOrdersOfTable() {
-    return {
-      restaurantId: 1,
-      restaurant: {
-        currency: {
-          id: 1,
-        },
-      },
-      orders: [this.order],
-    };
+    this.meal = mockMeal;
+    this.order = mockOrder;
   }
 
   clearTable() {
@@ -33,11 +16,8 @@ export class MealServiceMock {
 
   formatTable() {
     return {
-      sorted: this.getOrdersOfTable().orders,
-      start: this.meal.start,
-      end: this.meal.end,
-      waiterId: 1,
-      total: this.meal.total,
+      ...this.meal,
+      sorted: [this.order],
     };
   }
 
@@ -51,9 +31,5 @@ export class MealServiceMock {
 
   find(where) {
     return { ...this.meal, ...where };
-  }
-
-  delete() {
-    return { message: "success" };
   }
 }

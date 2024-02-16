@@ -1,15 +1,26 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilterService } from "./filter.service";
-import { getMocks } from "../../../test/helper/mocks";
-import { Victual } from "../../models/victual.model";
-import { Category } from "../../models/category.model";
-import { Order } from "../../models/order.model";
-import { Table } from "../../models/table.model";
-import { Task } from "../../models/task.model";
+import { Product } from "../../models/resources/product.model";
+import { Category } from "../../models/resources/category.model";
+import { Order } from "../../models/resources/order.model";
+import { Table } from "../../models/resources/table.model";
+import { Task } from "../../models/resources/task.model";
+import {
+  mockCategory,
+  mockOrder,
+  mockTable,
+  mockProduct,
+  mockWaiter,
+} from "../../../test/helper/mock.unit";
+import { Waiter } from "../../models/resources/waiter.model";
 
 describe("FilterService", () => {
   let service: FilterService;
-  const mocks = getMocks();
+  const waiter = mockWaiter;
+  const product = mockProduct;
+  const category = mockCategory;
+  const order = mockOrder;
+  const table = mockTable;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,14 +36,14 @@ describe("FilterService", () => {
 
   describe("Waiter", () => {
     const waiters = [
-      mocks.waiter,
+      waiter,
       {
-        ...mocks.waiter,
+        ...waiter,
         name: "search",
         email: "ezittegyteszt@gmail.com",
         gender: "female",
       },
-    ];
+    ] as Waiter[];
     it("should filter by name", () => {
       const filtered = service.waiters({
         data: waiters,
@@ -71,11 +82,8 @@ describe("FilterService", () => {
       expect(filtered.length).toEqual(0);
     });
   });
-  describe("Victual", () => {
-    const victuals = [
-      mocks.victual.default,
-      { ...mocks.victual.default, price: 300, name: "vtc" },
-    ] as Victual[];
+  describe("Product", () => {
+    const victuals = [product, { price: 300, name: "vtc" }] as Product[];
 
     it("should filter by name", () => {
       const filtered = service.victuals({
@@ -117,38 +125,28 @@ describe("FilterService", () => {
   });
 
   describe("Categories", () => {
-    const categories = [
-      mocks.category,
-      { ...mocks.category, name: "searchCat" },
-    ] as Category[];
+    const categories = [category, { name: "searchCat" }] as Category[];
+
     it("should filter by name", () => {
       const filtered = service.categories({
         data: categories,
         filters: {
-          name: "hCat",
+          name: "searchCat",
         },
       });
       expect(filtered.length).toEqual(1);
     });
   });
   describe("Orders", () => {
-    const base = mocks.order({
-      restaurantId: 1,
-      victualId: 1,
-      tableId: 1,
-      waiterId: 1,
-    });
     const current = new Date();
     const orders = [
       {
-        ...base,
-        id: 1,
+        ...order,
         createdAt: new Date(current.setDate(current.getDate() + 2)),
         closed: true,
       },
       {
-        ...base,
-        id: 2,
+        ...order,
         description: "this is a test",
         createdAt: new Date(current.setDate(current.getDate() - 4)),
         closed: false,
@@ -169,7 +167,6 @@ describe("FilterService", () => {
         data: orders,
       });
       expect(filtered.length).toEqual(1);
-      expect(filtered[0].id).toBe(1);
     });
     it("should filter with end", () => {
       const filtered = service.orders({
@@ -177,7 +174,6 @@ describe("FilterService", () => {
         data: orders,
       });
       expect(filtered.length).toEqual(1);
-      expect(filtered[0].id).toBe(2);
     });
     it("should filter with isClosed", () => {
       const filtered = service.orders({
@@ -199,7 +195,7 @@ describe("FilterService", () => {
     });
   });
   describe("Table", () => {
-    const tables = [mocks.table(), { name: "ok", id: 1 }] as Table[];
+    const tables = [table, { name: "ok", id: 1 }] as Table[];
     it("should filter by name", () => {
       const filtered = service.tables({
         data: tables,

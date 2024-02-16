@@ -1,8 +1,8 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { FieldService } from "../services/field.service";
-import { Order } from "../../../models/order.model";
-import { Restaurant } from "../../../models/restaurant.model";
-import { Table } from "../../../models/table.model";
+import { Order } from "../../../models/resources/order.model";
+import { Restaurant } from "../../../models/resources/restaurant.model";
+import { Table } from "../../../models/resources/table.model";
 import { CacheService } from "../../../cache/services/cache.service";
 
 @Resolver((of) => Table)
@@ -17,7 +17,7 @@ export class FieldResolver {
   }
 
   private getTotalOfOrders(orders: Order[]) {
-    return orders.reduce((acc, c) => acc + c.victual.price * c.quantity, 0);
+    return orders.reduce((acc, c) => acc + c.product.price * c.quantity, 0);
   }
 
   @ResolveField(() => Restaurant, { name: "restaurant" })

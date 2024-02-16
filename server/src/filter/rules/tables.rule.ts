@@ -1,4 +1,4 @@
-import { Table } from "../../models/table.model";
+import { Table } from "../../models/resources/table.model";
 import { Rule } from "../interfaces/rule.interface";
 import { ITableFilter } from "../interfaces/table.interface";
 import { MaxLength } from "./max.rule";
