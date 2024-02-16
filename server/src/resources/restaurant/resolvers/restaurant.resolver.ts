@@ -1,4 +1,8 @@
-import { UnauthorizedException, UseGuards } from "@nestjs/common";
+import {
+  UnauthorizedException,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
@@ -16,6 +20,7 @@ import {
 } from "../../../models/resources/restaurant.model";
 import { Success } from "../../../models/resources/success.model";
 import { GetRestaurant } from "../../../decorators";
+import { ExcludePassowrdInterceptor } from "../../../interceptors/exclude.interceptor";
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -25,6 +30,7 @@ export class RestaurantResolver {
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), RestaurantGuard)
+  @UseInterceptors(ExcludePassowrdInterceptor)
   @Mutation(() => Restaurant, { name: "updateRestaurant" })
   async update(
     @GetRestaurant() { id }: Restaurant,
@@ -63,6 +69,7 @@ export class RestaurantResolver {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), RestaurantGuard)
+  @UseInterceptors(ExcludePassowrdInterceptor)
   @Query(() => Restaurant, { name: "restaurantInfo" })
   info(@GetRestaurant() restaurant: Restaurant) {
     return restaurant;

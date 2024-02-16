@@ -10,6 +10,8 @@ import {
 import { AuthWaiter, LoginWaiter } from "../../models/resources/waiter.model";
 import { TaskService } from "../../resources/task/services/task.service";
 import { CurrencyService } from "../../resources/currency/services/currency.service";
+import { UseInterceptors } from "@nestjs/common";
+import { ExcludePassowrdInterceptor } from "../../interceptors/exclude.interceptor";
 
 @Resolver("Auth")
 export class AuthResolver {
@@ -20,6 +22,7 @@ export class AuthResolver {
     private readonly currencyService: CurrencyService
   ) {}
 
+  @UseInterceptors(ExcludePassowrdInterceptor)
   @Mutation(() => Restaurant)
   async signup(
     @Args("data", { type: () => CreateRestaurant })
