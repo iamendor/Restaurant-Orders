@@ -14,14 +14,20 @@ import { ReadAnalyticsService } from "../services/analytics.read.service";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IncomeService } from "../../income/services/income.service";
+import { PopularProductSummary } from "../../../models/analytics/popularproduct.model";
+import { PopularProductService } from "../../product/services/product.service";
 
+export interface SummaryContext {
+  analytics: number[];
+}
 @Resolver((of) => AnalyticsSummary)
 export class AnalyticsSummaryResolver {
   constructor(
     private readonly filterService: FilterService,
     private readonly analyticsService: ReadAnalyticsService,
     private readonly rangeService: RangeService,
-    private readonly incomeService: IncomeService
+    private readonly incomeService: IncomeService,
+    private readonly productService: PopularProductService
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
@@ -41,15 +47,19 @@ export class AnalyticsSummaryResolver {
           })
         : analytics;
 
-    ctx.analytics = filtered;
+    ctx.analytics = filtered.map((a) => a.id);
     return { createdAt: new Date() };
   }
 
   @ResolveField(() => IncomeSummary, { name: "income" })
-  async incomeSummary(@Context() { analytics }: { analytics: Analytics[] }) {
-    const incomes = await this.incomeService.findMany(
-      analytics.map((a) => a.id)
-    );
+  async incomeSummary(@Context() { analytics }: SummaryContext) {
+    const incomes = await this.incomeService.findMany(analytics);
     return this.incomeService.createSummary(incomes);
+  }
+
+  @ResolveField(() => PopularProductSummary, { name: "popularProduct" })
+  async popularProductSummary(@Context() { analytics }: SummaryContext) {
+    const products = await this.productService.findMany(analytics);
+    return this.productService.createSummary(products);
   }
 }

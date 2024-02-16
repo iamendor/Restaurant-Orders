@@ -15,3 +15,9 @@ export class PopularProduct {
   @Field(() => Product)
   numberThree: Product;
 }
+
+@ObjectType()
+export class PopularProductSummary {
+  @Field(() => PopularProduct)
+  toplist: PopularProduct;
+}

@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
 import { FieldService } from "./field.service";
+import { PopularProductService } from "./product.service";
 
 @Module({
-  providers: [FieldService],
-  exports: [FieldService],
+  providers: [PopularProductService, FieldService],
+  exports: [PopularProductService, FieldService],
 })
 export class PopularProductServiceModule {}

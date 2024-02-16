@@ -29,6 +29,7 @@ input AnalyticsFilter {
 type AnalyticsSummary {
   createdAt: Date!
   income: IncomeSummary!
+  popularProduct: PopularProductSummary!
 }
 
 type AuthRestaurant {
@@ -285,6 +286,10 @@ type PopularProduct {
   numberOne: Product!
   numberThree: Product!
   numberTwo: Product!
+}
+
+type PopularProductSummary {
+  toplist: PopularProduct!
 }
 
 type Product {

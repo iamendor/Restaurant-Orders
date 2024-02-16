@@ -7,6 +7,7 @@ import { FilterModule } from "../../../filter/filter.module";
 import { AnalyticsSummaryResolver } from "./analytics.summary.resolver";
 import { AnalyticsHelperModule } from "../../services/analytics.helper.module";
 import { IncomeServiceModule } from "../../income/services/income.service.module";
+import { PopularProductServiceModule } from "../../product/services/product.service.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { IncomeServiceModule } from "../../income/services/income.service.module
     FilterModule,
     AnalyticsHelperModule,
     IncomeServiceModule,
+    PopularProductServiceModule,
   ],
   providers: [AnalyticsResolver, AnalyticsSummaryResolver, FieldResolver],
 })
