@@ -19,12 +19,20 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "/": "Migrate development",
     "migrate:main": "prisma migrate dev --schema ./prisma/main/schema.prisma",
     "migrate:static": "prisma migrate dev --schema ./prisma/static/schema.prisma",
     "migrate:analytics": "prisma migrate dev --schema ./prisma/analytics/schema.prisma",
+    "//": "Generate Prisma libraries",
     "generate:main": "prisma generate --schema ./prisma/main/schema.prisma",
     "generate:static": "prisma generate --schema ./prisma/static/schema.prisma",
-    "generate:analytics": "prisma generate --schema ./prisma/analytics/schema.prisma"
+    "generate:analytics": "prisma generate --schema ./prisma/analytics/schema.prisma",
+    "prisma:generate": "npm run generate:main && npm run generate:static && npm run generate:analytics",
+    "///": "Deploy database to production",
+    "database:deploy:static": "prisma deploy --schema ./prisma/static/schema.prisma",
+    "database:deploy:main": "prisma deploy --schema ./prisma/main/schema.prisma",
+    "database:deploy:analytics": "prisma deploy --schema ./prisma/analytics/schema.prisma",
+    "database:deploy": "npm run database:deploy:static && npm run database:deploy:main && npm run database:deploy:analytics"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",

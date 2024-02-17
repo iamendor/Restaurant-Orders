@@ -16,7 +16,7 @@ import { PrismaModule } from "../prisma/prisma.module";
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
-        API_PORT: Joi.number().required(),
+        PORT: Joi.number().required(),
         NODE_ENV: Joi.string().default("test"),
       }).options({
         abortEarly: true,

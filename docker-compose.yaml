@@ -1,31 +1,77 @@
 services:
   db:
-    container_name: swr_db
+    container_name: db
     image: mysql
     restart: always
+    networks:
+      - backend
     volumes:
-      - swr_db:/var/lib/mysql
+      - db:/var/lib/mysql
     environment:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     ports:
       - "3306:3306"
-    expose:
-      - 3306
-  redis:
-    container_name: swr_redis
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+  cache:
+    container_name: cache
     restart: always
     image: redis
     volumes:
-      - swr_redis:/etc/redis
+      - cache:/etc/redis
+    networks:
+      - backend
     environment:
       - REDIS_PORT=6379
       - REDIS_DATABASES=1
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      timeout: 10s
+      retries: 5
+  api:
+    container_name: api
+    restart: always
+    networks:
+      - backend
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+      args:
+        - MAIN_DATABASE_URL=${MAIN_DATABASE_URL}
+        - MAIN_SHADOW_DATABASE_URL=${MAIN_SHADOW_DATABASE_URL}
+        - ANALYTICS_DATABASE_URL=${ANALYTICS_DATABASE_URL}
+        - ANALYTICS_SHADOW_DATABASE_URL=${ANALYTICS_SHADOW_DATABASE_URL}
+        - STATIC_DATABASE_URL=${STATIC_DATABASE_URL}
+        - STATIC_SHADOW_DATABASE_URL=${STATIC_SHADOW_DATABASE_URL}
+    depends_on:
+      - cache
+      - db
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=${API_PORT}
+      - REDIS_URL=${REDIS_URL}
+      - MAIN_DATABASE_URL=${MAIN_DATABASE_URL}
+      - MAIN_SHADOW_DATABASE_URL=${MAIN_SHADOW_DATABASE_URL}
+      - ANALYTICS_DATABASE_URL=${ANALYTICS_DATABASE_URL}
+      - ANALYTICS_SHADOW_DATABASE_URL=${ANALYTICS_SHADOW_DATABASE_URL}
+      - STATIC_DATABASE_URL=${STATIC_DATABASE_URL}
+      - STATIC_SHADOW_DATABASE_URL=${STATIC_SHADOW_DATABASE_URL}
+    ports:
+      - ${API_PORT}:${API_PORT}
     expose:
-      - 6379
+      - ${API_PORT}
+    volumes:
+      - api:/usr/app
 volumes:
-  swr_db:
-  swr_redis:
+  db:
+  cache:
+  api:
+networks:
+  backend:
+    driver: bridge
