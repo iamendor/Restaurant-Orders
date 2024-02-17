@@ -9,6 +9,7 @@ import {
   mockPopularFood,
   mockWaiterOfTheDay,
 } from "../../../../test/helper/mock.analytics";
+import { mockRestaurant } from "../../../../test/helper/mock.unit";
 
 describe("AnalyticsService", () => {
   let service: CreateAnalyticsService;
@@ -58,6 +59,12 @@ describe("AnalyticsService", () => {
       .fn()
       .mockReturnValueOnce(mockPopularFood)
       .mockReturnValueOnce(mockWaiterOfTheDay);
+    prismaMain.restaurant.findMany = jest.fn().mockReturnValue([
+      {
+        ...mockRestaurant,
+        settings: { enableAnalytics: true },
+      },
+    ]);
     prismaAnalytics.analytics.create = jest.fn().mockImplementation(() => {});
 
     const isSuccess = await service.trigger();

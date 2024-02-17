@@ -61,6 +61,6 @@ describe("Analytics", () => {
       data: { analytics },
     } = body;
 
-    expect(analytics.length).toBe(9);
+    expect(analytics.length).toBe(7);
   });
 });
