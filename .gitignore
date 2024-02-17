@@ -4,12 +4,10 @@
 dist
 node_modules
 
-migrations/
 .vscode
 schema.gql
 
 generated/
-backup/
 
 # Logs
 logs

@@ -29,9 +29,9 @@
     "generate:analytics": "prisma generate --schema ./prisma/analytics/schema.prisma",
     "prisma:generate": "npm run generate:main && npm run generate:static && npm run generate:analytics",
     "///": "Deploy database to production",
-    "database:deploy:static": "prisma deploy --schema ./prisma/static/schema.prisma",
-    "database:deploy:main": "prisma deploy --schema ./prisma/main/schema.prisma",
-    "database:deploy:analytics": "prisma deploy --schema ./prisma/analytics/schema.prisma",
+    "database:deploy:static": "prisma migrate deploy --schema ./prisma/static/schema.prisma",
+    "database:deploy:main": "prisma migrate deploy --schema ./prisma/main/schema.prisma",
+    "database:deploy:analytics": "prisma migrate deploy --schema ./prisma/analytics/schema.prisma",
     "database:deploy": "npm run database:deploy:static && npm run database:deploy:main && npm run database:deploy:analytics"
   },
   "dependencies": {
