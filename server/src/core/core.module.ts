@@ -8,6 +8,7 @@ import { DateScalar } from "../models/resources/date.model";
 import * as Joi from "joi";
 import { RedisModule } from "@nestjs-modules/ioredis";
 import { PrismaModule } from "../prisma/prisma.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Global()
 @Module({
@@ -35,6 +36,7 @@ import { PrismaModule } from "../prisma/prisma.module";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
   ],
   providers: [DateScalar],

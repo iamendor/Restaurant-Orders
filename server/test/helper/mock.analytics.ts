@@ -38,3 +38,23 @@ export const mockAnalytics = [1, 2, 3, 4, 5, 6, 7].map((id) => {
     },
   };
 });
+
+export const e2eAnalytics = mockAnalytics.map((a) => ({
+  ...a,
+  id: undefined,
+  popularProduct: {
+    ...a.popularProduct,
+    id: undefined,
+    analyticsId: undefined,
+  },
+  waiterOfTheDay: {
+    ...a.waiterOfTheDay,
+    id: undefined,
+    analyticsId: undefined,
+  },
+  income: {
+    ...a.income,
+    id: undefined,
+    analyticsId: undefined,
+  },
+}));

@@ -1,9 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { PrismaAnalyticsService } from "../../../prisma/analytics/services/prisma.analytics.service";
+import { Cron } from "@nestjs/schedule";
 
 @Injectable()
 export class CreateAnalyticsService {
+  logger: Logger = new Logger();
+  private CONTEXT = "AnalyticsService";
   constructor(
     private readonly prismaMainService: PrismaMainService,
     private readonly prismaAnalyticsService: PrismaAnalyticsService
@@ -15,8 +18,9 @@ export class CreateAnalyticsService {
     start.setHours(0, 0, 0, 0);
     return { start: start.toISOString(), end: end.toISOString() };
   }
-
+  @Cron("58 23 * * *")
   async trigger() {
+    this.logger.log("Creating analytics...", this.CONTEXT);
     const restaurants = (
       await this.prismaMainService.restaurant.findMany({
         include: { settings: true },
@@ -48,7 +52,9 @@ export class CreateAnalyticsService {
           },
         },
       });
+      this.logger.log(`Analytics created for ${restaurantId}`, this.CONTEXT);
     }
+    this.logger.log("Analytics created succesfully", this.CONTEXT);
     return true;
   }
 
