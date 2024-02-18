@@ -1,9 +1,8 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+const apolloClient = new ApolloClient({
+  uri: process.env.NEXT_PUBLIC_API,
+  cache: new InMemoryCache(),
+  defaultOptions: { query: { fetchPolicy: "no-cache" } },
+});
 
-const createApolloClient = () =>
-  new ApolloClient({
-    uri: process.env.API,
-    cache: new InMemoryCache(),
-  });
-
-export default createApolloClient;
+export default apolloClient;

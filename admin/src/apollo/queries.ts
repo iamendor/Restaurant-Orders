@@ -63,3 +63,35 @@ export const DASHBOARD = gql`
     }
   }
 `;
+
+export const ACCOUNT = gql`
+  query getAccountData {
+    restaurantInfo {
+      name
+      email
+      createdAt
+      open
+      address {
+        country
+        zip
+        city
+        address1
+        address2
+      }
+      currency {
+        name
+      }
+      settings {
+        enableAnalytics
+      }
+    }
+  }
+`;
+
+export const CURRENCIES = gql`
+  query curr {
+    listCurrencies {
+      name
+    }
+  }
+`;

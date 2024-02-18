@@ -106,14 +106,13 @@ export function Order({ order }) {
   );
 }
 
-
-
 export function TopIncome({ income, today, symbol }) {
   const createdAt = useMemo(
     () => new Date(income.createdAt).toLocaleDateString().replace(/\s/g, ""),
     []
   );
   const compareToday = useMemo(() => {
+    //TODO: difference on zero
     const diff = Math.round(((income.total - today) / today) * 100);
     if (diff < 0) return `${Math.abs(diff)}% lower than today!`;
     return `${diff}% higher than today!`;

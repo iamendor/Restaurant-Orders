@@ -1,5 +1,6 @@
+import apolloClient from "@/apollo";
 import createApolloClient from "@/apollo";
-import { SignIn } from "@/apollo/mutations";
+import { SIGN_IN } from "@/apollo/mutations";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 export const authOptions: NextAuthOptions = {
@@ -31,11 +32,10 @@ export const authOptions: NextAuthOptions = {
       },
 
       authorize: async (credentials, req) => {
-        const client = createApolloClient();
         const { email, password } = credentials;
 
-        const signin = await client.mutate({
-          mutation: SignIn,
+        const signin = await apolloClient.mutate({
+          mutation: SIGN_IN,
           variables: {
             credentials: {
               email,

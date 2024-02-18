@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 const HREF = {
   "/dashboard": "Dashboard",
   "/dashboard/waiters": "Waiters",
+  "/dashboard/account": "Settings",
 };
 
 export default function TopBar({ name }) {

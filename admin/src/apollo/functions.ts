@@ -1,24 +1,35 @@
 import { getServerSession } from "next-auth";
-import createApolloClient from ".";
-import { DASHBOARD } from "./queries";
+import { ACCOUNT, DASHBOARD } from "./queries";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { ISession } from "@/interfaces/session";
+import apolloClient from ".";
+
+export const genAuthHeaders = (jwt) => ({
+  headers: { Authorization: `Bearer ${jwt}` },
+});
 
 export async function getDashboardData() {
-  const session: any = await getServerSession(authOptions);
-  const jwt = session.jwt;
-  const client = createApolloClient();
+  const { jwt }: ISession = await getServerSession(authOptions);
+
   const min = new Date();
   min.setDate(min.getDate() - 8);
-  const { data, error } = await client.query({
+  const { data, error } = await apolloClient.query({
     query: DASHBOARD,
     variables: {
       min,
     },
-    context: {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    },
+    context: genAuthHeaders(jwt),
+  });
+  if (!data && error) return null;
+  return data;
+}
+
+export async function getAccountData() {
+  const { jwt }: ISession = await getServerSession(authOptions);
+
+  const { data, error } = await apolloClient.query({
+    query: ACCOUNT,
+    context: genAuthHeaders(jwt),
   });
   if (!data && error) return null;
   return data;

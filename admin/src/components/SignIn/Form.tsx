@@ -5,38 +5,45 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Button from "../Button";
 import Input from "../Input";
-import styles from "@/app/signin/page.module.scss";
-import { useState } from "react";
+import styles from "@/styles/SignIn/Form.module.scss";
 import { useRouter } from "next/navigation";
 
 const Form = () => {
   const router = useRouter();
-  const [error, setError] = useState(null);
   const REGISTER = "";
   const {
     handleSubmit,
     register,
+    setError,
     formState: { errors },
   } = useForm();
   console.log(errors);
   const onSubmit = async (data) => {
-    console.log("run");
-    setError(null);
     const { ok, error: err } = await signIn("credentials", {
       ...data,
       redirect: false,
     });
     if (!ok) {
-      setError(err);
+      if (err == "not found")
+        return setError("email", {
+          type: "notfound",
+          message: "Email was not found!",
+        });
+      if (err == "unauthorized")
+        return setError("password", {
+          type: "invalid",
+          message: "Invalid password!",
+        });
+      return;
     }
     router.push("/dashboard");
   };
   return (
     <form className={styles.credentials} onSubmit={handleSubmit(onSubmit)}>
       <h1>Login</h1>
-      <p id={styles.error}>{error && error}</p>
       <Input
-        error={errors?.email?.message}
+        className={styles.input}
+        error={errors?.email}
         register={register("email", { required: "You must provide an email!" })}
       >
         <Image
@@ -47,7 +54,8 @@ const Form = () => {
         />
       </Input>
       <Input
-        error={errors?.password?.message}
+        className={styles.input}
+        error={errors?.password}
         register={register("password", {
           required: "You must provide a password!",
           minLength: {

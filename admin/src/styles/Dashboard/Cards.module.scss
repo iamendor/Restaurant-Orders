@@ -1,9 +1,3 @@
-@mixin card($color) {
-  @include flex-center;
-  background-color: $color;
-  border-radius: 0.5rem;
-  padding: 1rem;
-}
 .income {
   @include flex-center;
   @include card($primary-color);

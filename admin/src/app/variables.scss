@@ -2,11 +2,20 @@
 
 $bg-color: #cee0ff;
 $primary-color: #213e60;
+$primary-pale: #3f5d81;
 $secondary-color: #faf9f8;
 $accent-color: #e68c3a;
 $white: #ffffff;
 $primary-selected: #173252;
 $ready-color: #2abe71;
+$ready-pale: #7beab1;
+
+@mixin card($color) {
+  @include flex-center;
+  background-color: $color;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
 
 @mixin h1 {
   @include font;
