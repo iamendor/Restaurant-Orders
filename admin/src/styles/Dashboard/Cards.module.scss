@@ -1,0 +1,32 @@
+.income {
+  @include flex-center;
+  @include h5;
+  gap: 15%;
+  grid-column-start: 1;
+  grid-column-end: 5;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  background-color: $primary-color;
+  border-radius: 0.5rem;
+
+  .content {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+
+    h2,
+    p {
+      @include font;
+      font-weight: 100;
+      color: $secondary-color;
+    }
+    h2 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1.5rem;
+    }
+  }
+}
