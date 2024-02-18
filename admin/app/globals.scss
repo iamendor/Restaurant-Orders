@@ -1,0 +1,25 @@
+:root,
+* {
+  font-family: var(--antonio);
+  font-size: 16px;
+}
+
+@mixin h1 {
+  font-weight: 500;
+}
+
+@mixin h2 {
+  font-weight: 400;
+}
+
+@mixin h3 {
+  font-weight: 300;
+}
+
+@mixin h4 {
+  font-weight: 200;
+}
+
+@mixin h5 {
+  font-weight: 100;
+}
