@@ -4,13 +4,12 @@ import { AuthService } from "./auth.service";
 import { RestaurantService } from "../../resources/restaurant/services/restaurant.service";
 import { WaiterService } from "../../resources/waiter/services/waiter.service";
 import { SecurityModule } from "../../security/security.module";
-import { PrismaModule } from "../../prisma/prisma.module";
+import { PrismaMainModule } from "../../prisma/main/prisma.main.module";
 import { RestaurantServiceMock } from "../../resources/restaurant/services/mock/restaurant.service.mock";
 import { WaiterServiceMock } from "../../resources/waiter/services/mock/waiter.service.mock";
 
 import { JwtPayload } from "../../interfaces/jwt.interface";
 import { mockRestaurant, mockWaiter } from "../../../test/helper/mock.unit";
-import { Restaurant } from "../../models/restaurant.model";
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -37,7 +36,7 @@ describe("AuthService", () => {
           secret: "test",
         }),
         SecurityModule,
-        PrismaModule,
+        PrismaMainModule,
       ],
       providers: [
         AuthService,
@@ -71,7 +70,7 @@ describe("AuthService", () => {
     expect(invalidWaiter).toBeNull();
   });
   it("should generate jwt for restaurant", async () => {
-    const payload = service.generateRestaurantJwt(mocks.restaurantModel);
+    const payload = service.generateRestaurantJwt(mockRestaurant);
     expect(typeof payload === "string").toBeTruthy();
     const decoded: JwtPayload = jwt.decode(payload) as JwtPayload;
     expect(decoded.sub).toBe(1);

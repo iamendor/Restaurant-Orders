@@ -3,108 +3,198 @@
 # ------------------------------------------------------
 
 type Address {
+  """The first line of address"""
   address1: String!
+
+  """The second line of address(optional)"""
   address2: String
+
+  """City"""
   city: String!
+
+  """Country"""
   country: String!
   id: Float!
   restaurant: Restaurant!
   restaurantId: Float!
+
+  """Zip code"""
   zip: String!
 }
 
+type Analytics {
+  createdAt: Date!
+  id: Float!
+  income: Income!
+  popularProduct: PopularProduct!
+  waiterOfTheDay: WaiterOfTheDay!
+}
+
+input AnalyticsFilter {
+  """Exclude data created before the date"""
+  max: Date
+
+  """Exclude data created later the date"""
+  min: Date
+}
+
+type AnalyticsSummary {
+  createdAt: Date!
+  income: IncomeSummary!
+  popularProduct: PopularProductSummary!
+
+  """The range of the summary"""
+  range: String!
+  waiter: WaiterOfTheDaySummary!
+}
+
 type AuthRestaurant {
+  """The JWT token for authorization"""
   access_token: String!
   restaurant: Restaurant!
 }
 
 type AuthWaiter {
+  """The JWT token for authorization"""
   access_token: String!
   waiter: Waiter!
+}
+
+type BaseTask {
+  id: Float!
+
+  """Name"""
+  name: String!
 }
 
 type Category {
   createdAt: Date!
   id: Float!
+
+  """The level of the category"""
+  level: Float!
+
+  """Name"""
   name: String!
   parent: Category
   parentId: Float
+  products: [Product!]!
   restaurant: Restaurant!
   restaurantId: Float!
   root: Boolean!
   subCategories: [Category!]!
-  victuals: [Victual!]!
 }
 
 input CategoryFilter {
+  """Add max length of list"""
   maxLength: Float
+
+  """Use it for searching by name"""
   name: String
+
+  """Check if category is a root category(or not)"""
   root: Boolean
 }
 
 input CreateAddress {
+  """The first line of address"""
   address1: String!
+
+  """The second line of address(optional)"""
   address2: String
+
+  """City"""
   city: String!
+
+  """Country"""
   country: String!
+
+  """Zip code"""
   zip: String!
 }
 
 input CreateCategory {
+  level: Float
   name: String!
   parentId: Float
+  restaurantId: Float
 }
 
 input CreateMeal {
+  restaurantId: Float
   tableId: Float!
 }
 
 input CreateOpenHour {
+  """The end of the shift"""
   end: String!
+
+  """The day of the opening hour"""
   name: String!
+  restaurantId: Float
+
+  """The start of the shift"""
   start: String!
 }
 
 input CreateOrder {
   description: String
   isReady: Boolean
+  productId: Float!
   quantity: Float
   restaurantId: Float
   tableId: Float!
-  victualId: Float!
   waiterId: Float
+}
+
+input CreateProduct {
+  categoryId: Float!
+  name: String!
+  price: Float!
+  restaurantId: Float
 }
 
 input CreateRestaurant {
   address: CreateAddress!
   currency: WhereCurrency!
+  currencyId: Float
   email: String!
   name: String!
   password: String!
 }
 
 input CreateTable {
+  """Name"""
   name: String!
-}
-
-input CreateVictual {
-  categoryId: Float!
-  name: String!
-  price: Float!
+  restaurantId: Float
 }
 
 input CreateWaiter {
+  """Email"""
   email: String!
+
+  """Gender"""
   gender: String!
+
+  """Name"""
   name: String!
   password: String!
+
+  """Profile icon"""
   profileIcon: String
+  restaurantId: Float
 }
 
 type Currency {
   id: Float!
+
+  """Name"""
   name: String!
-  restaurantId: Float!
+
+  """This is only used inside api, always returns null!"""
+  restaurantId: Float
+
+  """Symbol"""
   symbol: String!
 }
 
@@ -115,18 +205,58 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Income {
+  createdAt: Date!
+  id: Float!
+
+  """The total made"""
+  total: Float!
+}
+
+type IncomeRange {
+  """The lowest income"""
+  bottom: Income!
+
+  """The highest income"""
+  top: Income!
+}
+
+type IncomeSummary {
+  """The average of the incomes"""
+  average: Float!
+
+  """The median of the incomes"""
+  median: Float!
+
+  """The highest and lowest income"""
+  range: IncomeRange!
+
+  """The total made at the date"""
+  total: Float!
+}
+
 type ListenOrder {
   action: String
+
+  """Returns true if it is closed and added to meal"""
   closed: Boolean!
   createdAt: Date!
+
+  """Additonal description"""
   description: String
   id: Float!
+
+  """The order's status"""
   isReady: Boolean!
+  product: Product!
+
+  """Quantity"""
   quantity: Float!
   restaurant: Restaurant!
+  restaurantId: Float!
   table: Table!
-  victual: Victual!
   waiter: Waiter!
+  waiterId: Float!
 }
 
 input LoginRestaurant {
@@ -135,27 +265,42 @@ input LoginRestaurant {
 }
 
 input LoginWaiter {
+  """Email"""
   email: String!
   password: String!
 }
 
 type Meal {
+  """The last order's date created in the meal"""
   end: Date!
   id: Float!
   orders: [Order!]!
   restaurant: Restaurant!
   restaurantId: Float!
+
+  """The first order's date created in the meal"""
   start: Date!
   table: Table!
+
+  """The total income of the meal"""
   total: Float!
   waiter: Waiter!
 }
 
 input MealFilter {
+  """Exclude data created before the date"""
   maxDate: DateTime
+
+  """Add max length of list"""
   maxLength: Float
+
+  """Exclude data that has more total income"""
   maxPrice: Float
+
+  """Exclude data created later the date"""
   minDate: DateTime
+
+  """Exclude data that has less total income"""
   minPrice: Float
 }
 
@@ -167,18 +312,17 @@ type Mutation {
   createOpenHours(data: [CreateOpenHour!]!): Success!
   createOrder(data: CreateOrder!): Order!
   createOrders(data: [CreateOrder!]!): Success!
+  createProduct(data: CreateProduct!): Product!
+  createProducts(data: [CreateProduct!]!): Success!
   createTable(data: CreateTable!): Table!
   createTables(data: [CreateTable!]!): Success!
-  createVictual(data: CreateVictual!): Victual!
-  createVictuals(data: [CreateVictual!]!): Success!
   createWaiter(data: CreateWaiter!): Waiter!
   deleteCategory(where: WhereCategory!): Success!
-  deleteMeal(where: WhereMeal!): Success!
   deleteOpenHour(where: WhereOpenHour!): Success!
   deleteOrder(where: WhereOrder!): Success!
+  deleteProduct(where: WhereProduct!): Success!
   deleteRestaurant: Success!
   deleteTable(where: WhereTable!): Success!
-  deleteVictual(where: WhereVictual!): Success!
   deleteWaiter(where: WhereWaiter!): Success!
   loginRestaurant(credentials: LoginRestaurant!): AuthRestaurant!
   loginWaiter(credentials: LoginWaiter!): AuthWaiter!
@@ -186,60 +330,130 @@ type Mutation {
   updateCategory(data: UpdateCategory!): Category!
   updateOpenHour(data: UpdateOpenHour!): OpenHour!
   updateOrder(data: UpdateOrder!): Order!
+  updateProduct(data: UpdateProduct!): Product!
   updateRestaurant(update: UpdateRestaurant!): Restaurant!
   updateRestaurantPassword(update: UpdateRestaurantPassword!): Success!
   updateTable(data: UpdateTable!): Table!
-  updateVictual(data: UpdateVictual!): Victual!
   updateWaiter(data: UpdateWaiter!): Waiter!
   updateWaiterPassword(data: UpdateWaiterPassword!): Success!
 }
 
 type OpenHour {
   createdAt: Date!
+
+  """The end of the shift"""
   end: String!
   id: Float!
+
+  """The day of the opening hour"""
   name: String!
+
+  """The restaurant of the opening hour"""
   restaurant: Restaurant
   restaurantId: Float!
+
+  """The start of the shift"""
   start: String!
 }
 
 type Order {
+  """Returns true if it is closed and added to meal"""
   closed: Boolean!
   createdAt: Date!
+
+  """Additonal description"""
   description: String
   id: Float!
+
+  """The order's status"""
   isReady: Boolean!
+  product: Product!
+
+  """Quantity"""
   quantity: Float!
   restaurant: Restaurant!
+  restaurantId: Float!
   table: Table!
-  victual: Victual!
   waiter: Waiter!
+  waiterId: Float!
 }
 
 input OrderFilter {
   description: String
   isClosed: String = "false"
+
+  """Check if it is ready(or not)"""
   isReady: Boolean
+
+  """Exclude data created before the date"""
   max: DateTime
+
+  """Add max length of list"""
   maxLength: Float
+
+  """Exclude data created later the date"""
   min: DateTime
 }
 
+type PopularProduct {
+  createdAt: Date!
+  id: Float!
+  numberOne: Product!
+  numberThree: Product!
+  numberTwo: Product!
+}
+
+type PopularProductSummary {
+  """Toplist of the popular products"""
+  toplist: PopularProduct!
+}
+
+type Product {
+  category: Category!
+  createdAt: Date!
+  id: Float!
+
+  """Name"""
+  name: String!
+  orders: [Order!]!
+
+  """Price"""
+  price: Float!
+  restaurant: Category!
+  restaurantId: Float!
+}
+
+input ProductFilter {
+  """Exclude data that has more price"""
+  max: Float
+
+  """Add max length of list"""
+  maxLength: Float
+
+  """Exclude data that has less price"""
+  min: Float
+
+  """Use it for searching by name"""
+  name: String
+}
+
 type Query {
+  analytics(filter: AnalyticsFilter): [Analytics!]!
+  analyticsSummary(range: String! = "week"): AnalyticsSummary!
   categories(filter: CategoryFilter): [Category!]!
   category(where: WhereCategory!): Category!
   listCurrencies: [Currency!]!
+  listTasks(filter: TaskFilter): [Task!]!
   meal(where: WhereMeal!): Meal!
   meals(filter: MealFilter): [Meal!]!
   openHours: [OpenHour!]!
   order(where: WhereOrder!): Order!
   orders(filter: OrderFilter = {isClosed: "false"}): [Order!]!
+  product(where: WhereProduct!): Product!
+  products(filter: ProductFilter): [Product!]!
   restaurantInfo: Restaurant!
   table(where: WhereTable!): Table!
   tables(filter: TableFilter): [Table!]!
-  victual(where: WhereVictual!): Victual!
-  victuals(filter: VictualFilter): [Victual!]!
   waiterInfo(where: WhereWaiter): Waiter!
   waiters(filter: WaiterFilter): [Waiter!]!
 }
@@ -249,15 +463,28 @@ type Restaurant {
   categories: [Category!]!
   createdAt: Date!
   currency: Currency!
+  currencyId: Float!
+
+  """Email"""
   email: String!
   id: Float!
   meals: [Meal!]!
+
+  """Name"""
   name: String!
   open: Boolean!
   orders: [Order!]!
+  products: [Product!]!
+  settings: Settings!
   tables: [Table!]!
-  victuals: [Victual!]!
+  tasks: [Task!]!
   waiters: [Waiter!]!
+}
+
+type Settings {
+  """Enable analytics"""
+  enableAnalytics: Boolean!
+  id: Float!
 }
 
 type Subscription {
@@ -271,6 +498,8 @@ type Success {
 type Table {
   createdAt: Date!
   id: Float!
+
+  """Name"""
   name: String!
   orders: [Order!]!
   restaurant: Restaurant!
@@ -279,8 +508,26 @@ type Table {
 }
 
 input TableFilter {
+  """Add max length of list"""
   maxLength: Float
+
+  """Use it for searching by name"""
   name: String
+}
+
+type Task {
+  base: BaseTask!
+  baseId: Float!
+
+  """Returns if task is done"""
+  done: Boolean!
+  id: Float!
+  restaurant: Restaurant!
+}
+
+input TaskFilter {
+  """Exclude task that has been done(or not)"""
+  done: String
 }
 
 input UpdateAddress {
@@ -297,8 +544,10 @@ input UpdateCategory {
 }
 
 input UpdateCategoryData {
+  level: Float
   name: String
   parentId: Float
+  restaurantId: Float
 }
 
 input UpdateOpenHour {
@@ -307,8 +556,13 @@ input UpdateOpenHour {
 }
 
 input UpdateOpenHourData {
+  """The end of the shift"""
   end: String
+
+  """The day of the opening hour"""
   name: String
+
+  """The start of the shift"""
   start: String
 }
 
@@ -318,23 +572,50 @@ input UpdateOrder {
 }
 
 input UpdateOrderData {
+  """Additonal description"""
   description: String
+
+  """The order's status"""
   isReady: Boolean
+  productId: Float
+
+  """Quantity"""
   quantity: Float
   tableId: Float
-  victualId: Float
+}
+
+input UpdateProduct {
+  update: UpdateProductData!
+  where: WhereProduct!
+}
+
+input UpdateProductData {
+  categoryId: Float
+  name: String
+  price: Float
+  restaurantId: Float
 }
 
 input UpdateRestaurant {
   address: UpdateAddress
   currency: WhereCurrency
+
+  """Email"""
   email: String
+
+  """Name"""
   name: String
+  settings: UpdateSettings
 }
 
 input UpdateRestaurantPassword {
   old: String!
   password: String!
+}
+
+input UpdateSettings {
+  """Enable analytics"""
+  enableAnalytics: Boolean
 }
 
 input UpdateTable {
@@ -343,18 +624,9 @@ input UpdateTable {
 }
 
 input UpdateTableData {
+  """Name"""
   name: String
-}
-
-input UpdateVictual {
-  update: UpdateVictualData!
-  where: WhereVictual!
-}
-
-input UpdateVictualData {
-  categoryId: Float
-  name: String
-  price: Float
+  restaurantId: Float
 }
 
 input UpdateWaiter {
@@ -363,10 +635,18 @@ input UpdateWaiter {
 }
 
 input UpdateWaiterData {
+  """Email"""
   email: String
+
+  """Gender"""
   gender: String
+
+  """Name"""
   name: String
+
+  """Profile icon"""
   profileIcon: String
+  restaurantId: Float
 }
 
 input UpdateWaiterPassword {
@@ -379,42 +659,50 @@ input UpdateWaiterPasswordData {
   password: String!
 }
 
-type Victual {
-  category: Category!
-  createdAt: Date!
-  id: Float!
-  name: String!
-  orders: [Order!]!
-  price: Float!
-  restaurant: Category!
-  restaurantId: Float!
-}
-
-input VictualFilter {
-  max: Float
-  maxLength: Float
-  min: Float
-  name: String
-}
-
 type Waiter {
   createdAt: Date!
+
+  """Email"""
   email: String!
+
+  """Gender"""
   gender: String!
   id: Float!
   meals: [Meal!]!
+
+  """Name"""
   name: String!
   orders: [Order!]!
+
+  """Profile icon"""
   profileIcon: String
   restaurant: Restaurant!
   restaurantId: Float!
 }
 
 input WaiterFilter {
+  """Use it for searching by email"""
   email: String
+
+  """Use it for searching by gender"""
   gender: String
+
+  """Add max length of list"""
   maxLength: Float
+
+  """Use it for searching by name"""
   name: String
+}
+
+type WaiterOfTheDay {
+  createdAt: Date!
+  id: Float!
+  waiter: Waiter!
+  waiterId: Float!
+}
+
+type WaiterOfTheDaySummary {
+  best: Waiter!
 }
 
 input WhereCategory {
@@ -423,6 +711,7 @@ input WhereCategory {
 }
 
 input WhereCurrency {
+  """Name"""
   name: String!
 }
 
@@ -439,15 +728,16 @@ input WhereOrder {
   id: Float!
 }
 
+input WhereProduct {
+  id: Float!
+}
+
 input WhereTable {
   id: Float
 }
 
-input WhereVictual {
-  id: Float!
-}
-
 input WhereWaiter {
+  """Email"""
   email: String
   id: Float
   restaurantId: Float

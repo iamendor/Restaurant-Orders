@@ -1,23 +1,23 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 
-import { Order } from "@prisma/client";
 import {
   CreateOrder,
+  Order,
   UpdateOrder,
   WhereOrder,
-} from "../../../models/order.model";
-import { Success } from "../../../models/success.model";
-import { Prisma } from "@prisma/client";
+} from "../../../models/resources/order.model";
+import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
+import { Prisma } from "prisma/client/main";
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   async create(data: CreateOrder): Promise<Order> {
-    const { restaurantId, tableId, victualId, waiterId, ...rest } = data;
+    const { restaurantId, tableId, productId, waiterId, ...rest } = data;
 
     const order = await this.prismaService.order.create({
       data: {
@@ -32,9 +32,10 @@ export class OrderService {
             id: tableId,
           },
         },
-        victual: {
+
+        product: {
           connect: {
-            id: victualId,
+            id: productId,
           },
         },
         waiter: {

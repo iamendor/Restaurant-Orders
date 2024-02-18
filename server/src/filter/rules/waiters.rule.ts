@@ -1,4 +1,4 @@
-import { Waiter } from "../../models/waiter.model";
+import { Waiter } from "../../models/resources/waiter.model";
 import { Rule } from "../interfaces/rule.interface";
 import { IWaiterFilter } from "../interfaces/waiter.interface";
 import { MaxLength } from "./max.rule";

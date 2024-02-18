@@ -13,10 +13,10 @@ import {
   CreateCategory,
   UpdateCategory,
   WhereCategory,
-} from "../../../models/category.model";
+} from "../../../models/resources/category.model";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
-import { Success } from "../../../models/success.model";
-import { CategoryFilter } from "../../../models/filter.model";
+import { Success } from "../../../models/resources/success.model";
+import { CategoryFilter } from "../../../models/resources/filter.model";
 import { GetCategory } from "../../../decorators";
 import {
   CREATE_CATEGORY_ACTION,
@@ -26,7 +26,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
 import {

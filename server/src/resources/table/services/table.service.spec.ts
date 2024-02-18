@@ -1,22 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TableService } from "./table.service";
-import { PrismaModule } from "../../../prisma/prisma.module";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { mockRestaurant, mockTable } from "../../../../test/helper/mock.unit";
 
 describe("TableService", () => {
   let service: TableService;
   let tableId: number;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
 
   const SUCCESS = "success";
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaMainModule],
       providers: [TableService],
     }).compile();
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
     service = module.get<TableService>(TableService);
   });
 

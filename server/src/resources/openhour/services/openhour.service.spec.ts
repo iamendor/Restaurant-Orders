@@ -1,21 +1,21 @@
 import { Test } from "@nestjs/testing";
-import { PrismaModule } from "../../../prisma/prisma.module";
+import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { OpenHourService } from "./openhour.service";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { mockOpenHour } from "../../../../test/helper/mock.unit";
 import { SUCCESS } from "../../../response";
 
 describe("OpenHour Service", () => {
   let service: OpenHourService;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
   const mockOpen = mockOpenHour;
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaMainModule],
       providers: [OpenHourService],
     }).compile();
     service = module.get<OpenHourService>(OpenHourService);
-    prisma = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaMainService>(PrismaMainService);
   });
 
   it("should create an openhour", async () => {

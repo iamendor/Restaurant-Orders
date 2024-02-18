@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";
-import { ListenOrder } from "../../models/order.model";
+import { ListenOrder } from "../../models/resources/order.model";
 
 @Injectable()
 export class SubscriptionService {

@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
-import { Success } from "../../../models/success.model";
-import { Meal, WhereMeal } from "../../../models/meal.model";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
+import { Success } from "../../../models/resources/success.model";
+import { Meal, WhereMeal } from "../../../models/resources/meal.model";
 import { CreateMealData } from "../../../interfaces/meal.interface";
-import { Order } from "../../../models/order.model";
+import { Order } from "../../../models/resources/order.model";
 
 @Injectable()
 export class MealService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
   async clearTable(tableId: number) {
     await this.prismaService.order.updateMany({
       where: {
@@ -28,7 +28,7 @@ export class MealService {
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;
     const total = sorted.reduce(
-      (acc, c) => acc + c.victual.price * c.quantity,
+      (acc, c) => acc + c.product.price * c.quantity,
       0
     );
     return { sorted, start, end, waiterId, total };

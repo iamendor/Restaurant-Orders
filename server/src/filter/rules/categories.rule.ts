@@ -1,4 +1,4 @@
-import { Category } from "../../models/category.model";
+import { Category } from "../../models/resources/category.model";
 import { ICategoryFilter } from "../interfaces/category.interface";
 import { Rule } from "../interfaces/rule.interface";
 import { MaxLength } from "./max.rule";

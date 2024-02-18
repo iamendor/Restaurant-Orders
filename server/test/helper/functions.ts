@@ -1,18 +1,28 @@
-import { PrismaService } from "../../src/prisma/services/prisma.service";
+import { PrismaMainService } from "../../src/prisma/main/services/prisma.main.service";
 import {
   mockAddress,
   mockCategory,
   mockCurrency,
   mockRestaurant,
   mockTable,
-  mockVictual,
+  mockProduct,
   mockWaiter,
 } from "./mock.unit";
 import req from "./graphql-request";
 import { getMutations } from "./mutations";
+import { PrismaAnalyticsService } from "../../src/prisma/analytics/services/prisma.analytics.service";
+import { e2eAnalytics, mockAnalytics } from "./mock.analytics";
 
-export const clearMocks = async ({ prisma }: { prisma: PrismaService }) => {
+export const clearMocks = async ({ prisma }: { prisma: PrismaMainService }) => {
   await prisma.restaurant.deleteMany();
+};
+
+export const clearAnalytics = async ({
+  prisma,
+}: {
+  prisma: PrismaAnalyticsService;
+}) => {
+  await prisma.analytics.deleteMany();
 };
 
 export const excludeId = ({ id, ...rest }) => ({ ...rest });
@@ -21,7 +31,7 @@ export const createCategory = ({
   prisma,
   restaurantId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
 }) => {
   return prisma.category.create({
@@ -35,7 +45,7 @@ export const createTable = ({
   prisma,
   restaurantId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
 }) => {
   return prisma.table.create({
@@ -46,19 +56,19 @@ export const createTable = ({
   });
 };
 
-export const createVictual = ({
+export const createProduct = ({
   prisma,
   restaurantId,
   categoryId,
 }: {
-  prisma: PrismaService;
+  prisma: PrismaMainService;
   restaurantId: number;
   categoryId: number;
 }) => {
-  return prisma.victual.create({
+  return prisma.product.create({
     data: {
-      name: mockVictual.name,
-      price: mockVictual.price,
+      name: mockProduct.name,
+      price: mockProduct.price,
       restaurant: { connect: { id: restaurantId } },
       category: { connect: { id: categoryId } },
     },
@@ -135,13 +145,41 @@ export const mock = {
       createdAt: undefined,
     },
   },
-  victual: {
+  product: {
     create: {
-      ...mockVictual,
+      ...mockProduct,
       id: undefined,
       restaurantId: undefined,
       createdAt: undefined,
       categoryId: undefined,
     },
   },
+};
+
+export const createAnalytics = async ({
+  prisma,
+  restaurantId,
+}: {
+  prisma: PrismaAnalyticsService;
+  restaurantId: number;
+}) => {
+  for (let i = 0; i < mockAnalytics.length; i++) {
+    const mock = e2eAnalytics[i];
+    await prisma.analytics.create({
+      data: {
+        id: undefined,
+        ...mock,
+        restaurantId,
+        income: {
+          create: { ...mock.income, id: undefined },
+        },
+        popularProduct: {
+          create: { ...mock.popularProduct, id: undefined },
+        },
+        waiterOfTheDay: {
+          create: { ...mock.waiterOfTheDay, id: undefined },
+        },
+      },
+    });
+  }
 };

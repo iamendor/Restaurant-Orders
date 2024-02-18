@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 
 @Injectable()
 export class FieldService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
   async getRestaurant(id: number) {
     const table = await this.prismaService.table.findFirst({
       where: {
@@ -24,7 +24,7 @@ export class FieldService {
       include: {
         orders: {
           include: {
-            victual: forTotal,
+            product: forTotal,
           },
         },
       },

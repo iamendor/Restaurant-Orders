@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { WaiterRules } from "../rules/waiters.rule";
-import { Waiter } from "../../models/waiter.model";
-import { Victual } from "../../models/victual.model";
-import { Category } from "../../models/category.model";
-import { Order } from "../../models/order.model";
-import { Meal } from "../../models/meal.model";
+import { Waiter } from "../../models/resources/waiter.model";
+import { Product } from "../../models/resources/product.model";
+import { Category } from "../../models/resources/category.model";
+import { Order } from "../../models/resources/order.model";
+import { Meal } from "../../models/resources/meal.model";
 import { IWaiterFilter } from "../interfaces/waiter.interface";
-import { IVictualFilter } from "../interfaces/victual.interface";
-import { VictualRules } from "../rules/victuals.rule";
+import { IProductFilter } from "../interfaces/product.interface";
+import { VictualRules } from "../rules/products.rule";
 import { ICategoryFilter } from "../interfaces/category.interface";
 import { CategoryRules } from "../rules/categories.rule";
 import { IOrderFilter } from "../interfaces/order.interface";
@@ -19,15 +19,19 @@ import {
   MealFilter,
   OrderFilter,
   TaskFilter,
-  VictualFilter,
+  ProductFilter,
   WaiterFilter,
-} from "../../models/filter.model";
-import { Table } from "../../models/table.model";
+  AnalyticsFilter,
+} from "../../models/resources/filter.model";
+import { Table } from "../../models/resources/table.model";
 import { ITableFilter } from "../interfaces/table.interface";
 import { TableRules } from "../rules/tables.rule";
 import { ITaskFilter } from "../interfaces/task.interface";
 import { TaskRules } from "../rules/tasks.rule";
-import { Task } from "../../models/task.model";
+import { Task } from "../../models/resources/task.model";
+import { IAnalyticsFilter } from "../interfaces/analytics/analytics.interface";
+import { AnalyticsRules } from "../rules/analytics/analytics.rule";
+import { Analytics } from "../../models/analytics/analytics.model";
 
 interface IFilter<T> {
   data: T[];
@@ -35,20 +39,22 @@ interface IFilter<T> {
     | WaiterFilter
     | CategoryFilter
     | OrderFilter
-    | VictualFilter
+    | ProductFilter
     | MealFilter
-    | TaskFilter;
+    | TaskFilter
+    | AnalyticsFilter;
 }
 
 @Injectable()
 export class FilterService {
   private wRules: IWaiterFilter;
-  private vRules: IVictualFilter;
+  private vRules: IProductFilter;
   private cRules: ICategoryFilter;
   private oRules: IOrderFilter;
   private mRules: IMealFilter;
   private tRules: ITableFilter;
   private tkRules: ITaskFilter;
+  private aRules: IAnalyticsFilter;
 
   constructor() {
     this.wRules = WaiterRules();
@@ -58,6 +64,7 @@ export class FilterService {
     this.mRules = MealRules();
     this.tRules = TableRules();
     this.tkRules = TaskRules();
+    this.aRules = AnalyticsRules();
   }
   private filter({ data, filters }, rules) {
     let filtered = data;
@@ -72,8 +79,8 @@ export class FilterService {
   waiters(data: IFilter<Waiter>) {
     return this.filter(data, this.wRules) as Waiter[];
   }
-  victuals(data: IFilter<Victual>) {
-    return this.filter(data, this.vRules) as Victual[];
+  victuals(data: IFilter<Product>) {
+    return this.filter(data, this.vRules) as Product[];
   }
   categories(data: IFilter<Category>): Category[] {
     return this.filter(data, this.cRules) as Category[];
@@ -89,5 +96,8 @@ export class FilterService {
   }
   tasks(data: IFilter<Task>) {
     return this.filter(data, this.tkRules) as Task[];
+  }
+  analytics(data: IFilter<Analytics>) {
+    return this.filter(data, this.aRules) as Analytics[];
   }
 }

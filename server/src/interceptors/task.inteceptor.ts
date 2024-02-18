@@ -15,7 +15,7 @@ import { WAITER } from "../role";
 export const CREATE_WAITER_ACTION = "waiter.create";
 export const CREATE_ORDER_ACTION = "order.create";
 export const CREATE_TABLE_ACTION = "table.create";
-export const CREATE_VICTUAL_ACTION = "victual.create";
+export const CREATE_PRODUCT_ACTION = "product.create";
 export const CREATE_OPENHOUR_ACTION = "openhour.create";
 export const CREATE_MEAL_ACTION = "meal.create";
 export const CREATE_CATEGORY_ACTION = "category.create";

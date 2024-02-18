@@ -4,14 +4,14 @@ import {
   OpenHour,
   UpdateOpenHour,
   WhereOpenHour,
-} from "../../../models/openhour.model";
+} from "../../../models/resources/openhour.model";
 import { OpenHourService } from "../services/openhour.service";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";
 import { RESTAURANT, WAITER } from "../../../role";
 import { RID } from "../../../auth/decorators/role.decorator";
-import { Success } from "../../../models/success.model";
+import { Success } from "../../../models/resources/success.model";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { IdGuard } from "../../../auth/guard/id.guard";

@@ -11,6 +11,6 @@ async function bootstrap() {
   app.useGlobalFilters(new UnExpectedException());
   app.useGlobalFilters(new PrismaClientException());
   app.useGlobalFilters(new AuthExceptionFilter());
-  await app.listen(config.get("API_PORT"));
+  await app.listen(config.get("PORT"));
 }
 bootstrap();

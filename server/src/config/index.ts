@@ -12,6 +12,7 @@ export class Config {
       playground: config.get("GRAPHQL_PLAYGROUND") || false,
       installSubscriptionHandlers: true,
       includeStacktraceInErrorResponses: false,
+      fieldResolverEnhancers: ["interceptors"],
 
       subscriptions: {
         "graphql-ws": true,
@@ -42,7 +43,7 @@ export class Config {
   static getRedisConfig(configService: ConfigService): RedisModuleOptions {
     return {
       type: "single",
-      url: "redis://127.0.0.1:6379",
+      url: configService.get("REDIS_URL"),
     };
   }
 }

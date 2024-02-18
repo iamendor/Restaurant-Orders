@@ -4,14 +4,18 @@ import { RestaurantService } from "../../resources/restaurant/services/restauran
 import { JwtService } from "@nestjs/jwt";
 import { WaiterService } from "../../resources/waiter/services/waiter.service";
 import { SecurityService } from "../../security/services/security.service";
-import { Waiter as PWaiter } from "@prisma/client";
+import { Waiter as PWaiter } from "prisma/client/main";
 import { RESTAURANT, WAITER } from "../../role";
 import {
   LoginRestaurant,
   AuthRestaurant,
   Restaurant,
-} from "../../models/restaurant.model";
-import { LoginWaiter, AuthWaiter, Waiter } from "../../models/waiter.model";
+} from "../../models/resources/restaurant.model";
+import {
+  LoginWaiter,
+  AuthWaiter,
+  Waiter,
+} from "../../models/resources/waiter.model";
 import { AuthException } from "../../error";
 
 @Injectable()

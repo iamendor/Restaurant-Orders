@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 
 @Injectable()
 export class FieldService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
   async getRestaurant(id: number) {
     const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
@@ -27,16 +27,16 @@ export class FieldService {
     });
     return order.table;
   }
-  async getVictual(id: number) {
+  async getProduct(id: number) {
     const order = await this.prismaService.order.findUniqueOrThrow({
       where: {
         id,
       },
       select: {
-        victual: true,
+        product: true,
       },
     });
-    return order.victual;
+    return order.product;
   }
   async getWaiter(id: number) {
     const order = await this.prismaService.order.findUniqueOrThrow({

@@ -4,10 +4,11 @@ import { JwtModule } from "@nestjs/jwt";
 import { Config } from "../config";
 import { ApolloDriver } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
-import { DateScalar } from "../models/date.model";
-import { PrismaModule } from "../prisma/prisma.module";
+import { DateScalar } from "../models/resources/date.model";
 import * as Joi from "joi";
 import { RedisModule } from "@nestjs-modules/ioredis";
+import { PrismaModule } from "../prisma/prisma.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Global()
 @Module({
@@ -16,8 +17,7 @@ import { RedisModule } from "@nestjs-modules/ioredis";
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
-        DATABASE_URL: Joi.string().required(),
-        API_PORT: Joi.number().required(),
+        PORT: Joi.number().required(),
         NODE_ENV: Joi.string().default("test"),
       }).options({
         abortEarly: true,
@@ -36,6 +36,7 @@ import { RedisModule } from "@nestjs-modules/ioredis";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => Config.getGqlModuleOptions(config),
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
   ],
   providers: [DateScalar],

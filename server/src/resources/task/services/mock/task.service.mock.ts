@@ -1,13 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { Task } from "../../../../models/task.model";
-import { BaseTask, Task as PTask } from "@prisma/client";
+import { Task } from "../../../../models/resources/task.model";
+import { Task as PTask } from "prisma/client/main";
+import { Task as BaseTask } from "prisma/client/static";
 import { SUCCESS } from "../../../../response";
 
 @Injectable()
 export class TaskServiceMock {
   task: Task;
   constructor() {
-    this.task = { name: "Test application", id: 1, done: false };
+    this.task = {
+      id: 1,
+      done: false,
+      baseId: 1,
+      base: { name: "Test app!", id: 1 },
+    };
   }
   init() {
     return SUCCESS;

@@ -1,23 +1,23 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilterService } from "./filter.service";
-import { Victual } from "../../models/victual.model";
-import { Category } from "../../models/category.model";
-import { Order } from "../../models/order.model";
-import { Table } from "../../models/table.model";
-import { Task } from "../../models/task.model";
+import { Product } from "../../models/resources/product.model";
+import { Category } from "../../models/resources/category.model";
+import { Order } from "../../models/resources/order.model";
+import { Table } from "../../models/resources/table.model";
+import { Task } from "../../models/resources/task.model";
 import {
   mockCategory,
   mockOrder,
   mockTable,
-  mockVictual,
+  mockProduct,
   mockWaiter,
 } from "../../../test/helper/mock.unit";
-import { Waiter } from "../../models/waiter.model";
+import { Waiter } from "../../models/resources/waiter.model";
 
 describe("FilterService", () => {
   let service: FilterService;
   const waiter = mockWaiter;
-  const victual = mockVictual;
+  const product = mockProduct;
   const category = mockCategory;
   const order = mockOrder;
   const table = mockTable;
@@ -82,8 +82,8 @@ describe("FilterService", () => {
       expect(filtered.length).toEqual(0);
     });
   });
-  describe("Victual", () => {
-    const victuals = [victual, { price: 300, name: "vtc" }] as Victual[];
+  describe("Product", () => {
+    const victuals = [product, { price: 300, name: "vtc" }] as Product[];
 
     it("should filter by name", () => {
       const filtered = service.victuals({

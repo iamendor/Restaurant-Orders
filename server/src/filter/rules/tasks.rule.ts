@@ -1,4 +1,4 @@
-import { Task } from "../../models/task.model";
+import { Task } from "../../models/resources/task.model";
 import { Rule } from "../interfaces/rule.interface";
 import { RuleBuilder } from "./rule";
 

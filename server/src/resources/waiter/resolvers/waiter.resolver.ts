@@ -14,7 +14,7 @@ import {
   NotSpecifiedException,
   PermissionDeniedException,
 } from "../../../error";
-import { Waiter as PWaiter } from "@prisma/client";
+import { Waiter as PWaiter } from "prisma/client/main";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import {
   Waiter,
@@ -22,9 +22,9 @@ import {
   UpdateWaiter,
   WhereWaiter,
   UpdateWaiterPassword,
-} from "../../../models/waiter.model";
-import { Success } from "../../../models/success.model";
-import { WaiterFilter } from "../../../models/filter.model";
+} from "../../../models/resources/waiter.model";
+import { Success } from "../../../models/resources/success.model";
+import { WaiterFilter } from "../../../models/resources/filter.model";
 import {
   CREATE_WAITER_ACTION,
   TaskInterceptor,
@@ -33,9 +33,10 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { WaiterGuard } from "../../../guard";
+import { ExcludePassowrdInterceptor } from "../../../interceptors/exclude.interceptor";
 
 const WaiterCacheInterceptor = CacheInterceptor({
   prefix: "waiters",
@@ -52,6 +53,7 @@ export class WaiterResolver {
 
   @Mutation(() => Waiter, { name: "createWaiter" })
   @UseInterceptors(
+    ExcludePassowrdInterceptor,
     WaiterClearCacheInterceptor,
     TaskInterceptor(CREATE_WAITER_ACTION)
   )
@@ -62,7 +64,7 @@ export class WaiterResolver {
 
   @Mutation(() => Waiter, { name: "updateWaiter" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), UpdateWaiterGuard)
-  @UseInterceptors(WaiterClearCacheInterceptor)
+  @UseInterceptors(ExcludePassowrdInterceptor, WaiterClearCacheInterceptor)
   async update(@User() user: JwtPayload, @Args("data") data: UpdateWaiter) {
     const { role } = user;
     const where = role === WAITER ? { id: user.id } : { ...data.where };
@@ -109,7 +111,11 @@ export class WaiterResolver {
 
   @Query(() => [Waiter])
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
-  @UseInterceptors(WaiterCacheInterceptor, FilterInterceptor("waiters"))
+  @UseInterceptors(
+    WaiterCacheInterceptor,
+    FilterInterceptor("waiters"),
+    ExcludePassowrdInterceptor
+  )
   waiters(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => WaiterFilter })
@@ -122,6 +128,7 @@ export class WaiterResolver {
 
   @Query(() => Waiter, { name: "waiterInfo" })
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), IdGuard)
+  @UseInterceptors(ExcludePassowrdInterceptor)
   async info(
     @User() user: JwtPayload,
     @RID() restaurantId: number,

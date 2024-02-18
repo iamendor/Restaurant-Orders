@@ -13,9 +13,9 @@ import {
   CreateOrder,
   UpdateOrder,
   WhereOrder,
-} from "../../../models/order.model";
-import { Success } from "../../../models/success.model";
-import { OrderFilter } from "../../../models/filter.model";
+} from "../../../models/resources/order.model";
+import { Success } from "../../../models/resources/success.model";
+import { OrderFilter } from "../../../models/resources/filter.model";
 import { OpenGuard } from "../../openhour/guard/open.guard";
 import { GetOrder } from "../../../decorators";
 import {
@@ -26,7 +26,7 @@ import {
   CacheInterceptor,
   ClearCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
-import { FilterInterceptor } from "../../../interceptors/task.interceptor";
+import { FilterInterceptor } from "../../../interceptors/filter.interceptor";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { AddWID } from "../../../pipes/wid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
@@ -34,7 +34,7 @@ import { TableService } from "../../table/services/table.service";
 import { User } from "../../../auth/decorators/user.decorator";
 import { JwtPayload } from "../../../interfaces/jwt.interface";
 import { PermissionDeniedException } from "../../../error";
-import { VictualService } from "../../victual/services/victual.service";
+import { ProductService } from "../../product/services/product.service";
 import { SUCCESS } from "../../../response";
 
 const OrderCacheInterceptor = CacheInterceptor({
@@ -50,7 +50,7 @@ export class OrderResolver {
     private readonly orderService: OrderService,
     private readonly subscriptionService: SubscriptionService,
     private readonly tableService: TableService,
-    private readonly victualService: VictualService
+    private readonly victualService: ProductService
   ) {}
 
   private UPDATE = "UPDATE";
@@ -64,8 +64,8 @@ export class OrderResolver {
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(@Args("data", AddRID, AddWID) data: CreateOrder) {
-    const isVictualValid = await this.victualService.validate({
-      id: data.victualId,
+    const isProductValid = await this.victualService.validate({
+      id: data.productId,
       restaurantId: data.restaurantId,
     });
     const isTableValid = await this.tableService.validate({
@@ -73,7 +73,7 @@ export class OrderResolver {
       restaurantId: data.restaurantId,
     });
 
-    if (!isVictualValid || !isTableValid) throw new PermissionDeniedException();
+    if (!isProductValid || !isTableValid) throw new PermissionDeniedException();
 
     const order = await this.orderService.create(data);
 
@@ -96,7 +96,7 @@ export class OrderResolver {
     @Args("data", { type: () => [CreateOrder] }, MinArrayPipe, AddRID, AddWID)
     data: CreateOrder[]
   ) {
-    const victIds = [...new Set(data.map((o) => o.victualId))];
+    const victIds = [...new Set(data.map((o) => o.productId))];
     const tableIds = [...new Set(data.map((o) => o.tableId))];
     for (let i = 0; i < tableIds.length; i++) {
       const isTableValid = await this.tableService.validate({

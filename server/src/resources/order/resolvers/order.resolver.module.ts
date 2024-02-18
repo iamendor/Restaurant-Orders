@@ -9,7 +9,7 @@ import { CacheModule } from "../../../cache/cache.module";
 import { TaskServiceModule } from "../../task/services/task.service.module";
 import { OrderSubscriptionResolver } from "./order.subscription.resolver";
 import { TableServiceModule } from "../../table/services/table.service.module";
-import { VictualServiceModule } from "../../victual/services/victual.service.module";
+import { VictualServiceModule } from "../../product/services/product.service.module";
 
 @Module({
   imports: [

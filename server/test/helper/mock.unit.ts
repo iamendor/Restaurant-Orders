@@ -16,7 +16,7 @@ export const mockRestaurant = {
   name: "Test Kft.",
   email: "test@gmail.com",
   address: mockAddress,
-  currency: mockCurrency,
+  currencyId: 1,
   password: "mockRestaurant123",
   createdAt: new Date(),
 };
@@ -32,7 +32,7 @@ export const mockWaiter = {
   restaurantId: 1,
 };
 
-export const mockVictual = {
+export const mockProduct = {
   id: 1,
   price: 1.1,
   name: "TestMeal",
@@ -59,7 +59,7 @@ export const mockTable = {
 export const mockOrder = {
   id: 1,
   restaurantId: 1,
-  victualId: 1,
+  productId: 1,
   tableId: 1,
   closed: false,
   waiterId: 1,
@@ -111,4 +111,10 @@ export const mockTask = {
     id: 1,
     name: "Test app",
   },
+};
+
+export const MockRedis = {
+  get: () => null,
+  set: () => {},
+  del: () => {},
 };

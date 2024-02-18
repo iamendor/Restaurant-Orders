@@ -1,21 +1,21 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { AppModule } from "../src/app.module";
-import { PrismaModule } from "../src/prisma/prisma.module";
+import { PrismaMainModule } from "../src/prisma/main/prisma.main.module";
 import { CoreModule } from "../src/core/core.module";
-import { PrismaService } from "../src/prisma/services/prisma.service";
+import { PrismaMainService } from "../src/prisma/main/services/prisma.main.service";
 
 describe("Restaurant Orders E2E", () => {
   let app: INestApplication;
-  let prisma: PrismaService;
+  let prisma: PrismaMainService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, AppModule, PrismaModule],
+      imports: [CoreModule, AppModule, PrismaMainModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
+    prisma = moduleFixture.get<PrismaMainService>(PrismaMainService);
     await app.init();
   });
 

@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../prisma/services/prisma.service";
+import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import {
   Category,
   CreateCategory,
   UpdateCategory,
   WhereCategory,
-} from "../../../models/category.model";
-import { Success } from "../../../models/success.model";
+} from "../../../models/resources/category.model";
+import { Success } from "../../../models/resources/success.model";
 import { VerifyResource } from "../../../interfaces/verify.interface";
 import { SUCCESS } from "../../../response";
 
@@ -14,7 +14,7 @@ import { SUCCESS } from "../../../response";
 export class CategoryService {
   private MAX_LEVEL = 3;
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaMainService) {}
 
   async create(data: CreateCategory): Promise<Category> {
     const { restaurantId, parentId, level, ...rest } = data;

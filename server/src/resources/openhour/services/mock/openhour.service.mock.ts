@@ -4,8 +4,8 @@ import {
   OpenHour,
   UpdateOpenHour,
   WhereOpenHour,
-} from "../../../../models/openhour.model";
-import { Success } from "../../../../models/success.model";
+} from "../../../../models/resources/openhour.model";
+import { Success } from "../../../../models/resources/success.model";
 import { mockOpenHour } from "../../../../../test/helper/mock.unit";
 import { SUCCESS } from "../../../../response";
 
