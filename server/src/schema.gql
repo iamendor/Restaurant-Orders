@@ -454,6 +454,7 @@ type Query {
   restaurantInfo: Restaurant!
   table(where: WhereTable!): Table!
   tables(filter: TableFilter): [Table!]!
+  todayAnalytics(range: String! = "today"): AnalyticsSummary!
   waiterInfo(where: WhereWaiter): Waiter!
   waiters(filter: WaiterFilter): [Waiter!]!
 }

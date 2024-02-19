@@ -1,8 +1,5 @@
 import { Args, Query, Resolver } from "@nestjs/graphql";
-import {
-  Analytics,
-  AnalyticsSummary,
-} from "../../../models/analytics/analytics.model";
+import { Analytics } from "../../../models/analytics/analytics.model";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../auth/guard/jwt.guard";
 import { RoleGuard } from "../../../auth/guard/role.guard";

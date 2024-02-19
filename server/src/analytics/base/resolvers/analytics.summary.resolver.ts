@@ -1,4 +1,11 @@
-import { Args, Context, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Context,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { AnalyticsSummary } from "../../../models/analytics/analytics.model";
 import { IncomeSummary } from "../../../models/analytics/income.model";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
@@ -19,10 +26,12 @@ import {
   AnalyticsResourceSummaryInterceptor,
   AnalyticsSummaryCacheInterceptor,
 } from "../../../interceptors/cache.interceptor";
+import { CreateAnalyticsService } from "../services/analytics.create.service";
 
 export interface SummaryContext {
   analytics: number[];
 }
+
 @Resolver((of) => AnalyticsSummary)
 export class AnalyticsSummaryResolver {
   constructor(
@@ -31,8 +40,30 @@ export class AnalyticsSummaryResolver {
     private readonly rangeService: RangeService,
     private readonly incomeService: IncomeService,
     private readonly productService: PopularProductService,
-    private readonly waiterService: WaiterOfTheDayService
+    private readonly waiterService: WaiterOfTheDayService,
+    private readonly createAnalyticsService: CreateAnalyticsService
   ) {}
+
+  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
+  @Query(() => AnalyticsSummary, { name: "todayAnalytics" })
+  async today(
+    @User() { id }: JwtPayload,
+    @Args("range", { defaultValue: "today" }) _: string
+  ) {
+    const analytics = await this.createAnalyticsService.create(id);
+    const createdAt = new Date();
+    const income = this.incomeService.createSummary([
+      { ...analytics.income, id: 1, createdAt },
+    ]);
+    const popularProduct = this.productService.createSummary([
+      { ...analytics.popularProduct, id: 1, createdAt, analyticsId: 1 },
+    ]);
+    const waiter = this.waiterService.createSummary([
+      { ...analytics.waiterOfTheDay, id: 1, createdAt },
+    ]);
+
+    return { income, popularProduct, waiter, createdAt };
+  }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(AnalyticsSummaryCacheInterceptor)
@@ -58,21 +89,33 @@ export class AnalyticsSummaryResolver {
 
   @ResolveField(() => IncomeSummary, { name: "income" })
   @UseInterceptors(AnalyticsResourceSummaryInterceptor("income"))
-  async incomeSummary(@Context() { analytics }: SummaryContext) {
+  async incomeSummary(
+    @Context() { analytics }: SummaryContext,
+    @Parent() parent: AnalyticsSummary
+  ) {
+    if (parent.income) return parent.income;
     const incomes = await this.incomeService.findMany(analytics);
     return this.incomeService.createSummary(incomes);
   }
 
   @ResolveField(() => PopularProductSummary, { name: "popularProduct" })
   @UseInterceptors(AnalyticsResourceSummaryInterceptor("popularProduct"))
-  async popularProductSummary(@Context() { analytics }: SummaryContext) {
+  async popularProductSummary(
+    @Context() { analytics }: SummaryContext,
+    @Parent() parent: AnalyticsSummary
+  ) {
+    if (parent.popularProduct) return parent.popularProduct;
     const products = await this.productService.findMany(analytics);
     return this.productService.createSummary(products);
   }
 
   @ResolveField(() => WaiterOfTheDaySummary, { name: "waiter" })
   @UseInterceptors(AnalyticsResourceSummaryInterceptor("waiter"))
-  async waiterOfTheDaySummary(@Context() { analytics }: SummaryContext) {
+  async waiterOfTheDaySummary(
+    @Context() { analytics }: SummaryContext,
+    @Parent() parent: AnalyticsSummary
+  ) {
+    if (parent.waiter) return parent.waiter;
     const bestWaiters = await this.waiterService.findMany(analytics);
     return this.waiterService.createSummary(bestWaiters);
   }
