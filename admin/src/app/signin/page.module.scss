@@ -1,0 +1,83 @@
+.page {
+  @include flex-center;
+  @include full-size;
+  @include font;
+
+  .signin {
+    @include flex-center;
+    width: 80%;
+    height: 85%;
+    background-color: $secondary-color;
+    border-radius: 1rem;
+
+    .credentials {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem;
+      padding-top: 3rem;
+      width: 40%;
+      height: 100%;
+
+      #error {
+        height: 1.5rem;
+        font-size: 1.5rem;
+        color: $accent-color;
+        text-transform: capitalize;
+      }
+
+      h1 {
+        @include h2;
+        margin-bottom: 15%;
+      }
+
+      #new {
+        font-size: 1rem;
+        a {
+          color: $accent-color;
+        }
+      }
+      .submit {
+        margin-top: 2rem;
+        width: 60%;
+      }
+    }
+
+    .title {
+      @include flex-center;
+
+      position: relative;
+      width: 60%;
+      height: 100%;
+      object-fit: fill;
+      border-radius: 0 1rem 1rem 0;
+
+      .image {
+        @include full-size;
+        position: absolute;
+      }
+
+      .content {
+        @include flex-center;
+        flex-direction: column;
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: $secondary-color;
+
+        p,
+        span {
+          color: $secondary-color;
+        }
+        p {
+          @include h1;
+        }
+        span {
+          @include h3;
+        }
+      }
+    }
+  }
+}
