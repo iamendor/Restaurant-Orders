@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/signin",
+    signOut: "/signout",
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {

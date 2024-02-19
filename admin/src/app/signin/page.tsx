@@ -1,6 +1,6 @@
 import Image from "next/image";
 import styles from "./page.module.scss";
-import Form from "@/src/components/SignIn/Form";
+import Form from "@/components/SignIn/Form";
 
 export default async function SignIn() {
   return (

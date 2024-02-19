@@ -3,7 +3,7 @@ import path from "path";
 const nextConfig = {
   sassOptions: {
     includePaths: [path.join("./src", "app", "**", "*")],
-    prependData: "@import '~@/src/app/variables.scss';",
+    prependData: "@import '~@/app/variables.scss';",
   },
 };
 

@@ -1,0 +1,26 @@
+.topbar {
+  width: 100%;
+  height: 15%;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+
+  .bell {
+    margin-left: auto;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  h1 {
+    @include h3;
+    span {
+      @include h3;
+      color: $accent-color;
+    }
+  }
+
+  a {
+    @include h4;
+    text-decoration: none;
+  }
+}
