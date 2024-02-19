@@ -18,17 +18,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    jwt: ({ token, user }) => {
-      if (user) return { ...token, jwt: (user as any).jwt };
-      return token;
-    },
-    session: ({ session, token }) => {
-      if (token) (session as any).jwt = token.jwt;
-      return session;
-    },
-  },
   providers: [
     Credentials({
       name: "Credentials",
