@@ -16,6 +16,8 @@ import { PrismaAnalyticsModule } from "../../../prisma/analytics/prisma.analytic
 import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { IncomeServiceModule } from "../../income/services/income.service.module";
+import { AnalyticsSummary } from "../../../models/analytics/analytics.model";
+import { CreateAnalyticsService } from "../services/analytics.create.service";
 
 describe("AnalyticsSummaryResolver", () => {
   let resolver: AnalyticsSummaryResolver;
@@ -37,6 +39,7 @@ describe("AnalyticsSummaryResolver", () => {
       providers: [
         { provide: ReadAnalyticsService, useClass: ReadAnalyticsServiceMock },
         { provide: CacheService, useClass: CacheServiceMock },
+        CreateAnalyticsService,
         AnalyticsSummaryResolver,
       ],
     }).compile();
@@ -60,23 +63,32 @@ describe("AnalyticsSummaryResolver", () => {
   });
 
   it("should create summary of income", async () => {
-    const incomeSummary = await resolver.incomeSummary({
-      analytics: mockAnalyticsIds,
-    });
+    const incomeSummary = await resolver.incomeSummary(
+      {
+        analytics: mockAnalyticsIds,
+      },
+      {} as AnalyticsSummary
+    );
     expect(incomeSummary).toBeDefined();
   });
 
   it("should create summary of the best waiters", async () => {
-    const waiterSummary = await resolver.waiterOfTheDaySummary({
-      analytics: mockAnalyticsIds,
-    });
+    const waiterSummary = await resolver.waiterOfTheDaySummary(
+      {
+        analytics: mockAnalyticsIds,
+      },
+      {} as AnalyticsSummary
+    );
     expect(waiterSummary).toBeDefined();
   });
 
   it("should create summary of income", async () => {
-    const popularProductSummary = await resolver.popularProductSummary({
-      analytics: mockAnalyticsIds,
-    });
+    const popularProductSummary = await resolver.popularProductSummary(
+      {
+        analytics: mockAnalyticsIds,
+      },
+      {} as AnalyticsSummary
+    );
     expect(popularProductSummary).toBeDefined();
   });
 });

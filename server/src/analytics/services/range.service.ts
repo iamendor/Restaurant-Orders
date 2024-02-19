@@ -1,6 +1,13 @@
 import { Injectable } from "@nestjs/common";
 
-export type IRange = "week" | "month" | "quarter" | "half" | "year" | "all";
+export type IRange =
+  | "today"
+  | "week"
+  | "month"
+  | "quarter"
+  | "half"
+  | "year"
+  | "all";
 export interface Range {
   start: Date;
   end: Date;
@@ -12,10 +19,16 @@ export class RangeService {
     return this[range]();
   }
   private today() {
+    const [start, end] = this.gen();
+    start.setHours(0, 0, 0, 0);
+    return { start, end };
+  }
+
+  private current() {
     return new Date();
   }
   private gen() {
-    return [this.today(), this.today()];
+    return [this.current(), this.current()];
   }
   private week(): Range {
     const [start, end] = this.gen();
