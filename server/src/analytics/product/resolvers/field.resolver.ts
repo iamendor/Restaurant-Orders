@@ -8,16 +8,19 @@ import { PopularProduct } from "../../../models/analytics/popularproduct.model";
 export class FieldResolver {
   constructor(private readonly fieldService: FieldService) {}
 
-  @ResolveField(() => Product, { name: "numberOne" })
+  @ResolveField(() => Product, { name: "numberOne", nullable: true })
   getNumberOne(@Parent() { numberOne }: PPopularProduct) {
+    if (!numberOne) return null;
     return this.fieldService.getProduct(numberOne);
   }
-  @ResolveField(() => Product, { name: "numberTwo" })
+  @ResolveField(() => Product, { name: "numberTwo", nullable: true })
   getNumberTwo(@Parent() { numberTwo }: PPopularProduct) {
+    if (!numberTwo) return null;
     return this.fieldService.getProduct(numberTwo);
   }
-  @ResolveField(() => Product, { name: "numberThree" })
+  @ResolveField(() => Product, { name: "numberThree", nullable: true })
   getNumberThree(@Parent() { numberThree }: PPopularProduct) {
+    if (!numberThree) return null;
     return this.fieldService.getProduct(numberThree);
   }
 }
