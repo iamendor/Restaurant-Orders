@@ -13,7 +13,6 @@ import { PopularProductService } from "../../product/services/product.service";
 import { WaiterOfTheDayService } from "../../waiter/services/waiter.service";
 import { IncomeService } from "../../income/services/income.service";
 import { PrismaAnalyticsModule } from "../../../prisma/analytics/prisma.analytics.module";
-import { PrismaMainService } from "../../../prisma/main/services/prisma.main.service";
 import { PrismaMainModule } from "../../../prisma/main/prisma.main.module";
 import { IncomeServiceModule } from "../../income/services/income.service.module";
 import { AnalyticsSummary } from "../../../models/analytics/analytics.model";

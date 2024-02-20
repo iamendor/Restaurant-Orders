@@ -398,9 +398,9 @@ input OrderFilter {
 type PopularProduct {
   createdAt: Date!
   id: Float!
-  numberOne: Product!
-  numberThree: Product!
-  numberTwo: Product!
+  numberOne: Product
+  numberThree: Product
+  numberTwo: Product
 }
 
 type PopularProductSummary {
@@ -699,11 +699,11 @@ type WaiterOfTheDay {
   createdAt: Date!
   id: Float!
   waiter: Waiter!
-  waiterId: Float!
+  waiterId: Float
 }
 
 type WaiterOfTheDaySummary {
-  best: Waiter!
+  best: Waiter
 }
 
 input WhereCategory {

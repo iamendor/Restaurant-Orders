@@ -67,14 +67,11 @@ export class CreateAnalyticsService {
   }
 
   async createIncome(restaurantId: number) {
-    const { start, end } = this.currentDate();
+    const { start } = this.currentDate();
     const meals = await this.prismaMainService.meal.findMany({
       where: {
         start: {
-          gt: start,
-        },
-        end: {
-          lt: end,
+          gte: start,
         },
         restaurantId,
       },
@@ -85,7 +82,7 @@ export class CreateAnalyticsService {
     return { total: meals.reduce((acc, c) => acc + c.total, 0) };
   }
   async createPopularProduct(restaurantId: number) {
-    const { start, end } = this.currentDate();
+    const { start } = this.currentDate();
     const products = (
       await this.prismaMainService.order.groupBy({
         by: "productId",
@@ -93,7 +90,6 @@ export class CreateAnalyticsService {
           restaurantId,
           createdAt: {
             gt: start,
-            lt: end,
           },
         },
         _count: {
@@ -114,14 +110,13 @@ export class CreateAnalyticsService {
     };
   }
   async createWaiterOfTheDay(restaurantId: number) {
-    const { start, end } = this.currentDate();
+    const { start } = this.currentDate();
     const waiters = await this.prismaMainService.order.groupBy({
       by: "waiterId",
       where: {
         restaurantId,
         createdAt: {
           gt: start,
-          lt: end,
         },
       },
 
