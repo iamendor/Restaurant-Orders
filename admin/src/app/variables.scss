@@ -6,6 +6,7 @@ $secondary-color: #faf9f8;
 $accent-color: #e68c3a;
 $white: #ffffff;
 $primary-selected: #173252;
+$ready-color: #2abe71;
 
 @mixin h1 {
   @include font;
@@ -33,8 +34,14 @@ $primary-selected: #173252;
 
 @mixin h5 {
   @include font;
+  font-size: 2rem;
+  font-weight: 50;
+}
+
+@mixin h6 {
+  @include font;
   font-size: 1.5rem;
-  font-weight: 100;
+  font-weight: 50;
 }
 
 @mixin flex-center {

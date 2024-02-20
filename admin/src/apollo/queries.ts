@@ -21,6 +21,7 @@ export const DASHBOARD = gql`
     }
     analytics(filter: { min: $min }) {
       income {
+        createdAt
         total
       }
     }
@@ -28,6 +29,12 @@ export const DASHBOARD = gql`
       income {
         average
         median
+        range {
+          top {
+            createdAt
+            total
+          }
+        }
       }
     }
 

@@ -8,6 +8,7 @@ node_modules
 
 .vscode
 schema.gql
+backup/
 
 # Logs
 logs

@@ -1,4 +1,4 @@
-import styles from "@/src/styles/Input.module.scss";
+import styles from "@/styles/Input.module.scss";
 export default function Input({
   register,
   type = "text",

@@ -86,7 +86,7 @@ export default function Navbar() {
         />
         Statistics
       </NavItem>
-      <NavItem href="/dashboard/signout" className={styles.last}>
+      <NavItem href="/signout" className={styles.last}>
         <Image
           className={styles.icon}
           src="/dashboard/logout.svg"

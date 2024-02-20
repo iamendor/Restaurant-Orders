@@ -1,6 +1,6 @@
 .navbar {
   width: 18%;
-  height: 90%;
+  height: 95%;
   display: flex;
   flex-direction: column;
   background: $primary-color;
@@ -15,9 +15,9 @@
   }
 
   .navitem {
-    @include h5;
+    @include h6;
     cursor: pointer;
-    
+
     display: flex;
     align-items: center;
     padding: 1.5rem 0;

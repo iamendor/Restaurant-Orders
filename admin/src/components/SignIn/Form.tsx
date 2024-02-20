@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Button from "../Button";
 import Input from "../Input";
-import styles from "@/src/app/signin/page.module.scss";
+import styles from "@/app/signin/page.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
