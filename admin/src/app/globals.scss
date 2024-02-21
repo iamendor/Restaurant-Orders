@@ -1,0 +1,49 @@
+$breakpoint1: 1300px;
+$breakpoint2: 1200px;
+$breakpoint3: 1000px;
+$breakpoint4: 840px;
+
+:root,
+* {
+  font-family: "Antonio", sans-serif;
+  font-size: 16px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: $primary-color;
+  text-decoration: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  background-color: $bg-color;
+}
+
+@media screen and (max-width: $breakpoint1) {
+  :root {
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: $breakpoint2) {
+  :root {
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: $breakpoint3) {
+  :root {
+    font-size: 10px;
+  }
+}
+
+@media screen and (max-width: $breakpoint3) {
+  :root {
+    font-size: 8px;
+  }
+}

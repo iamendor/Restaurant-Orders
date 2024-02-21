@@ -6,7 +6,7 @@ import { UnExpectedException } from "./exceptions/unexpected.exception";
 import { AuthExceptionFilter } from "./exceptions/unauthorized.exception";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   const config = app.get<ConfigService>(ConfigService);
   app.useGlobalFilters(new UnExpectedException());
   app.useGlobalFilters(new PrismaClientException());
