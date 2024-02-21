@@ -1,0 +1,45 @@
+.navbar {
+  width: 18%;
+  height: 95%;
+  display: flex;
+  flex-direction: column;
+  background: $primary-color;
+  border-radius: 1rem;
+
+  .title {
+    @include flex-center;
+    width: 100%;
+    height: 18%;
+    color: $secondary-color;
+    font-size: 4rem;
+  }
+
+  .navitem {
+    @include h6;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 0;
+    width: 100%;
+    height: 8%;
+    gap: 2rem;
+    color: $secondary-color;
+    transition: background-color 200ms ease;
+
+    .icon {
+      margin-left: 20%;
+      width: 2rem;
+      height: 2rem;
+    }
+
+    &:hover {
+      background-color: $primary-selected;
+    }
+
+    &.last {
+      margin-top: auto;
+      border-radius: 0 0 1rem 1rem;
+    }
+  }
+}

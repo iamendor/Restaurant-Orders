@@ -1,0 +1,152 @@
+.input_cont {
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  flex-direction: column;
+
+  .input {
+    width: 100%;
+    height: 80%;
+    background-color: $white;
+    border-radius: 0.5rem;
+    position: relative;
+
+    &.error {
+      border: 1px solid $accent-color;
+    }
+
+    input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      font-size: 1.5rem;
+      font-weight: 100;
+      padding: 0 1.5rem;
+      padding-right: 2rem;
+      background-color: transparent;
+
+      &::placeholder {
+        text-transform: capitalize;
+        color: $primary-color;
+      }
+    }
+    .icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      * {
+        @include full-size;
+      }
+    }
+  }
+
+  p {
+    height: 1rem;
+    font-size: 0.9rem;
+    font-weight: 100;
+    color: $accent-color;
+    margin-left: 0.5rem;
+  }
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 2rem;
+  height: 1rem;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .switch {
+      background-color: $ready-pale;
+    }
+
+    &:checked + .switch::before {
+      background-color: $ready-color;
+    }
+
+    &:checked + .switch:before {
+      transform: translateX(1rem) translateY(-50%);
+    }
+  }
+
+  .switch {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e7e7e7;
+    transition: all 200ms ease;
+    border-radius: 1rem;
+
+    &::before {
+      position: absolute;
+      content: "";
+      height: 1.2rem;
+      width: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0;
+      background-color: $accent-color;
+      border-radius: 50%;
+      transition: all 200ms ease;
+    }
+  }
+}
+
+.dropdown {
+  width: 100%;
+  height: 4rem;
+  position: relative;
+
+  select {
+    border-radius: 0.5rem;
+    background-color: $white;
+    @include h6;
+    @include full-size;
+    appearance: none;
+    border: none;
+    height: 70%;
+    padding: 0 1rem;
+    cursor: pointer;
+  }
+  & select.error {
+    border: 1px solid $accent-color;
+  }
+
+  &::before,
+  &::after {
+    --size: 0.3rem;
+    position: absolute;
+    content: "";
+    right: 1rem;
+    pointer-events: none;
+  }
+
+  &::before {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-bottom: var(--size) solid black;
+    top: 25%;
+  }
+
+  &::after {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-top: var(--size) solid black;
+    top: 40%;
+  }
+  .item {
+    background-color: $secondary-color;
+    border: none;
+  }
+}
