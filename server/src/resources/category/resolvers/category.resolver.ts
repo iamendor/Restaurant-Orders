@@ -59,7 +59,7 @@ export class CategoryResolver {
       restaurantId: id,
       name: data.name,
     });
-    if (!isUnique) throw new UniqueFieldFailedException();
+    if (!isUnique) throw new UniqueFieldFailedException("name");
 
     if (!data.parentId) return this.categoryService.create(data);
     const { parentId } = data;
@@ -92,7 +92,7 @@ export class CategoryResolver {
     );
     for (let i = 0; i < data.length; i++) {
       if (categories.includes(data[i].name))
-        throw new UniqueFieldFailedException();
+        throw new UniqueFieldFailedException("name");
     }
 
     const parents = [
@@ -130,7 +130,7 @@ export class CategoryResolver {
         restaurantId: id,
         name: data.update.name,
       });
-      if (!isUnique) throw new UniqueFieldFailedException();
+      if (!isUnique) throw new UniqueFieldFailedException("name");
     }
     return this.categoryService.update(data);
   }

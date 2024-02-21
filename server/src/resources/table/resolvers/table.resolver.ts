@@ -57,7 +57,7 @@ export class TableResolver {
       name: data.name,
     });
 
-    if (!isUnique) throw new UniqueFieldFailedException();
+    if (!isUnique) throw new UniqueFieldFailedException("name");
 
     return this.tableService.create(data);
   }
@@ -79,7 +79,7 @@ export class TableResolver {
 
     for (let i = 0; i < data.length; i++) {
       if (tableNames.includes(data[i].name))
-        throw new UniqueFieldFailedException();
+        throw new UniqueFieldFailedException("name");
     }
 
     return this.tableService.createMany(data);
@@ -95,7 +95,7 @@ export class TableResolver {
         restaurantId: id,
       });
 
-      if (!isUniqe) throw new UniqueFieldFailedException();
+      if (!isUniqe) throw new UniqueFieldFailedException("name");
     }
     return this.tableService.update(data);
   }

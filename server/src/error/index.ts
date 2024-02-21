@@ -54,9 +54,9 @@ export class NotFoundException extends GraphQLError {
 }
 
 export class UniqueFieldFailedException extends GraphQLError {
-  constructor() {
+  constructor(field?: string) {
     super("unique field failed", {
-      extensions: { code: HttpStatus.BAD_REQUEST },
+      extensions: { code: HttpStatus.BAD_REQUEST, field },
     });
   }
 }
