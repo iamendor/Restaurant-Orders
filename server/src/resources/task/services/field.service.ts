@@ -6,7 +6,7 @@ import { PrismaStaticService } from "../../../prisma/static/services/prisma.stat
 export class FieldService {
   constructor(
     private readonly prismaService: PrismaMainService,
-    private readonly prismaStaticService: PrismaStaticService
+    private readonly prismaStaticService: PrismaStaticService,
   ) {}
 
   async getRestaurant(id: number) {

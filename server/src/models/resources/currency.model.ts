@@ -19,5 +19,5 @@ export class Currency {
 export class WhereCurrency extends PickType(
   Currency,
   ["name"] as const,
-  InputType
+  InputType,
 ) {}

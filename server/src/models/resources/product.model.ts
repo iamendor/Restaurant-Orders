@@ -54,7 +54,7 @@ export class UpdateProductData extends PartialType(CreateProduct) {}
 export class WhereProduct extends PickType(
   Product,
   ["id"] as const,
-  InputType
+  InputType,
 ) {}
 
 @InputType()

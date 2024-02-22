@@ -9,7 +9,7 @@ export class CreateAnalyticsService {
   private CONTEXT = "AnalyticsService";
   constructor(
     private readonly prismaMainService: PrismaMainService,
-    private readonly prismaAnalyticsService: PrismaAnalyticsService
+    private readonly prismaAnalyticsService: PrismaAnalyticsService,
   ) {}
 
   private currentDate() {
@@ -32,7 +32,7 @@ export class CreateAnalyticsService {
       restaurants.map(async (r) => {
         const analytic = await this.create(r.id);
         return { restaurantId: r.id, ...analytic };
-      })
+      }),
     );
 
     for (let i = 0; i < analytics.length; i++) {
@@ -104,7 +104,7 @@ export class CreateAnalyticsService {
       })
     ).map((order) => order.productId);
     return {
-      numberOne: products[0],
+      numberOne: products[0] || null,
       numberTwo: products[1] || null,
       numberThree: products[2] || null,
     };
@@ -119,7 +119,6 @@ export class CreateAnalyticsService {
           gt: start,
         },
       },
-
       _count: {
         id: true,
       },

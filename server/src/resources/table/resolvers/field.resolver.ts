@@ -9,7 +9,7 @@ import { CacheService } from "../../../cache/services/cache.service";
 export class FieldResolver {
   constructor(
     private readonly fieldService: FieldService,
-    private readonly cacheService: CacheService
+    private readonly cacheService: CacheService,
   ) {}
 
   private totalCachePrefix(tableId: number) {

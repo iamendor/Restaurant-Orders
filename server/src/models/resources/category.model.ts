@@ -57,7 +57,7 @@ export class CreateCategory {
 export class WhereCategory extends PickType(
   Category,
   ["id"] as const,
-  InputType
+  InputType,
 ) {
   @Field({ nullable: true })
   root?: boolean;

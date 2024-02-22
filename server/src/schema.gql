@@ -51,12 +51,18 @@ type AnalyticsSummary {
 type AuthRestaurant {
   """The JWT token for authorization"""
   access_token: String!
+
+  """The JWT token expiration time"""
+  expiresAt: Date!
   restaurant: Restaurant!
 }
 
 type AuthWaiter {
   """The JWT token for authorization"""
   access_token: String!
+
+  """The JWT token expiration time"""
+  expiresAt: Date!
   waiter: Waiter!
 }
 
@@ -215,10 +221,10 @@ type Income {
 
 type IncomeRange {
   """The lowest income"""
-  bottom: Income!
+  bottom: Income
 
   """The highest income"""
-  top: Income!
+  top: Income
 }
 
 type IncomeSummary {
@@ -454,7 +460,6 @@ type Query {
   restaurantInfo: Restaurant!
   table(where: WhereTable!): Table!
   tables(filter: TableFilter): [Table!]!
-  todayAnalytics(range: String! = "today"): AnalyticsSummary!
   waiterInfo(where: WhereWaiter): Waiter!
   waiters(filter: WaiterFilter): [Waiter!]!
 }

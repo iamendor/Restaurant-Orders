@@ -31,7 +31,7 @@ model Income{
 model PopularProduct{
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
-  numberOne Int
+  numberOne Int?
   numberTwo Int?
   numberThree Int?
   analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
@@ -41,7 +41,7 @@ model PopularProduct{
 model WaiterOfTheDay{
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
-  waiterId Int
+  waiterId Int?
   analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
   analyticsId Int @unique
 }

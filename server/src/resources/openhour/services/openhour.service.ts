@@ -16,12 +16,18 @@ export class OpenHourService {
 
   async isAlreadyCreated(
     data: CreateOpenHour,
-    list?: OpenHour[]
+    list?: OpenHour[],
   ): Promise<OpenHour> {
     if (!list) {
       list = await this.list(data.restaurantId);
     }
     return list.find((oh) => oh.name == data.name);
+  }
+
+  validateDuration(start: string, end: string) {
+    const startDate = new Date(`1970-01-01T${start}`);
+    const endDate = new Date(`1970-01-01T${end}`);
+    return startDate < endDate;
   }
 
   async create({ restaurantId, ...data }: CreateOpenHour): Promise<OpenHour> {

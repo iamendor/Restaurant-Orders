@@ -25,7 +25,7 @@ export const ClearCacheInterceptor = (prefix: string) => {
     constructor(public readonly cacheService: CacheService) {}
     intercept(
       context: ExecutionContext,
-      next: CallHandler<any>
+      next: CallHandler<any>,
     ): Observable<any> {
       const ctx = GqlExecutionContext.create(context);
       const restaurantId = getRIDFRomUser(ctx);
@@ -33,7 +33,7 @@ export const ClearCacheInterceptor = (prefix: string) => {
       return next.handle().pipe(
         tap(() => {
           this.cacheService.del(`${prefix}:${restaurantId}`);
-        })
+        }),
       );
     }
   }
@@ -58,7 +58,7 @@ export const CacheInterceptor = ({
 
     async intercept(
       context: ExecutionContext,
-      next: CallHandler<any>
+      next: CallHandler<any>,
     ): Promise<Observable<any>> {
       const ctx = GqlExecutionContext.create(context);
       const restaurantId = restaurant && getRIDFRomUser(ctx);
@@ -83,7 +83,7 @@ export const CacheInterceptor = ({
               ttl: ttl,
             });
           }
-        })
+        }),
       );
     }
   }
@@ -98,7 +98,7 @@ export class AnalyticsSummaryCacheInterceptor implements NestInterceptor {
   constructor(private readonly cacheService: CacheService) {}
   async intercept(
     context: ExecutionContext,
-    next: CallHandler<any>
+    next: CallHandler<any>,
   ): Promise<Observable<any>> {
     const ctx = GqlExecutionContext.create(context);
     const { range } = ctx.getArgs();
@@ -117,14 +117,14 @@ export class AnalyticsSummaryCacheInterceptor implements NestInterceptor {
           key,
           value: JSON.stringify(req.analytics),
           ttl: 60,
-        })
-      )
+        }),
+      ),
     );
   }
 }
 
 export const AnalyticsResourceSummaryInterceptor = (
-  resource: "income" | "waiter" | "popularProduct"
+  resource: "income" | "waiter" | "popularProduct",
 ) => {
   @Injectable()
   class CI implements NestInterceptor {
@@ -155,7 +155,7 @@ export const AnalyticsResourceSummaryInterceptor = (
 
     async intercept(
       context: ExecutionContext,
-      next: CallHandler<any>
+      next: CallHandler<any>,
     ): Promise<Observable<any>> {
       const ctx = GqlExecutionContext.create(context);
       const range = ctx.getRoot().range;
@@ -168,8 +168,12 @@ export const AnalyticsResourceSummaryInterceptor = (
         .handle()
         .pipe(
           tap((data) =>
-            this.cacheService.set({ key, value: JSON.stringify(data), ttl: 60 })
-          )
+            this.cacheService.set({
+              key,
+              value: JSON.stringify(data),
+              ttl: 60,
+            }),
+          ),
         );
     }
   }

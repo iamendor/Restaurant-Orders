@@ -1,4 +1,4 @@
-import { HttpStatus, UnauthorizedException } from "@nestjs/common";
+import { HttpStatus, Logger, UnauthorizedException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 
 export class SomethingWentWrongException extends GraphQLError {
@@ -54,9 +54,9 @@ export class NotFoundException extends GraphQLError {
 }
 
 export class UniqueFieldFailedException extends GraphQLError {
-  constructor() {
+  constructor(field?: string) {
     super("unique field failed", {
-      extensions: { code: HttpStatus.BAD_REQUEST },
+      extensions: { code: HttpStatus.BAD_REQUEST, field },
     });
   }
 }
@@ -93,6 +93,22 @@ export class NestedCategoryException extends GraphQLError {
   }
 }
 
+export class InvalidOpenHourException extends GraphQLError {
+  constructor(index?: number) {
+    super("The start is greater than the end", {
+      extensions: { code: HttpStatus.BAD_REQUEST, index },
+    });
+  }
+}
+
+export class EnviromentVariableNotFoundException extends Error {
+  logger: Logger = new Logger();
+  constructor(variable?: string, stack?: string) {
+    super();
+    this.logger.error(`Variable ${variable} not found!`, stack);
+  }
+}
+
 export const expectedExceptions = [
   AuthException,
   PermissionDeniedException,
@@ -105,4 +121,6 @@ export const expectedExceptions = [
   OrderReadyException,
   ShortArrayException,
   NestedCategoryException,
+  InvalidOpenHourException,
+  EnviromentVariableNotFoundException,
 ];

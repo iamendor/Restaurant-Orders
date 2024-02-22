@@ -4,11 +4,12 @@ import { Prisma } from "prisma/client/main";
 import { NotFoundException, UniqueFieldFailedException } from "../error";
 
 @Catch(Prisma.PrismaClientKnownRequestError)
-export class PrismaClientException implements GqlExceptionFilter {
+export class PrismaClientExceptionFilter implements GqlExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     switch (exception.code) {
       case "P2002":
-        throw new UniqueFieldFailedException();
+        const field = (exception.meta.target as string).split("_")[1];
+        throw new UniqueFieldFailedException(field);
       case "P2001":
       case "P2015":
       case "P2018":

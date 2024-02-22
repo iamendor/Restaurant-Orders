@@ -27,6 +27,7 @@ import { OpenHourGuard } from "../../../guard";
 import { AddRID } from "../../../pipes/rid.pipe";
 import { MinArrayPipe } from "../../../pipes/array.pipe";
 import { SUCCESS } from "../../../response";
+import { InvalidOpenHourException } from "../../../error";
 
 const OpenHourCacheInterceptor = CacheInterceptor({
   prefix: "openhours",
@@ -43,11 +44,16 @@ export class OpenHourResolver {
   @Mutation(() => OpenHour, { name: "createOpenHour" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
-    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+    TaskInterceptor(CREATE_OPENHOUR_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data", AddRID) data: CreateOpenHour) {
     const isCreated = await this.openHourService.isAlreadyCreated(data);
+    const isValid = this.openHourService.validateDuration(data.start, data.end);
+    if (!isValid) {
+      throw new InvalidOpenHourException();
+    }
+
     if (isCreated) {
       return await this.openHourService.update({
         where: { id: isCreated.id },
@@ -61,20 +67,27 @@ export class OpenHourResolver {
   @Mutation(() => Success, { name: "createOpenHours" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
-    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+    TaskInterceptor(CREATE_OPENHOUR_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateOpenHour] }, MinArrayPipe, AddRID)
     data: Required<CreateOpenHour>[],
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ) {
     const current = await this.openHourService.list(id);
     for (let i = 0; i < data.length; i++) {
       const today = await this.openHourService.isAlreadyCreated(
         data[i],
-        current
+        current,
       );
+      const isValid = this.openHourService.validateDuration(
+        data[i].start,
+        data[i].end,
+      );
+      if (!isValid) {
+        throw new InvalidOpenHourException(i);
+      }
       if (today) {
         const update = { start: data[i].start, end: data[i].end };
         await this.openHourService.update({

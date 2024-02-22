@@ -44,12 +44,7 @@ export class AnalyticsSummaryResolver {
     private readonly createAnalyticsService: CreateAnalyticsService
   ) {}
 
-  @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
-  @Query(() => AnalyticsSummary, { name: "todayAnalytics" })
-  async today(
-    @User() { id }: JwtPayload,
-    @Args("range", { defaultValue: "today" }) _: string
-  ) {
+  async today(@User() { id }: JwtPayload) {
     const analytics = await this.createAnalyticsService.create(id);
     const createdAt = new Date();
     const income = this.incomeService.createSummary([
@@ -62,7 +57,7 @@ export class AnalyticsSummaryResolver {
       { ...analytics.waiterOfTheDay, id: 1, createdAt },
     ]);
 
-    return { income, popularProduct, waiter, createdAt };
+    return { income, popularProduct, waiter, createdAt, range: "today" };
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
@@ -73,6 +68,7 @@ export class AnalyticsSummaryResolver {
     @Context() ctx,
     @Args("range", { defaultValue: "week" }) range: IRange
   ) {
+    if (range == "today") return this.today({ id } as JwtPayload);
     const { start } = this.rangeService.calculate(range);
     const analytics = await this.analyticsService.list(id);
     const filtered =

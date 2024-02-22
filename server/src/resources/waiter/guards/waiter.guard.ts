@@ -8,7 +8,7 @@ import { NotSpecifiedException } from "../../../error";
 @Injectable()
 export class UpdateWaiterGuard implements CanActivate {
   canActivate(
-    context: ExecutionContext
+    context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const ctx = GqlExecutionContext.create(context);
     const args = ctx.getArgs();

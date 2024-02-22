@@ -33,7 +33,7 @@ export class OpenHour {
 export class CreateOpenHour extends PickType(
   OpenHour,
   ["start", "end", "name"] as const,
-  InputType
+  InputType,
 ) {
   @Field({ nullable: true })
   restaurantId?: number;
@@ -41,7 +41,7 @@ export class CreateOpenHour extends PickType(
 
 @InputType()
 export class UpdateOpenHourData extends PartialType(
-  PickType(OpenHour, ["start", "end", "name"] as const, InputType)
+  PickType(OpenHour, ["start", "end", "name"] as const, InputType),
 ) {}
 
 @InputType()

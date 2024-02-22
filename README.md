@@ -42,3 +42,7 @@ In the **_init/db/init.sql_** file change the password of the users and match it
 
 - _JWT_SECRET_ - The JWT secret for the authorization
 - _API_PORT_ - The port that where the api will be running
+
+#### Cors
+
+- _ADMIN_DOMAIN_ - The domain of the admin website

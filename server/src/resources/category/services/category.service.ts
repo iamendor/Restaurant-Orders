@@ -96,7 +96,7 @@ export class CategoryService {
 
   async validateUnique({ restaurantId, name }) {
     const categoryNames = (await this.list(restaurantId)).map(
-      (cat) => cat.name
+      (cat) => cat.name,
     );
     return !categoryNames.includes(name);
   }

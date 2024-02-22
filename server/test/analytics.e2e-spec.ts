@@ -33,7 +33,7 @@ describe("Analytics", () => {
     app = moduleFixture.createNestApplication();
     prismaMain = moduleFixture.get<PrismaMainService>(PrismaMainService);
     prismaAnalytics = moduleFixture.get<PrismaAnalyticsService>(
-      PrismaAnalyticsService
+      PrismaAnalyticsService,
     );
 
     await app.init();

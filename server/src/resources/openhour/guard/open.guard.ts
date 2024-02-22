@@ -9,7 +9,7 @@ import { IdGuard } from "../../../auth/guard/id.guard";
 export class OpenGuard implements CanActivate {
   constructor(
     private readonly openHourService: OpenHourService,
-    private readonly idGuard: IdGuard
+    private readonly idGuard: IdGuard,
   ) {}
   private getDay(num: number) {
     const days = [
@@ -44,11 +44,12 @@ export class OpenGuard implements CanActivate {
     const openHour = (await this.openHourService.list(id)).find((oh) => {
       return oh.name == day;
     });
+
     if (!openHour) throw new RestaurantClosedException();
     const isBetween = this.checkBetween(
       this.formatTime(currentDate),
       openHour.start,
-      openHour.end
+      openHour.end,
     );
     if (!isBetween) throw new RestaurantClosedException();
     return true;

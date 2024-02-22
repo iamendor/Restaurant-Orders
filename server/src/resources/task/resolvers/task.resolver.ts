@@ -23,7 +23,7 @@ export class TaskResolver {
   list(
     @User() { id }: JwtPayload,
     @Args("filter", { type: () => TaskFilter, nullable: true })
-    _filters?: TaskFilter
+    _filters?: TaskFilter,
   ) {
     return this.taskService.list(id);
   }

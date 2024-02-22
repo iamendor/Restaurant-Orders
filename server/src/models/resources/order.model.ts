@@ -62,7 +62,7 @@ export class WhereOrder extends PickType(Order, ["id"] as const, InputType) {}
 
 @InputType()
 export class UpdateOrderData extends PartialType(
-  PickType(Order, ["description", "isReady", "quantity"] as const, InputType)
+  PickType(Order, ["description", "isReady", "quantity"] as const, InputType),
 ) {
   @Field({ nullable: true })
   tableId?: number;

@@ -45,4 +45,7 @@ export class OpenHourServiceMock {
   validate() {
     return true;
   }
+  validateDuration() {
+    return true;
+  }
 }

@@ -19,7 +19,7 @@ export class RestaurantService {
   constructor(
     private readonly prismaService: PrismaMainService,
     private readonly securityService: SecurityService,
-    private readonly currencyService: CurrencyService
+    private readonly currencyService: CurrencyService,
   ) {}
   async create({ currency, ...data }: CreateRestaurant): Promise<Restaurant> {
     const restaurant = await this.prismaService.restaurant.create({

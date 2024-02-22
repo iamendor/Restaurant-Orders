@@ -20,7 +20,7 @@ describe("IncomeService", () => {
 
     service = module.get<IncomeService>(IncomeService);
     prismaAnalytics = module.get<PrismaAnalyticsService>(
-      PrismaAnalyticsService
+      PrismaAnalyticsService,
     );
   });
 

@@ -26,7 +26,7 @@ import { ExcludePassowrdInterceptor } from "../../../interceptors/exclude.interc
 export class RestaurantResolver {
   constructor(
     private readonly restaurantService: RestaurantService,
-    private readonly securityService: SecurityService
+    private readonly securityService: SecurityService,
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT), RestaurantGuard)
@@ -35,7 +35,7 @@ export class RestaurantResolver {
   async update(
     @GetRestaurant() { id }: Restaurant,
     @Args("update")
-    update: UpdateRestaurant
+    update: UpdateRestaurant,
   ) {
     return this.restaurantService.update({
       where: { id },
@@ -47,7 +47,7 @@ export class RestaurantResolver {
   @Mutation(() => Success, { name: "updateRestaurantPassword" })
   async updatePassword(
     @Args("update") update: UpdateRestaurantPassword,
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ) {
     const { password } = (await this.restaurantService.find({
       id,

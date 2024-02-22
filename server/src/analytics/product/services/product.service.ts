@@ -5,7 +5,7 @@ import { PopularProduct } from "prisma/client/analytics";
 @Injectable()
 export class PopularProductService {
   constructor(
-    private readonly prismaAnalyticsService: PrismaAnalyticsService
+    private readonly prismaAnalyticsService: PrismaAnalyticsService,
   ) {}
 
   findMany(ids: number[]) {

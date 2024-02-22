@@ -4,13 +4,16 @@ import { PrismaAnalyticsService } from "../../../prisma/analytics/services/prism
 @Injectable()
 export class ReadAnalyticsService {
   constructor(
-    private readonly prismaAnalyticsService: PrismaAnalyticsService
+    private readonly prismaAnalyticsService: PrismaAnalyticsService,
   ) {}
 
   async list(restaurantId: number) {
     const analytics = this.prismaAnalyticsService.analytics.findMany({
       where: {
         restaurantId,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
     return analytics;

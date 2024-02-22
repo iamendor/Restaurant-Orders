@@ -13,10 +13,10 @@ export class Income {
 
 @ObjectType()
 export class IncomeRange {
-  @Field(() => Income, { description: "The highest income" })
-  top: Income;
-  @Field(() => Income, { description: "The lowest income" })
-  bottom: Income;
+  @Field(() => Income, { description: "The highest income", nullable: true })
+  top?: Income;
+  @Field(() => Income, { description: "The lowest income", nullable: true })
+  bottom?: Income;
 }
 
 @ObjectType()

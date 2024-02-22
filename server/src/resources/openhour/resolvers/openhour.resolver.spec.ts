@@ -34,7 +34,7 @@ describe("OpenHourResolver", () => {
 
     resolver = await module.resolve<OpenHourResolver>(
       OpenHourResolver,
-      contextId
+      contextId,
     );
   });
 

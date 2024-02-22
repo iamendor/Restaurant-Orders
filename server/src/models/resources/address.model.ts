@@ -34,7 +34,7 @@ export class Address {
 export class CreateAddress extends OmitType(
   Address,
   ["id", "restaurant", "restaurantId"] as const,
-  InputType
+  InputType,
 ) {}
 
 @InputType()
@@ -55,5 +55,5 @@ export class UpdateAddress {
 export class WhereAddress extends PickType(
   Address,
   ["id", "restaurantId"] as const,
-  InputType
+  InputType,
 ) {}

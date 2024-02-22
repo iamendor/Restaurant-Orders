@@ -66,7 +66,7 @@ describe("AnalyticsSummaryResolver", () => {
       {
         analytics: mockAnalyticsIds,
       },
-      {} as AnalyticsSummary
+      {} as AnalyticsSummary,
     );
     expect(incomeSummary).toBeDefined();
   });
@@ -76,7 +76,7 @@ describe("AnalyticsSummaryResolver", () => {
       {
         analytics: mockAnalyticsIds,
       },
-      {} as AnalyticsSummary
+      {} as AnalyticsSummary,
     );
     expect(waiterSummary).toBeDefined();
   });
@@ -86,7 +86,7 @@ describe("AnalyticsSummaryResolver", () => {
       {
         analytics: mockAnalyticsIds,
       },
-      {} as AnalyticsSummary
+      {} as AnalyticsSummary,
     );
     expect(popularProductSummary).toBeDefined();
   });

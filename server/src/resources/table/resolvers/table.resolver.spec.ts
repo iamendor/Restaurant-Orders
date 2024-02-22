@@ -46,7 +46,7 @@ describe("TableResolver", () => {
   it("create a table", async () => {
     const table = await resolver.create(
       { ...mockTable, name: `${mockTable.name}Create` },
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(table.name).toBe(`${mockTable.name}Create`);
   });
@@ -54,7 +54,7 @@ describe("TableResolver", () => {
     const tables = [1, 2].map((id) => ({ name: `${mockTable.name}${id}`, id }));
     const createTables = await resolver.createMany(
       tables.map((t) => ({ ...t, restaurantId: 1 })),
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(createTables.message).toBe(SUCCESS);
   });
@@ -67,7 +67,7 @@ describe("TableResolver", () => {
           name: update,
         },
       },
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(updatedTable.name).toBe(update);
   });
@@ -90,7 +90,7 @@ describe("TableResolver", () => {
   it("deletes table", async () => {
     const deletedTable = await resolver.delete(
       { id: mockTable.id },
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(deletedTable.message).toBe(SUCCESS);
   });

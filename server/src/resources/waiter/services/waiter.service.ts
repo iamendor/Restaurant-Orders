@@ -19,7 +19,7 @@ import { SUCCESS } from "../../../response";
 export class WaiterService {
   constructor(
     private readonly prismaService: PrismaMainService,
-    private readonly securityService: SecurityService
+    private readonly securityService: SecurityService,
   ) {}
 
   async create({ restaurantId, ...waiter }: CreateWaiter): Promise<Waiter> {

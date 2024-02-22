@@ -74,6 +74,8 @@ export class AuthRestaurant {
   restaurant: Restaurant;
   @Field({ description: "The JWT token for authorization" })
   access_token: string;
+  @Field(() => DateScalar, { description: "The JWT token expiration time" })
+  expiresAt: Date;
 }
 
 @InputType()
@@ -100,12 +102,12 @@ export class LoginRestaurant extends PickType(CreateRestaurant, [
 
 @InputType()
 export class WhereRestaurant extends PartialType(
-  PickType(Restaurant, ["id", "email"] as const, InputType)
+  PickType(Restaurant, ["id", "email"] as const, InputType),
 ) {}
 
 @InputType()
 export class UpdateRestaurant extends PartialType(
-  PickType(Restaurant, ["name", "email"] as const, InputType)
+  PickType(Restaurant, ["name", "email"] as const, InputType),
 ) {
   @Field(() => UpdateAddress, { nullable: true })
   address?: UpdateAddress;

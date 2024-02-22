@@ -44,20 +44,20 @@ export class TableResolver {
   @Mutation(() => Table, { name: "createTable" })
   @UseInterceptors(
     TableClearCacheInterceptor,
-    TaskInterceptor(CREATE_TABLE_ACTION)
+    TaskInterceptor(CREATE_TABLE_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(
     @Args("data", { type: () => CreateTable }, AddRID)
     data: Required<CreateTable>,
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ) {
     const isUnique = await this.tableService.validateUnique({
       restaurantId: id,
       name: data.name,
     });
 
-    if (!isUnique) throw new UniqueFieldFailedException();
+    if (!isUnique) throw new UniqueFieldFailedException("name");
 
     return this.tableService.create(data);
   }
@@ -65,21 +65,21 @@ export class TableResolver {
   @Mutation(() => Success, { name: "createTables" })
   @UseInterceptors(
     TableClearCacheInterceptor,
-    TaskInterceptor(CREATE_TABLE_ACTION)
+    TaskInterceptor(CREATE_TABLE_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateTable] }, MinArrayPipe, AddRID)
     data: Required<CreateTable>[],
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ) {
     const tableNames = (await this.tableService.list(id)).map(
-      (tab) => tab.name
+      (tab) => tab.name,
     );
 
     for (let i = 0; i < data.length; i++) {
       if (tableNames.includes(data[i].name))
-        throw new UniqueFieldFailedException();
+        throw new UniqueFieldFailedException("name");
     }
 
     return this.tableService.createMany(data);
@@ -95,7 +95,7 @@ export class TableResolver {
         restaurantId: id,
       });
 
-      if (!isUniqe) throw new UniqueFieldFailedException();
+      if (!isUniqe) throw new UniqueFieldFailedException("name");
     }
     return this.tableService.update(data);
   }
@@ -113,7 +113,7 @@ export class TableResolver {
   list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => TableFilter })
-    _filters?: TableFilter
+    _filters?: TableFilter,
   ) {
     return this.tableService.list(restaurantId);
   }

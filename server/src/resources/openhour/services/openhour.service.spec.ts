@@ -55,4 +55,14 @@ describe("OpenHour Service", () => {
     const deleted = await service.delete({ id: 1 });
     expect(deleted.message).toBe("success");
   });
+
+  it("checks if openhours are synced and start is not greater than end", () => {
+    const start = "08:00:00";
+    const end = "09:00:00";
+
+    const valid = service.validateDuration(start, end);
+    const inValid = service.validateDuration(end, start);
+    expect(valid).toBeTruthy();
+    expect(inValid).toBeFalsy();
+  });
 });

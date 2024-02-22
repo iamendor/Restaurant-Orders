@@ -41,7 +41,7 @@ describe("CategoryResolver", () => {
 
     resolver = await module.resolve<CategoryResolver>(
       CategoryResolver,
-      contextId
+      contextId,
     );
   });
 
@@ -52,7 +52,7 @@ describe("CategoryResolver", () => {
   it("create a category", async () => {
     const category = await resolver.create(
       { ...mockCategory, name: "unitTestMockCategory" },
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(category.name).toBe("unitTestMockCategory");
     cat = category;
@@ -66,7 +66,7 @@ describe("CategoryResolver", () => {
 
     const created = await resolver.createMany(
       categories,
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(created.message).toBe(SUCCESS);
   });
@@ -81,7 +81,7 @@ describe("CategoryResolver", () => {
           name: update,
         },
       },
-      mockRestaurantPayload
+      mockRestaurantPayload,
     );
     expect(updated.name).toBe(update);
   });

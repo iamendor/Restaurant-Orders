@@ -43,18 +43,18 @@ const MealClearCacheInterceptor = ClearCacheInterceptor("meals");
 export class MealResolver {
   constructor(
     private readonly mealService: MealService,
-    private readonly fieldService: FieldService
+    private readonly fieldService: FieldService,
   ) {}
 
   @Mutation(() => Meal, { name: "createMeal" })
   @UseInterceptors(
     MealClearCacheInterceptor,
-    TaskInterceptor(CREATE_MEAL_ACTION)
+    TaskInterceptor(CREATE_MEAL_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), CreateMealGuard)
   async create(
     @Args("data", { type: () => CreateMeal }, AddRID)
-    { tableId, restaurantId }: Required<CreateMeal>
+    { tableId, restaurantId }: Required<CreateMeal>,
   ): Promise<Meal> {
     const orders = await this.fieldService.getOrders(tableId, true);
 
@@ -80,7 +80,7 @@ export class MealResolver {
   async list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => MealFilter })
-    _filter?: MealFilter
+    _filter?: MealFilter,
   ) {
     return this.mealService.list(restaurantId);
   }
