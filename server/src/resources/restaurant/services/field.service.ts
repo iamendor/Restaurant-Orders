@@ -89,6 +89,7 @@ export class FieldService {
       "Sunday",
     ];
     const date = new Date();
+    date.setFullYear(1970, 0, 1);
 
     const openHour = await this.prismaService.openingHour.findFirst({
       where: { restaurantId, name: days[date.getDay() - 1] },
@@ -97,8 +98,8 @@ export class FieldService {
     const { start, end } = openHour;
     const startDate = new Date(`1970-01-01T${start}`);
     const endDate = new Date(`1970-01-01T${end}`);
-    const checkDate = new Date(`1970-01-01T${date.toLocaleTimeString()}`);
-    return checkDate >= startDate && checkDate <= endDate;
+
+    return date >= startDate && date <= endDate;
   }
 
   async getTasks(restaurantId: number) {

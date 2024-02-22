@@ -1,15 +1,17 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { PrismaClientException } from "./exceptions/prisma.exception";
+import { PrismaClientExceptionFilter } from "./exceptions/prisma.exception";
 import { ConfigService } from "@nestjs/config";
-import { UnExpectedException } from "./exceptions/unexpected.exception";
+import { UnExpectedExceptionFilter } from "./exceptions/unexpected.exception";
 import { AuthExceptionFilter } from "./exceptions/unauthorized.exception";
+import { Config } from "./config";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
   const config = app.get<ConfigService>(ConfigService);
-  app.useGlobalFilters(new UnExpectedException());
-  app.useGlobalFilters(new PrismaClientException());
+  app.enableCors(Config.getCorsConfig(config));
+  app.useGlobalFilters(new UnExpectedExceptionFilter());
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
   app.useGlobalFilters(new AuthExceptionFilter());
   await app.listen(config.get("PORT"));
 }

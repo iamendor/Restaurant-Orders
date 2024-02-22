@@ -44,6 +44,7 @@ export class OpenGuard implements CanActivate {
     const openHour = (await this.openHourService.list(id)).find((oh) => {
       return oh.name == day;
     });
+
     if (!openHour) throw new RestaurantClosedException();
     const isBetween = this.checkBetween(
       this.formatTime(currentDate),

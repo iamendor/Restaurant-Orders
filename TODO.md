@@ -26,9 +26,9 @@
 
 - [ ] Invalidate orders on closing meal with action CLOSED - **#2**
 - [x] Error handling in analytics if it is no waiter - **#3**
-- [x] Something wrong with opening - **#4** ❓
+- [x] Something wrong with opening - **#4**
 - [x] Add order by date to analytics - **#5**
 - [x] Find what unique field failed - **#6**
-- [ ] Cors configuration - **#7**
+- [x] Cors configuration - **#7**
 - [ ] Error handling for no analytics - **#8**
 - [ ] Error handling on triggering analytics - **#9**
