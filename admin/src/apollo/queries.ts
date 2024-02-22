@@ -2,20 +2,13 @@ import { gql } from "@apollo/client";
 
 export const DASHBOARD = gql`
   query getDashboardData($min: Date!) {
-    todayAnalytics {
+    todaySummary: analyticsSummary(range: "today") {
       income {
         total
       }
       waiter {
         best {
           name
-        }
-      }
-      popularProduct {
-        toplist {
-          numberOne {
-            name
-          }
         }
       }
     }
@@ -25,7 +18,12 @@ export const DASHBOARD = gql`
         total
       }
     }
-    analyticsSummary(range: "week") {
+    weeklySummary: analyticsSummary {
+      waiter {
+        best {
+          name
+        }
+      }
       income {
         average
         median

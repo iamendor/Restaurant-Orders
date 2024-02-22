@@ -35,7 +35,7 @@ export default function Input({
 
 export function ToggleInput({
   register,
-  default: def = false,
+  default: def = "",
   onChange = () => {},
 }) {
   return (
