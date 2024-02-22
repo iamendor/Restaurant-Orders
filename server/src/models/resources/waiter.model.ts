@@ -49,7 +49,7 @@ export class AuthWaiter {
 export class CreateWaiter extends PickType(
   Waiter,
   ["name", "email", "gender", "profileIcon"] as const,
-  InputType
+  InputType,
 ) {
   @Field()
   password: string;
@@ -61,7 +61,7 @@ export class CreateWaiter extends PickType(
 export class LoginWaiter extends PickType(
   Waiter,
   ["email"] as const,
-  InputType
+  InputType,
 ) {
   @Field()
   password: string;
@@ -70,12 +70,12 @@ export class LoginWaiter extends PickType(
 @InputType()
 export class WhereWaiter extends PartialType(
   PickType(Waiter, ["id", "restaurantId", "email"] as const),
-  InputType
+  InputType,
 ) {}
 
 @InputType()
 export class UpdateWaiterData extends PartialType(
-  OmitType(CreateWaiter, ["password"] as const)
+  OmitType(CreateWaiter, ["password"] as const),
 ) {}
 
 @InputType()

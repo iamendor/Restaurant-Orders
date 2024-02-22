@@ -26,7 +26,7 @@ export const FilterInterceptor = (resource: FilterInterceptorOptions) => {
     constructor(public readonly filterService: FilterService) {}
     intercept(
       context: ExecutionContext,
-      next: CallHandler<any>
+      next: CallHandler<any>,
     ): Observable<any> | Promise<Observable<any>> {
       const ctx = GqlExecutionContext.create(context);
       const filter = ctx.getArgs().filter;
@@ -39,7 +39,7 @@ export const FilterInterceptor = (resource: FilterInterceptorOptions) => {
             filters: filter,
           });
           return filtered;
-        })
+        }),
       );
     }
   }

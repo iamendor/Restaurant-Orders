@@ -18,7 +18,7 @@ describe("WaiterService", () => {
     }).compile();
     service = module.get<WaiterOfTheDayService>(WaiterOfTheDayService);
     prismaAnalytics = module.get<PrismaAnalyticsService>(
-      PrismaAnalyticsService
+      PrismaAnalyticsService,
     );
   });
 
@@ -41,8 +41,8 @@ describe("WaiterService", () => {
             ...a,
             [b.waiterId]: (a[b.waiterId] || 0) + 1,
           }),
-          {}
-        )
+          {},
+        ),
       )
         .sort((a: any, b: any) => b[1] - a[1])
         .map((i) => Number(i[0]))[0];

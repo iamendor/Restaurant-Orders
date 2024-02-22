@@ -19,14 +19,14 @@ export class AuthResolver {
     private readonly authService: AuthService,
     private readonly restaurantService: RestaurantService,
     private readonly taskService: TaskService,
-    private readonly currencyService: CurrencyService
+    private readonly currencyService: CurrencyService,
   ) {}
 
   @UseInterceptors(ExcludePassowrdInterceptor)
   @Mutation(() => Restaurant)
   async signup(
     @Args("data", { type: () => CreateRestaurant })
-    data: CreateRestaurant
+    data: CreateRestaurant,
   ) {
     const currency = await this.currencyService.find(data.currency);
 

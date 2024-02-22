@@ -7,7 +7,7 @@ import { CalculatorService } from "../../services/calculator.service";
 export class IncomeService {
   constructor(
     private readonly prismaAnalyticsService: PrismaAnalyticsService,
-    private readonly calculatorService: CalculatorService
+    private readonly calculatorService: CalculatorService,
   ) {}
 
   private sort(data: Income[]) {

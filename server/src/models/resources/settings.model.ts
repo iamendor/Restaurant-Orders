@@ -16,5 +16,5 @@ export class Settings {
 
 @InputType()
 export class UpdateSettings extends PartialType(
-  PickType(Settings, ["enableAnalytics"] as const, InputType)
+  PickType(Settings, ["enableAnalytics"] as const, InputType),
 ) {}

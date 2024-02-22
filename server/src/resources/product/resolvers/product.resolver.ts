@@ -42,7 +42,7 @@ const ProductClearCacheInterceptor = ClearCacheInterceptor("product");
 export class ProductResolver {
   constructor(
     private readonly productService: ProductService,
-    private readonly categoryService: CategoryService
+    private readonly categoryService: CategoryService,
   ) {}
 
   private;
@@ -50,12 +50,12 @@ export class ProductResolver {
   @Mutation(() => Product, { name: "createProduct" })
   @UseInterceptors(
     ProductClearCacheInterceptor,
-    TaskInterceptor(CREATE_PRODUCT_ACTION)
+    TaskInterceptor(CREATE_PRODUCT_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(
     @User() { id }: JwtPayload,
-    @Args("data", AddRID) data: CreateProduct
+    @Args("data", AddRID) data: CreateProduct,
   ) {
     const { categoryId } = data;
     const isCatValid = await this.categoryService.validate({
@@ -73,12 +73,12 @@ export class ProductResolver {
   @Mutation(() => Success, { name: "createProducts" })
   @UseInterceptors(
     ProductClearCacheInterceptor,
-    TaskInterceptor(CREATE_PRODUCT_ACTION)
+    TaskInterceptor(CREATE_PRODUCT_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateProduct] }, MinArrayPipe, AddRID)
-    data: CreateProduct[]
+    data: CreateProduct[],
   ) {
     const categories = [...new Set(data.map((v) => v.categoryId))];
 
@@ -113,7 +113,7 @@ export class ProductResolver {
   list(
     @RID() id: number,
     @Args("filter", { nullable: true, type: () => ProductFilter })
-    _filters?: ProductFilter
+    _filters?: ProductFilter,
   ) {
     return this.productService.list(id);
   }

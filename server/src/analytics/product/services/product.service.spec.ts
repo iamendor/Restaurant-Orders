@@ -20,7 +20,7 @@ describe("PopularProductService", () => {
     service = module.get<PopularProductService>(PopularProductService);
 
     prismaAnalytics = module.get<PrismaAnalyticsService>(
-      PrismaAnalyticsService
+      PrismaAnalyticsService,
     );
   });
 

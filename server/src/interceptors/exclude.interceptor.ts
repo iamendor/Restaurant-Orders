@@ -13,7 +13,7 @@ export const ExcludeKeyInterceptor = (key: string) => {
   class CI implements NestInterceptor {
     intercept(
       context: ExecutionContext,
-      next: CallHandler<any>
+      next: CallHandler<any>,
     ): Observable<any> {
       return next.handle().pipe(
         map((data) => {
@@ -21,7 +21,7 @@ export const ExcludeKeyInterceptor = (key: string) => {
             return data.map(({ [key]: excluded, ...d }) => d);
           const { [key]: excluded, ...d } = data;
           return d;
-        })
+        }),
       );
     }
   }

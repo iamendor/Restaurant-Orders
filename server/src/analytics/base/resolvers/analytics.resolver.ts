@@ -25,7 +25,7 @@ export class AnalyticsResolver {
   list(
     @User() { id }: JwtPayload,
     @Args("filter", { nullable: true, type: () => AnalyticsFilter })
-    _?: AnalyticsFilter
+    _?: AnalyticsFilter,
   ) {
     return this.analyticsService.list(id);
   }

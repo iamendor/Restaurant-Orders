@@ -34,7 +34,7 @@ export function ResourceGuard({
     service: any;
     constructor(
       public readonly idGuard: IdGuard,
-      public readonly prismaService: PrismaMainService
+      public readonly prismaService: PrismaMainService,
     ) {
       this.FIND = FIND;
       this.DELETE = DELETE;

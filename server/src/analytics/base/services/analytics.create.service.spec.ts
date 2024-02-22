@@ -24,7 +24,7 @@ describe("AnalyticsService", () => {
 
     service = module.get<CreateAnalyticsService>(CreateAnalyticsService);
     prismaAnalytics = module.get<PrismaAnalyticsService>(
-      PrismaAnalyticsService
+      PrismaAnalyticsService,
     );
 
     prismaMain = module.get<PrismaMainService>(PrismaMainService);

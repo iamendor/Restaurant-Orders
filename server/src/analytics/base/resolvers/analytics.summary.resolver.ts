@@ -41,14 +41,14 @@ export class AnalyticsSummaryResolver {
     private readonly incomeService: IncomeService,
     private readonly productService: PopularProductService,
     private readonly waiterService: WaiterOfTheDayService,
-    private readonly createAnalyticsService: CreateAnalyticsService
+    private readonly createAnalyticsService: CreateAnalyticsService,
   ) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @Query(() => AnalyticsSummary, { name: "todayAnalytics" })
   async today(
     @User() { id }: JwtPayload,
-    @Args("range", { defaultValue: "today" }) _: string
+    @Args("range", { defaultValue: "today" }) _: string,
   ) {
     const analytics = await this.createAnalyticsService.create(id);
     const createdAt = new Date();
@@ -71,7 +71,7 @@ export class AnalyticsSummaryResolver {
   async summary(
     @User() { id }: JwtPayload,
     @Context() ctx,
-    @Args("range", { defaultValue: "week" }) range: IRange
+    @Args("range", { defaultValue: "week" }) range: IRange,
   ) {
     const { start } = this.rangeService.calculate(range);
     const analytics = await this.analyticsService.list(id);
@@ -91,7 +91,7 @@ export class AnalyticsSummaryResolver {
   @UseInterceptors(AnalyticsResourceSummaryInterceptor("income"))
   async incomeSummary(
     @Context() { analytics }: SummaryContext,
-    @Parent() parent: AnalyticsSummary
+    @Parent() parent: AnalyticsSummary,
   ) {
     if (parent.income) return parent.income;
     const incomes = await this.incomeService.findMany(analytics);
@@ -102,7 +102,7 @@ export class AnalyticsSummaryResolver {
   @UseInterceptors(AnalyticsResourceSummaryInterceptor("popularProduct"))
   async popularProductSummary(
     @Context() { analytics }: SummaryContext,
-    @Parent() parent: AnalyticsSummary
+    @Parent() parent: AnalyticsSummary,
   ) {
     if (parent.popularProduct) return parent.popularProduct;
     const products = await this.productService.findMany(analytics);
@@ -113,7 +113,7 @@ export class AnalyticsSummaryResolver {
   @UseInterceptors(AnalyticsResourceSummaryInterceptor("waiter"))
   async waiterOfTheDaySummary(
     @Context() { analytics }: SummaryContext,
-    @Parent() parent: AnalyticsSummary
+    @Parent() parent: AnalyticsSummary,
   ) {
     if (parent.waiter) return parent.waiter;
     const bestWaiters = await this.waiterService.findMany(analytics);

@@ -68,7 +68,7 @@ describe("Waiter Resolver", () => {
         where: {
           id: 1,
         },
-      }
+      },
     );
     expect(updatedPassword.message).toBe(SUCCESS);
   });
@@ -88,7 +88,7 @@ describe("Waiter Resolver", () => {
       async () =>
         await resolver.updatePassword(mockWaiterPayload, {
           update: { password: "error" },
-        })
+        }),
     ).rejects.toThrow("no old password specified");
   });
   it("lists waiters of restaurant", async () => {

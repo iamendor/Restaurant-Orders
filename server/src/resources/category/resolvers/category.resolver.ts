@@ -48,12 +48,12 @@ export class CategoryResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
-    CategoryClearCacheInterceptor
+    CategoryClearCacheInterceptor,
   )
   @Mutation(() => Category, { name: "createCategory" })
   async create(
     @Args("data", AddRID) data: CreateCategory,
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ) {
     const isUnique = await this.categoryService.validateUnique({
       restaurantId: id,
@@ -79,16 +79,16 @@ export class CategoryResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   @UseInterceptors(
     TaskInterceptor(CREATE_CATEGORY_ACTION),
-    CategoryClearCacheInterceptor
+    CategoryClearCacheInterceptor,
   )
   @Mutation(() => Success, { name: "createCategories" })
   async createMany(
     @Args("data", { type: () => [CreateCategory] }, MinArrayPipe, AddRID)
     data: Required<CreateCategory>[],
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ): Promise<Success> {
     const categories = (await this.categoryService.list(id)).map(
-      (cat) => cat.name
+      (cat) => cat.name,
     );
     for (let i = 0; i < data.length; i++) {
       if (categories.includes(data[i].name))
@@ -108,7 +108,7 @@ export class CategoryResolver {
       if (!isParentValid) throw new PermissionDeniedException();
 
       const parentLevel = await this.categoryService.validateNesting(
-        parents[i]
+        parents[i],
       );
       if (!parentLevel) throw new NestedCategoryException(parents[i]);
       parentsLevel[parents[i]] = parentLevel;
@@ -116,8 +116,8 @@ export class CategoryResolver {
 
     return this.categoryService.createMany(
       data.map((cat) =>
-        cat.parentId ? { ...cat, level: parentsLevel[cat.parentId] } : cat
-      )
+        cat.parentId ? { ...cat, level: parentsLevel[cat.parentId] } : cat,
+      ),
     );
   }
 
@@ -146,7 +146,7 @@ export class CategoryResolver {
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT, WAITER), CategoryGuard)
   async find(
     @GetCategory() category: Category,
-    @Args("where") _: WhereCategory
+    @Args("where") _: WhereCategory,
   ) {
     return category;
   }
@@ -157,7 +157,7 @@ export class CategoryResolver {
   async list(
     @RID() restaurantId: number,
     @Args("filter", { nullable: true, type: () => CategoryFilter })
-    _filters?: CategoryFilter
+    _filters?: CategoryFilter,
   ) {
     return await this.categoryService.list(restaurantId);
   }

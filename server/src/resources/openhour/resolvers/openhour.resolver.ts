@@ -44,7 +44,7 @@ export class OpenHourResolver {
   @Mutation(() => OpenHour, { name: "createOpenHour" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
-    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+    TaskInterceptor(CREATE_OPENHOUR_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async create(@Args("data", AddRID) data: CreateOpenHour) {
@@ -67,23 +67,23 @@ export class OpenHourResolver {
   @Mutation(() => Success, { name: "createOpenHours" })
   @UseInterceptors(
     OpenHourClearCacheInterceptor,
-    TaskInterceptor(CREATE_OPENHOUR_ACTION)
+    TaskInterceptor(CREATE_OPENHOUR_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(RESTAURANT))
   async createMany(
     @Args("data", { type: () => [CreateOpenHour] }, MinArrayPipe, AddRID)
     data: Required<CreateOpenHour>[],
-    @User() { id }: JwtPayload
+    @User() { id }: JwtPayload,
   ) {
     const current = await this.openHourService.list(id);
     for (let i = 0; i < data.length; i++) {
       const today = await this.openHourService.isAlreadyCreated(
         data[i],
-        current
+        current,
       );
       const isValid = this.openHourService.validateDuration(
         data[i].start,
-        data[i].end
+        data[i].end,
       );
       if (!isValid) {
         throw new InvalidOpenHourException(i);

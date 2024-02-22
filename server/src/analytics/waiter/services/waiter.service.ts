@@ -5,7 +5,7 @@ import { WaiterOfTheDay } from "../../../models/analytics/waiteroftheday.model";
 @Injectable()
 export class WaiterOfTheDayService {
   constructor(
-    private readonly prismaAnalyticsService: PrismaAnalyticsService
+    private readonly prismaAnalyticsService: PrismaAnalyticsService,
   ) {}
   findMany(ids: number[]) {
     return this.prismaAnalyticsService.waiterOfTheDay.findMany({

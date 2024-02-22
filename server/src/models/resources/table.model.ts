@@ -39,7 +39,7 @@ export class CreateTable extends PickType(Table, ["name"] as const, InputType) {
 @InputType()
 export class WhereTable extends PartialType(
   PickType(Table, ["id"] as const),
-  InputType
+  InputType,
 ) {}
 
 @InputType()

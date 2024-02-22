@@ -6,7 +6,7 @@ import { PrismaMainService } from "../../../prisma/main/services/prisma.main.ser
 export class FieldService {
   constructor(
     private readonly prismaAnalyticsService: PrismaAnalyticsService,
-    private readonly prismaMainService: PrismaMainService
+    private readonly prismaMainService: PrismaMainService,
   ) {}
 
   async getIncome(id: number) {

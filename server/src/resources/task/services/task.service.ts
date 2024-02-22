@@ -11,7 +11,7 @@ import { SomethingWentWrongException } from "../../../error";
 export class TaskService {
   constructor(
     private readonly prismaService: PrismaMainService,
-    private readonly prismaStaticService: PrismaStaticService
+    private readonly prismaStaticService: PrismaStaticService,
   ) {}
 
   private getBase() {
@@ -45,7 +45,7 @@ export class TaskService {
     });
     if (!base) return null;
     const task = (await this.list(restaurantId)).find(
-      (t) => t.baseId == base.id
+      (t) => t.baseId == base.id,
     );
     if (!task) return null;
     return task;

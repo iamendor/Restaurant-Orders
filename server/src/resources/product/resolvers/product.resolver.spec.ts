@@ -41,7 +41,7 @@ describe("MealResolver", () => {
     }).compile();
     resolver = await module.resolve<ProductResolver>(
       ProductResolver,
-      contextId
+      contextId,
     );
   });
 

@@ -27,7 +27,7 @@ export function TaskInterceptor(action: string) {
     constructor(public readonly taskService: TaskService) {}
     intercept(
       context: ExecutionContext,
-      next: CallHandler<any>
+      next: CallHandler<any>,
     ): Observable<any> | Promise<Observable<any>> {
       const user = GqlExecutionContext.create(context).getContext().req.user;
       const restaurantId = user.role == WAITER ? user.restaurantId : user.id;
@@ -40,12 +40,12 @@ export function TaskInterceptor(action: string) {
           });
           if (!task)
             return this.logger.warn(
-              `Cannot find task ${action} for ${restaurantId}`
+              `Cannot find task ${action} for ${restaurantId}`,
             );
           if (!task.done) {
             await this.taskService.tick({ id: task.id });
           }
-        })
+        }),
       );
     }
   }

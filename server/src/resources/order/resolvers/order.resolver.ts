@@ -50,7 +50,7 @@ export class OrderResolver {
     private readonly orderService: OrderService,
     private readonly subscriptionService: SubscriptionService,
     private readonly tableService: TableService,
-    private readonly victualService: ProductService
+    private readonly victualService: ProductService,
   ) {}
 
   private UPDATE = "UPDATE";
@@ -60,7 +60,7 @@ export class OrderResolver {
   @Mutation(() => Order, { name: "createOrder" })
   @UseInterceptors(
     OrderClearCacheInterceptor,
-    TaskInterceptor(CREATE_ORDER_ACTION)
+    TaskInterceptor(CREATE_ORDER_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), IdGuard, OpenGuard)
   async create(@Args("data", AddRID, AddWID) data: CreateOrder) {
@@ -88,13 +88,13 @@ export class OrderResolver {
   @Mutation(() => Success, { name: "createOrders" })
   @UseInterceptors(
     OrderClearCacheInterceptor,
-    TaskInterceptor(CREATE_ORDER_ACTION)
+    TaskInterceptor(CREATE_ORDER_ACTION),
   )
   @UseGuards(JwtAuthGuard, RoleGuard(WAITER), OpenGuard)
   async createMany(
     @User() { restaurantId }: JwtPayload,
     @Args("data", { type: () => [CreateOrder] }, MinArrayPipe, AddRID, AddWID)
-    data: CreateOrder[]
+    data: CreateOrder[],
   ) {
     const victIds = [...new Set(data.map((o) => o.productId))];
     const tableIds = [...new Set(data.map((o) => o.tableId))];
@@ -122,7 +122,7 @@ export class OrderResolver {
     });
     this.subscriptionService.invalidateOrders(
       data[0].restaurantId,
-      ...orders.map((order) => ({ ...order, action: this.CREATE }))
+      ...orders.map((order) => ({ ...order, action: this.CREATE })),
     );
 
     return SUCCESS;
@@ -133,12 +133,12 @@ export class OrderResolver {
     JwtAuthGuard,
     RoleGuard(WAITER, RESTAURANT),
     OpenGuard,
-    ...OrderGuard
+    ...OrderGuard,
   )
   @UseInterceptors(OrderClearCacheInterceptor)
   async update(
     @RID() restaurantId: number,
-    @Args("data") { where, update }: UpdateOrder
+    @Args("data") { where, update }: UpdateOrder,
   ) {
     const updatedOrder = await this.orderService.update({
       where,
@@ -158,7 +158,7 @@ export class OrderResolver {
     JwtAuthGuard,
     RoleGuard(RESTAURANT, WAITER),
     OpenGuard,
-    ...OrderGuard
+    ...OrderGuard,
   )
   @UseInterceptors(OrderClearCacheInterceptor)
   async delete(@Args("where") where: WhereOrder, @GetOrder() order: Order) {
@@ -182,7 +182,7 @@ export class OrderResolver {
       type: () => OrderFilter,
       defaultValue: { isClosed: "false" },
     })
-    _filters?: OrderFilter
+    _filters?: OrderFilter,
   ) {
     return this.orderService.list(restaurantId);
   }

@@ -5,5 +5,5 @@ export interface IWaiterFilter {
   name: SearchName;
   email: Email;
   gender: Gender;
-  maxLength: MaxLength
+  maxLength: MaxLength;
 }

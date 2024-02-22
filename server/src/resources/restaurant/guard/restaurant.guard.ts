@@ -8,7 +8,7 @@ import { IdGuard } from "../../../auth/guard/id.guard";
 export class RestaurantGuard implements CanActivate {
   constructor(
     private readonly restaurantService: RestaurantService,
-    private readonly idGuard: IdGuard
+    private readonly idGuard: IdGuard,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.idGuard.canActivate(context);

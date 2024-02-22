@@ -22,14 +22,14 @@ export class MealService {
 
   formatTable(orders: Order[]) {
     const sorted = orders.sort(
-      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     );
     const start = sorted[0].createdAt;
     const end = sorted[sorted.length - 1].createdAt;
     const waiterId = sorted[0].waiterId;
     const total = sorted.reduce(
       (acc, c) => acc + c.product.price * c.quantity,
-      0
+      0,
     );
     return { sorted, start, end, waiterId, total };
   }

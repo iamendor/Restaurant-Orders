@@ -24,7 +24,7 @@ export class AuthService {
     private restaurantService: RestaurantService,
     private waiterService: WaiterService,
     private jwtService: JwtService,
-    private readonly securityService: SecurityService
+    private readonly securityService: SecurityService,
   ) {}
 
   private EXPIRATION = 12;

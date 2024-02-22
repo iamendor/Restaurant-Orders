@@ -32,7 +32,7 @@
 - [x] Cors configuration - **#7**
 - [x] Error handling for no analytics - **#8**
 - [x] Error handling on triggering analytics - **#9**
-- [ ] Deprecated packages - **#10**
+- [x] Deprecated packages - **#10**
 
 ## Admin
 

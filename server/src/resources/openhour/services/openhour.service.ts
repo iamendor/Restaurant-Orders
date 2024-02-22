@@ -16,7 +16,7 @@ export class OpenHourService {
 
   async isAlreadyCreated(
     data: CreateOpenHour,
-    list?: OpenHour[]
+    list?: OpenHour[],
   ): Promise<OpenHour> {
     if (!list) {
       list = await this.list(data.restaurantId);

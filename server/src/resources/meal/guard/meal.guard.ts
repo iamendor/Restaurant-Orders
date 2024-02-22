@@ -14,7 +14,7 @@ export class MealGuard implements ModelGuard {
   DELETE: string = "deleteMeal";
   constructor(
     private readonly mealService: MealService,
-    private readonly idGuard: IdGuard
+    private readonly idGuard: IdGuard,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.idGuard.canActivate(context);
@@ -38,7 +38,7 @@ export class MealGuard implements ModelGuard {
 export class CreateMealGuard implements CanActivate {
   constructor(
     private readonly idGuard: IdGuard,
-    private readonly tableService: TableService
+    private readonly tableService: TableService,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.idGuard.canActivate(context);
