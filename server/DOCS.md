@@ -245,16 +245,6 @@
 <td></td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>todayAnalytics</strong></td>
-<td valign="top"><a href="#analyticssummary">AnalyticsSummary</a>!</td>
-<td></td>
-</tr>
-<tr>
-<td colspan="2" align="right" valign="top">range</td>
-<td valign="top"><a href="#string">String</a>!</td>
-<td></td>
-</tr>
-<tr>
 <td colspan="2" valign="top"><strong>waiterInfo</strong></td>
 <td valign="top"><a href="#waiter">Waiter</a>!</td>
 <td></td>
