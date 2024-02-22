@@ -30,5 +30,12 @@
 - [x] Add order by date to analytics - **#5**
 - [x] Find what unique field failed - **#6**
 - [x] Cors configuration - **#7**
-- [ ] Error handling for no analytics - **#8**
-- [ ] Error handling on triggering analytics - **#9**
+- [x] Error handling for no analytics - **#8**
+- [x] Error handling on triggering analytics - **#9**
+- [ ] Deprecated packages - **#10**
+
+## Admin
+
+### Issues 🐛
+
+- [ ] Handle if no analytics available - **#1**

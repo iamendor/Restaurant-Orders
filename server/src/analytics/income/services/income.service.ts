@@ -28,7 +28,10 @@ export class IncomeService {
     const total = this.calculatorService.sum({ data, key: "total" });
     const average = total / data.length;
     const median = this.calculatorService.median({ data, key: "total" });
-    const range = { top: data[data.length - 1], bottom: data[0] };
+    const range =
+      data.length > 0
+        ? { top: data[data.length - 1], bottom: data[0] }
+        : { top: null, bottom: null };
     return { total, average, median, range };
   }
 }

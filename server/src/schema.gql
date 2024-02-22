@@ -221,10 +221,10 @@ type Income {
 
 type IncomeRange {
   """The lowest income"""
-  bottom: Income!
+  bottom: Income
 
   """The highest income"""
-  top: Income!
+  top: Income
 }
 
 type IncomeSummary {

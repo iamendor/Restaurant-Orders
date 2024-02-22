@@ -104,7 +104,7 @@ export class CreateAnalyticsService {
       })
     ).map((order) => order.productId);
     return {
-      numberOne: products[0],
+      numberOne: products[0] || null,
       numberTwo: products[1] || null,
       numberThree: products[2] || null,
     };
@@ -119,7 +119,6 @@ export class CreateAnalyticsService {
           gt: start,
         },
       },
-
       _count: {
         id: true,
       },
