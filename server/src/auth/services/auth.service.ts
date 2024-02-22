@@ -27,6 +27,14 @@ export class AuthService {
     private readonly securityService: SecurityService
   ) {}
 
+  private EXPIRATION = 12;
+
+  private genExpiration() {
+    const current = new Date();
+    current.setHours(current.getHours() + this.EXPIRATION);
+    return current;
+  }
+
   async validateRestaurant(credentials: LoginRestaurant) {
     const restaurant = await this.restaurantService.find({
       email: credentials.email,
@@ -77,6 +85,7 @@ export class AuthService {
     return {
       waiter: waiterValid,
       access_token: this.generateWaiterJwt(waiterValid),
+      expiresAt: this.genExpiration(),
     };
   }
 
@@ -87,6 +96,7 @@ export class AuthService {
     return {
       restaurant: restaurantValid,
       access_token: this.generateRestaurantJwt(restaurantValid),
+      expiresAt: this.genExpiration(),
     };
   }
 }

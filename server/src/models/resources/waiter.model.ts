@@ -41,6 +41,8 @@ export class AuthWaiter {
   waiter: Waiter;
   @Field({ description: "The JWT token for authorization" })
   access_token: string;
+  @Field(() => DateScalar, { description: "The JWT token expiration time" })
+  expiresAt: Date;
 }
 
 @InputType()

@@ -51,12 +51,18 @@ type AnalyticsSummary {
 type AuthRestaurant {
   """The JWT token for authorization"""
   access_token: String!
+
+  """The JWT token expiration time"""
+  expiresAt: Date!
   restaurant: Restaurant!
 }
 
 type AuthWaiter {
   """The JWT token for authorization"""
   access_token: String!
+
+  """The JWT token expiration time"""
+  expiresAt: Date!
   waiter: Waiter!
 }
 

@@ -12,6 +12,9 @@ export class ReadAnalyticsService {
       where: {
         restaurantId,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     return analytics;
   }

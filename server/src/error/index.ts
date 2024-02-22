@@ -93,6 +93,14 @@ export class NestedCategoryException extends GraphQLError {
   }
 }
 
+export class InvalidOpenHourException extends GraphQLError {
+  constructor(index?: number) {
+    super("The start is greater than the end", {
+      extensions: { code: HttpStatus.BAD_REQUEST, index },
+    });
+  }
+}
+
 export const expectedExceptions = [
   AuthException,
   PermissionDeniedException,
@@ -105,4 +113,5 @@ export const expectedExceptions = [
   OrderReadyException,
   ShortArrayException,
   NestedCategoryException,
+  InvalidOpenHourException,
 ];

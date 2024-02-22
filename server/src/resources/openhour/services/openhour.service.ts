@@ -24,6 +24,12 @@ export class OpenHourService {
     return list.find((oh) => oh.name == data.name);
   }
 
+  validateDuration(start: string, end: string) {
+    const startDate = new Date(`1970-01-01T${start}`);
+    const endDate = new Date(`1970-01-01T${end}`);
+    return startDate < endDate;
+  }
+
   async create({ restaurantId, ...data }: CreateOpenHour): Promise<OpenHour> {
     const openHour = await this.prismaService.openingHour.create({
       data: {
