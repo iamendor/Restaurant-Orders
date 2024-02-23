@@ -109,6 +109,14 @@ export class EnviromentVariableNotFoundException extends Error {
   }
 }
 
+export class DependentDataException extends GraphQLError {
+  constructor() {
+    super("Dependant data", {
+      extensions: { code: HttpStatus.BAD_REQUEST },
+    });
+  }
+}
+
 export const expectedExceptions = [
   AuthException,
   PermissionDeniedException,

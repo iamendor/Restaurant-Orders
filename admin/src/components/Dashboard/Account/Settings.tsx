@@ -10,11 +10,13 @@ import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import Error from "../Resource/Error";
 
 export default function Settings({ settings }) {
   const { data: session } = useSession();
   const [info, setInfo] = useState(settings);
   const [canUpdate, setUpdate] = useState(false);
+  const [error, setError] = useState(null);
 
   const [updateSettings] = useMutation(UPDATE_SETTINGS, {
     client: apolloClient,
@@ -39,6 +41,15 @@ export default function Settings({ settings }) {
     if (!canUpdate) setUpdate(true);
     return;
   };
+
+  if (error)
+    return (
+      <Error
+        error={error}
+        ignore={() => setError(null)}
+        className={styles.error}
+      />
+    );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.settings}>

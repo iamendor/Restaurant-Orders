@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { ACCOUNT, DASHBOARD } from "./queries";
+import { ACCOUNT, DASHBOARD, WAITERS } from "./queries";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ISession } from "@/interfaces/session";
 import apolloClient from ".";
@@ -29,6 +29,16 @@ export async function getAccountData() {
 
   const { data, error } = await apolloClient.query({
     query: ACCOUNT,
+    context: genAuthHeaders(jwt),
+  });
+  if (!data && error) return null;
+  return data;
+}
+
+export async function getWaiters() {
+  const { jwt }: ISession = await getServerSession(authOptions);
+  const { data, error } = await apolloClient.query({
+    query: WAITERS,
     context: genAuthHeaders(jwt),
   });
   if (!data && error) return null;

@@ -8,6 +8,10 @@ import { usePathname } from "next/navigation";
 const HREF = {
   "/dashboard": "Dashboard",
   "/dashboard/waiters": "Waiters",
+  "/dashboard/waiters/edit": "Waiters",
+  "/dashboard/waiters/delete": "Waiters",
+  "/dashboard/waiters/create": "Waiters",
+
   "/dashboard/account": "Settings",
 };
 

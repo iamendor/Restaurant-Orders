@@ -67,3 +67,26 @@ $ready-pale: #7beab1;
 @mixin font {
   font-family: "Antonio", sans-serif;
 }
+
+@mixin listunderline {
+  content: "";
+  width: 95%;
+  height: 1px;
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  background-color: $secondary-color;
+}
+
+@keyframes initListCard {
+  0% {
+    opacity: 0;
+    transform: translateY(-30%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}

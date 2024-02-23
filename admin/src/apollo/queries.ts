@@ -93,3 +93,27 @@ export const CURRENCIES = gql`
     }
   }
 `;
+
+export const WAITERS = gql`
+  query listWaiters {
+    waiters {
+      id
+      name
+      email
+      gender
+      profileIcon
+    }
+  }
+`;
+
+export const WAITER = gql`
+  query getWaiter($where: WhereWaiter!) {
+    waiterInfo(where: $where) {
+      id
+      profileIcon
+      name
+      email
+      gender
+    }
+  }
+`;

@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import Error from "../Resource/Error";
 
 const VIEW_MODE = "view";
 const EDIT_MODE = "edit";
@@ -22,10 +23,16 @@ export default function Account({ info }) {
   const { data: session } = useSession();
   const [mode, setMode] = useState(VIEW_MODE);
   const [userInfo, setInfo] = useState(info);
+  const [error, setError] = useState(null);
+  const onError = (err) => setError(err.message);
 
-  const [updateProfile] = useMutation(UPDATE_PROFILE, { client: apolloClient });
+  const [updateProfile] = useMutation(UPDATE_PROFILE, {
+    client: apolloClient,
+    onError,
+  });
   const [updatePassword] = useMutation(UPDATE_PASSWORD, {
     client: apolloClient,
+    onError,
   });
 
   const { handleSubmit: handleEditSubmit, ...editForm } = useForm();
@@ -77,6 +84,14 @@ export default function Account({ info }) {
       });
   };
 
+  if (error)
+    return (
+      <Error
+        error={error}
+        ignore={() => setError(null)}
+        className={styles.error}
+      />
+    );
   switch (mode) {
     case VIEW_MODE:
       return (

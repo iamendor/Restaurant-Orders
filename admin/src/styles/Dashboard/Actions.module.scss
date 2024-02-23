@@ -1,0 +1,11 @@
+.actions {
+  @include full-size;
+  @include flex-center;
+  gap: 1.5rem;
+
+  .image {
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+  }
+}

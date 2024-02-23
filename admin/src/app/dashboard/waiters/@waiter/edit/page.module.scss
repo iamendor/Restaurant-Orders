@@ -1,0 +1,41 @@
+.create {
+  @include full-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+
+  .profileIcon {
+    width: 10rem;
+    height: 10rem;
+    margin-bottom: 2rem;
+  }
+
+  .name,
+  .email,
+  .password {
+    width: 90%;
+    height: 3.5rem;
+    input {
+      background-color: $secondary-color;
+      font-size: 1.2rem;
+      padding: 0 1rem;
+    }
+    & p {
+      font-size: 0.7rem;
+    }
+  }
+  .gender {
+    width: 90%;
+    select {
+      background-color: $secondary-color;
+      font-size: 1.2rem;
+    }
+  }
+
+  .submit {
+    width: 90%;
+    margin-top: auto;
+    background-color: $accent-color;
+  }
+}

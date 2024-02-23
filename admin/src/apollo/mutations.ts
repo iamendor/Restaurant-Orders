@@ -35,3 +35,37 @@ export const UPDATE_PASSWORD = gql`
     }
   }
 `;
+
+export const CREATE_WAITER = gql`
+  mutation create($data: CreateWaiter!) {
+    createWaiter(data: $data) {
+      id
+      name
+    }
+  }
+`;
+
+export const DELETE_WAITER = gql`
+  mutation delete($where: WhereWaiter!) {
+    deleteWaiter(where: $where) {
+      message
+    }
+  }
+`;
+
+export const UPDATE_WAITER = gql`
+  mutation update($data: UpdateWaiter!) {
+    updateWaiter(data: $data) {
+      id
+      name
+    }
+  }
+`;
+
+export const UPDATE_WAITER_PASSWORD = gql`
+  mutation updateWaiterPassword($data: UpdateWaiterPassword!) {
+    updateWaiterPassword(data: $data) {
+      message
+    }
+  }
+`;

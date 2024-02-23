@@ -1,0 +1,15 @@
+.wrapper {
+  @include flex-center;
+  width: 10rem;
+  height: 10rem;
+  background-color: $secondary-color;
+  border-radius: 50%;
+  img {
+    width: 65%;
+    height: 65%;
+  }
+}
+.name {
+  @include h5;
+  font-weight: 300;
+}

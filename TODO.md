@@ -22,6 +22,7 @@
 - [x] Open hour validate that start is less than end - **#8**
 - [ ] Add country options and add a timezone for it - **#9**
 - [ ] Add href to base task - **#10**
+- [ ] Add filter options under waiter meals - **#11**
 
 ### Issues 🐛
 
