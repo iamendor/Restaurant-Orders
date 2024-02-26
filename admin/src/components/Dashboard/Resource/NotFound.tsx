@@ -10,7 +10,7 @@ export default function NotFound({ what = undefined, className = "" }) {
         height={50}
         alt="Restify Error"
       />
-      {what ? <p>{what && `${what} was not found!`}</p> : <h1>Not found!</h1>}
+      {what ? <p>{`${what} was not found!`}</p> : <h1>Not found!</h1>}
     </div>
   );
 }

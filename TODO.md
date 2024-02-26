@@ -42,3 +42,5 @@
 ### Issues 🐛
 
 - [x] Handle if no analytics available - **#1**
+- [ ] Dates in analytics has error - **#2**
+- [ ] Sync API token with NextAuth **#3**

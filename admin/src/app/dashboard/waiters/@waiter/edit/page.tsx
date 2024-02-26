@@ -2,28 +2,24 @@
 import Input, { DiceBearInput, DropdownInput } from "@/components/Input";
 import styles from "./page.module.scss";
 import { useForm } from "react-hook-form";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { useMutation, useQuery } from "@apollo/client";
 import { UPDATE_WAITER, UPDATE_WAITER_PASSWORD } from "@/apollo/mutations";
 import apolloClient from "@/apollo";
-import { useSession } from "next-auth/react";
 import { genAuthHeaders } from "@/apollo/functions";
 import { DEFAULT_ICON } from "@/utils/defaults";
-import { useRouter, useSearchParams } from "next/navigation";
 import { WAITER, WAITERS } from "@/apollo/queries";
 import Loading from "@/components/Loading";
 import { toastSuccess } from "@/utils/toast";
 import { defaultValues } from "../create/page";
 import Error from "@/components/Dashboard/Resource/Error";
+import Success from "@/components/Dashboard/Resource/Success";
+import useResource from "@/utils/useresource";
 
 export default function CreateWaiter() {
-  const [error, setError] = useState(null);
-  const router = useRouter();
-  const params = useSearchParams();
-  const { data: session } = useSession();
-  const id = params.get("id");
-  const [updateWaiter, { loading: updateLoading }] = useMutation(
+  const { error, setError, params, id, router, session } = useResource();
+  const [updateWaiter, { loading: updateLoading, data: updated }] = useMutation(
     UPDATE_WAITER,
     {
       client: apolloClient,
@@ -124,7 +120,9 @@ export default function CreateWaiter() {
   useEffect(() => setError(null), [params]);
 
   if (error) return <Error error={error} ignore={() => setError(null)} />;
-  if (!session || waiterLoading || updateLoading) return <Loading />;
+  if (!session || waiterLoading || updateLoading || passwordLoading)
+    return <Loading />;
+  if (updated) return <Success />;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.create}>

@@ -7,20 +7,17 @@ import styles from "./page.module.scss";
 import Loading from "@/components/Loading";
 import { DEFAULT_ICON } from "@/utils/defaults";
 import { useMutation, useQuery } from "@apollo/client";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toastSuccess } from "@/utils/toast";
 import Error from "@/components/Dashboard/Resource/Error";
 import NotFound from "@/components/Dashboard/Resource/NotFound";
+import Success from "@/components/Dashboard/Resource/Success";
+import useResource from "@/utils/useresource";
 
 export default function EditWaiter() {
-  const params = useSearchParams();
-  const id = params.get("id");
-  const router = useRouter();
-  const { data: session } = useSession();
+  const { session, id, router, params, error, setError } = useResource();
   const [deleteWaiter, { loading: mutating, data: mutateData }] = useMutation(
     DELETE_WAITER,
     {
@@ -46,7 +43,6 @@ export default function EditWaiter() {
     client: apolloClient,
     context: genAuthHeaders(session?.jwt),
   });
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     setError(null);
@@ -65,7 +61,7 @@ export default function EditWaiter() {
 
   const waiter = data.waiters.find((w) => w.id == id);
   if (!waiter) {
-    if (mutateData) return;
+    if (mutateData) return <Success />;
     return <NotFound what="Waiter" />;
   }
 

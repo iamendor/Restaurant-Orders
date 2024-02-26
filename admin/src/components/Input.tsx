@@ -9,6 +9,7 @@ export default function Input({
   className,
   default: def = "",
   placeholder,
+  onChange,
 }: {
   register: any;
   type?: string;
@@ -17,6 +18,7 @@ export default function Input({
   className?: string;
   default?: string;
   placeholder?: string;
+  onChange?: (e) => any;
 }) {
   const name = placeholder || register.name;
   return (
@@ -26,6 +28,7 @@ export default function Input({
           defaultValue={def}
           type={type}
           placeholder={name}
+          onKeyDown={onChange}
           {...register}
         />
         <div className={styles.icon}>{children}</div>

@@ -1,40 +1,52 @@
 "use client";
 import styles from "./page.module.scss";
-import { genAuthHeaders, getWaiters } from "@/apollo/functions";
+import { genAuthHeaders } from "@/apollo/functions";
 import Image from "next/image";
-import Actions from "../../Actions";
+import Actions from "../../../../components/Dashboard/Actions";
 import { DEFAULT_ICON } from "@/utils/defaults";
 import { useQuery } from "@apollo/client";
-import { useSession } from "next-auth/react";
 import { WAITERS } from "@/apollo/queries";
 import Loading from "@/components/Loading";
 import apolloClient from "@/apollo";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Error from "@/components/Dashboard/Resource/Error";
 import Link from "next/link";
+import { useEffect, useMemo } from "react";
+import useResource from "@/utils/useresource";
 
 export default function WaiterList() {
-  const { data: session } = useSession();
-  const params = useSearchParams();
-  const router = useRouter();
-  const path = usePathname();
-  const { data, loading, error } = useQuery(WAITERS, {
+  const { session, params, path, router } = useResource();
+
+  const { data, loading, error, refetch } = useQuery(WAITERS, {
     context: genAuthHeaders(session?.jwt),
     client: apolloClient,
+    skip: !session,
   });
+  const canPush = useMemo(
+    () =>
+      data &&
+      data?.waiters &&
+      data?.waiters.length != 0 &&
+      !params.get("id") &&
+      path == "/dashboard/waiters",
+    [data, params, path]
+  );
+
+  useEffect(() => {
+    if (canPush) {
+      router.push(`/dashboard/waiters?id=${data?.waiters[0].id}`);
+    }
+  }, [params, data]);
 
   if (loading || !session) return <Loading />;
-  if (!data) return <Error error={error?.message || "Something went wrong!"} />;
+  if (!data)
+    return (
+      <Error
+        error={error?.message || "Something went wrong!"}
+        ignore={() => refetch()}
+      />
+    );
 
   const { waiters } = data;
-
-  if (
-    waiters.length != 0 &&
-    !params.get("id") &&
-    path == "/dashboard/waiters"
-  ) {
-    router.push(`/dashboard/waiters?id=${waiters[0].id}`);
-  }
 
   return (
     <>
@@ -65,7 +77,7 @@ export function Waiter({ waiter, i }) {
       className={`${styles.waiter}`}
       style={
         {
-          "--delay": `${i * 50}ms`,
+          "--delay": `${i * 20}ms`,
         } as React.CSSProperties
       }
     >

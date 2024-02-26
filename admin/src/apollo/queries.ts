@@ -117,3 +117,31 @@ export const WAITER = gql`
     }
   }
 `;
+
+export const TABLES = gql`
+  query listTables {
+    tables {
+      id
+      name
+      orders {
+        id
+      }
+    }
+  }
+`;
+
+export const TABLE = gql`
+  query getTable($where: WhereTable!) {
+    table(where: $where) {
+      id
+      name
+      orders {
+        id
+        isReady
+        product {
+          name
+        }
+      }
+    }
+  }
+`;

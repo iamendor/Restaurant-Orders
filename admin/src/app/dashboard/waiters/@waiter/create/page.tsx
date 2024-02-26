@@ -2,19 +2,19 @@
 import Input, { DiceBearInput, DropdownInput } from "@/components/Input";
 import styles from "./page.module.scss";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Button from "@/components/Button";
 import { useMutation } from "@apollo/client";
 import { CREATE_WAITER } from "@/apollo/mutations";
 import apolloClient from "@/apollo";
-import { useSession } from "next-auth/react";
 import { genAuthHeaders } from "@/apollo/functions";
 import { DEFAULT_ICON } from "@/utils/defaults";
-import { useRouter } from "next/navigation";
 import { WAITERS } from "@/apollo/queries";
 import Loading from "@/components/Loading";
 import { toastSuccess } from "@/utils/toast";
 import Error from "@/components/Dashboard/Resource/Error";
+import Success from "@/components/Dashboard/Resource/Success";
+import useResource from "@/utils/useresource";
 
 export const defaultValues = {
   name: undefined,
@@ -34,29 +34,29 @@ export default function CreateWaiter() {
   } = useForm({
     defaultValues,
   });
-  const [error, setError] = useState(null);
-  const router = useRouter();
-  const { data: session } = useSession();
-  const [createWaiter, { loading }] = useMutation(CREATE_WAITER, {
-    client: apolloClient,
-    refetchQueries: [WAITERS],
-    onQueryUpdated: (ob) => {
-      return ob.refetch();
-    },
-    onCompleted: ({ createWaiter }) => {
-      console.log("complete");
-      router.push(`/dashboard/waiters?id=${createWaiter.id}`);
-    },
-    onError: (error) => {
-      error.message == "unique field failed" &&
-        setFormError("email", {
-          type: "unique",
-          message: "Email is already in use!",
-        });
+  const { router, setError, session, error } = useResource();
+  const [createWaiter, { loading, data: created }] = useMutation(
+    CREATE_WAITER,
+    {
+      client: apolloClient,
+      refetchQueries: [WAITERS],
+      onQueryUpdated: (ob) => {
+        return ob.refetch();
+      },
+      onCompleted: ({ createWaiter }) => {
+        router.push(`/dashboard/waiters?id=${createWaiter.id}`);
+      },
+      onError: (error) => {
+        error.message == "unique field failed" &&
+          setFormError("email", {
+            type: "unique",
+            message: "Email is already in use!",
+          });
 
-      return setError(error.message);
-    },
-  });
+        return setError(error.message);
+      },
+    }
+  );
 
   useEffect(() => {
     register("profileIcon");
@@ -74,8 +74,9 @@ export default function CreateWaiter() {
     );
   };
 
-  if (error) return <Error error={error} />;
+  if (error) return <Error error={error} ignore={() => setError(null)} />;
   if (!session || loading) return <Loading />;
+  if (created) return <Success />;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.create}>

@@ -35,15 +35,7 @@
 }
 
 .waiter {
-  width: 100%;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  position: relative;
-  animation: initListCard 200ms forwards;
-  animation-delay: var(--delay);
-  opacity: 0;
-  transform: translateY(-30%);
+  @include listitem;
 
   .profileIcon {
     @include flex-center;
@@ -67,9 +59,5 @@
   }
   .gender {
     text-transform: capitalize;
-  }
-
-  &::after {
-    @include listunderline;
   }
 }

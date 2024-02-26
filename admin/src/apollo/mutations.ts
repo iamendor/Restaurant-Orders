@@ -69,3 +69,27 @@ export const UPDATE_WAITER_PASSWORD = gql`
     }
   }
 `;
+
+export const CREATE_TABLES = gql`
+  mutation createTabs($data: [CreateTable!]!) {
+    createTables(data: $data) {
+      message
+    }
+  }
+`;
+
+export const DELETE_TABLE = gql`
+  mutation delTable($where: WhereTable!) {
+    deleteTable(where: $where) {
+      message
+    }
+  }
+`;
+
+export const UPDATE_TABLE = gql`
+  mutation updTable($data: UpdateTable!) {
+    updateTable(data: $data) {
+      name
+    }
+  }
+`;

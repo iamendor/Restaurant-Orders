@@ -3,18 +3,17 @@ import styles from "./page.module.scss";
 
 export default function WaiterLayout({
   list,
-  waiter,
+  table,
 }: Readonly<{
   children: React.ReactNode;
   list: React.ReactNode;
-  waiter: React.ReactNode;
+  table: React.ReactNode;
 }>) {
   return (
     <ResourceLayout
       list={list}
-      detail={waiter}
-      createHref="/dashboard/waiters/create"
-      detailClassName={styles.detail}
+      detail={table}
+      createHref="/dashboard/tables/create"
     />
   );
 }

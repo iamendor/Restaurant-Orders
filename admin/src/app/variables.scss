@@ -79,6 +79,21 @@ $ready-pale: #7beab1;
   background-color: $secondary-color;
 }
 
+@mixin listitem {
+  width: 100%;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  animation: initListCard 200ms forwards;
+  animation-delay: var(--delay);
+  opacity: 0;
+  transform: translateY(-30%);
+  &::after {
+    @include listunderline;
+  }
+}
+
 @keyframes initListCard {
   0% {
     opacity: 0;

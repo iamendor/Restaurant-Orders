@@ -1,0 +1,51 @@
+.columns,
+.table {
+  width: 100%;
+  display: flex;
+  padding: 0 1rem;
+
+  * {
+    text-align: center;
+  }
+
+  .column {
+    @include h6;
+    font-weight: 300;
+  }
+
+  .no {
+    width: 20%;
+  }
+  .name {
+    width: 35%;
+  }
+  .active {
+    width: 20%;
+  }
+  .actions {
+    width: 25%;
+  }
+}
+.table {
+  @include listitem;
+  height: 2rem;
+
+  .no,
+  .name,
+  .active,
+  .inactive {
+    font-size: 1.2rem;
+    font-weight: 100;
+  }
+  .active {
+    color: $ready-color;
+  }
+  .inactive {
+    width: 20%;
+    color: $accent-color;
+  }
+
+  &::after {
+    @include listunderline;
+  }
+}
