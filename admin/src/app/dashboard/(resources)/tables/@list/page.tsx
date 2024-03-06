@@ -7,7 +7,7 @@ import { genAuthHeaders } from "@/apollo/functions";
 import Loading from "@/components/Loading";
 import Error from "@/components/Dashboard/Resource/Error";
 import { useEffect, useMemo } from "react";
-import Actions from "../../../../components/Dashboard/Actions";
+import Actions from "@/components/Dashboard/Actions";
 import Link from "next/link";
 import useResource from "@/utils/useresource";
 

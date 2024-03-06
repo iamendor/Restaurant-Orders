@@ -2,7 +2,7 @@
 import styles from "./page.module.scss";
 import { genAuthHeaders } from "@/apollo/functions";
 import Image from "next/image";
-import Actions from "../../../../components/Dashboard/Actions";
+import Actions from "@/components/Dashboard/Actions";
 import { DEFAULT_ICON } from "@/utils/defaults";
 import { useQuery } from "@apollo/client";
 import { WAITERS } from "@/apollo/queries";

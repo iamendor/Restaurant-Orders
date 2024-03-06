@@ -1,0 +1,17 @@
+{
+  "extension": "ts",
+  "style": "scss",
+  "generate": {
+    "module": {
+      "loading": false,
+      "layout": false,
+      "error": false,
+      "notFound": false,
+      "mergeStyles": true
+    },
+    "route": {
+      "handlers": ["GET", "POST"],
+      "singleHandler": true
+    }
+  }
+}
