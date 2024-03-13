@@ -94,6 +94,21 @@ $ready-pale: #7beab1;
   }
 }
 
+@mixin columnnames {
+  display: flex;
+  width: 100%;
+  padding: 0 1rem;
+
+  * {
+    text-align: center;
+  }
+
+  .column {
+    @include h6;
+    font-weight: 300;
+  }
+}
+
 @keyframes initListCard {
   0% {
     opacity: 0;

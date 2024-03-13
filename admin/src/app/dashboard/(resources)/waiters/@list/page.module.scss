@@ -1,9 +1,6 @@
 .columns,
 .waiter {
-  padding: 0 1rem;
-  * {
-    text-align: center;
-  }
+  @include columnnames;
 
   & .profileIcon {
     width: 10%;

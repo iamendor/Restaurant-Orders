@@ -145,3 +145,20 @@ export const TABLE = gql`
     }
   }
 `;
+
+export const CATEGORIES = gql`
+  query getCategories {
+    categories {
+      id
+      name
+      subCategories {
+        id
+        name
+        subCategories {
+          id
+          name
+        }
+      }
+    }
+  }
+`;

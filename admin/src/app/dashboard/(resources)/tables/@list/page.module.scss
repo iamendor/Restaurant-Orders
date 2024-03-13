@@ -1,17 +1,6 @@
 .columns,
 .table {
-  width: 100%;
-  display: flex;
-  padding: 0 1rem;
-
-  * {
-    text-align: center;
-  }
-
-  .column {
-    @include h6;
-    font-weight: 300;
-  }
+  @include columnnames;
 
   .no {
     width: 20%;

@@ -2,6 +2,10 @@
 
 ### Created by: [iamendor](https://github.com/iamendor/iamendor)
 
+### Project closing
+
+I do not have the capacity for the client applications, so I'm closing the project. The NestJS server is fully functional and it is ready with docker-compose, if you would like to make your own client applications. Good luck!
+
 A software to make your workflow more efficient as an owner.
 
 # Stack
