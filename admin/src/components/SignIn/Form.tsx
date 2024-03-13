@@ -7,14 +7,17 @@ import Button from "../Button";
 import Input from "../Input";
 import styles from "@/styles/SignIn/Form.module.scss";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Error from "../Dashboard/Resource/Error";
 
 const Form = () => {
+  const [error, setError] = useState(null);
   const router = useRouter();
   const REGISTER = "";
   const {
     handleSubmit,
     register,
-    setError,
+    setError: setFormError,
     formState: { errors },
   } = useForm();
   console.log(errors);
@@ -25,19 +28,25 @@ const Form = () => {
     });
     if (!ok) {
       if (err == "not found")
-        return setError("email", {
+        return setFormError("email", {
           type: "notfound",
           message: "Email was not found!",
         });
       if (err == "unauthorized")
-        return setError("password", {
+        return setFormError("password", {
           type: "invalid",
           message: "Invalid password!",
         });
-      return;
+      return setError(err);
     }
     router.push("/dashboard");
   };
+  if (error)
+    return (
+      <div className={styles.credentials}>
+        <Error error={error} ignore={() => setError(null)} />
+      </div>
+    );
   return (
     <form className={styles.credentials} onSubmit={handleSubmit(onSubmit)}>
       <h1>Login</h1>

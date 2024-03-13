@@ -2,20 +2,13 @@ import { gql } from "@apollo/client";
 
 export const DASHBOARD = gql`
   query getDashboardData($min: Date!) {
-    todayAnalytics {
+    todaySummary: analyticsSummary(range: "today") {
       income {
         total
       }
       waiter {
         best {
           name
-        }
-      }
-      popularProduct {
-        toplist {
-          numberOne {
-            name
-          }
         }
       }
     }
@@ -25,7 +18,12 @@ export const DASHBOARD = gql`
         total
       }
     }
-    analyticsSummary(range: "week") {
+    weeklySummary: analyticsSummary {
+      waiter {
+        best {
+          name
+        }
+      }
       income {
         average
         median
@@ -92,6 +90,75 @@ export const CURRENCIES = gql`
   query curr {
     listCurrencies {
       name
+    }
+  }
+`;
+
+export const WAITERS = gql`
+  query listWaiters {
+    waiters {
+      id
+      name
+      email
+      gender
+      profileIcon
+    }
+  }
+`;
+
+export const WAITER = gql`
+  query getWaiter($where: WhereWaiter!) {
+    waiterInfo(where: $where) {
+      id
+      profileIcon
+      name
+      email
+      gender
+    }
+  }
+`;
+
+export const TABLES = gql`
+  query listTables {
+    tables {
+      id
+      name
+      orders {
+        id
+      }
+    }
+  }
+`;
+
+export const TABLE = gql`
+  query getTable($where: WhereTable!) {
+    table(where: $where) {
+      id
+      name
+      orders {
+        id
+        isReady
+        product {
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const CATEGORIES = gql`
+  query getCategories {
+    categories {
+      id
+      name
+      subCategories {
+        id
+        name
+        subCategories {
+          id
+          name
+        }
+      }
     }
   }
 `;

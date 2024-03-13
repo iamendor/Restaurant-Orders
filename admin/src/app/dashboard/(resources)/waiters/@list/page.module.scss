@@ -1,0 +1,60 @@
+.columns,
+.waiter {
+  @include columnnames;
+
+  & .profileIcon {
+    width: 10%;
+  }
+  & .name {
+    width: 25%;
+  }
+  & .email {
+    width: 30%;
+  }
+  & .gender {
+    width: 10%;
+  }
+  & .actions {
+    width: 25%;
+  }
+}
+
+.columns {
+  width: 100%;
+  display: flex;
+  margin-bottom: 1rem;
+
+  .column {
+    @include h6;
+    font-weight: 300;
+    text-align: center;
+  }
+}
+
+.waiter {
+  @include listitem;
+
+  .profileIcon {
+    @include flex-center;
+    .wrapper {
+      @include flex-center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background-color: $secondary-color;
+      .image {
+        height: 60%;
+        width: 60%;
+      }
+    }
+  }
+  .name,
+  .email,
+  .gender {
+    font-size: 1.2rem;
+    font-weight: 100;
+  }
+  .gender {
+    text-transform: capitalize;
+  }
+}

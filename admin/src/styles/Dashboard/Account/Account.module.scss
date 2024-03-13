@@ -14,9 +14,15 @@
   }
 }
 
+.error {
+  @include card($white);
+  padding: 1rem 2rem;
+}
+
 .account {
   @include card($white);
   padding: 1rem 2rem;
+  position: relative;
   width: 1fr;
   height: 100%;
   display: grid;

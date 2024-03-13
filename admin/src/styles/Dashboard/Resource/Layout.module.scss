@@ -1,0 +1,47 @@
+.layout {
+  @include full-size;
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  gap: 1rem;
+
+  .list,
+  .detail,
+  .create {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    background-color: $white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    gap: 1rem;
+  }
+
+  .list {
+    grid-column: 1 / 9;
+    grid-row: 1 / span 11;
+    height: 100%;
+  }
+
+  .detail {
+    grid-column: 9 / span 3;
+    gap: 0;
+    height: 100%;
+    grid-row: 2 / span 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .create {
+    @include flex-center;
+    @include h6;
+    font-size: 1.2rem;
+    grid-column: 9 / span 3;
+    grid-row: 1 / 1;
+    background-color: $accent-color;
+    padding: 0;
+    color: $secondary-color;
+    cursor: pointer;
+  }
+}

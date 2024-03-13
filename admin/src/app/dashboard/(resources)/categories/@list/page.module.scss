@@ -1,0 +1,18 @@
+.columns {
+  @include columnnames;
+
+  .no {
+    width: 20%;
+  }
+
+  .name {
+    width: 35%;
+  }
+
+  .subcats {
+    width: 20%;
+  }
+  .actions {
+    width: 25%;
+  }
+}

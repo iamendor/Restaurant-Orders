@@ -1,4 +1,6 @@
 import styles from "@/styles/Input.module.scss";
+import Image from "next/image";
+import { useState } from "react";
 export default function Input({
   register,
   type = "text",
@@ -7,6 +9,7 @@ export default function Input({
   className,
   default: def = "",
   placeholder,
+  onChange,
 }: {
   register: any;
   type?: string;
@@ -15,6 +18,7 @@ export default function Input({
   className?: string;
   default?: string;
   placeholder?: string;
+  onChange?: (e) => any;
 }) {
   const name = placeholder || register.name;
   return (
@@ -24,6 +28,7 @@ export default function Input({
           defaultValue={def}
           type={type}
           placeholder={name}
+          onKeyDown={onChange}
           {...register}
         />
         <div className={styles.icon}>{children}</div>
@@ -35,7 +40,7 @@ export default function Input({
 
 export function ToggleInput({
   register,
-  default: def = false,
+  default: def = "",
   onChange = () => {},
 }) {
   return (
@@ -78,5 +83,48 @@ function DropdownItem({ option }) {
     <option value={option} className={styles.item}>
       {option}
     </option>
+  );
+}
+
+export function DiceBearInput({
+  className = "",
+  setValue,
+  def,
+  gender = "male",
+}) {
+  const [url, setUrl] = useState(def);
+
+  const random = () => {
+    const newUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=${Math.random()}`;
+    setUrl(newUrl);
+    setValue(newUrl);
+  };
+
+  const del = () => {
+    setUrl("");
+    setValue(undefined);
+  };
+
+  return (
+    <div className={`${className} ${styles.dicebear}`}>
+      {url && <Image src={url} width={50} height={50} alt="" />}
+
+      <div className={styles.random} onClick={random}>
+        <Image
+          src="/dashboard/waiter/create/dice.svg"
+          width={30}
+          height={30}
+          alt="Restify Waiter Create Dice"
+        />
+      </div>
+      <div className={styles.delete} onClick={del}>
+        <Image
+          src="/dashboard/actions/delete.svg"
+          width={30}
+          height={30}
+          alt="Restify Waiter Create Dice"
+        />
+      </div>
+    </div>
   );
 }

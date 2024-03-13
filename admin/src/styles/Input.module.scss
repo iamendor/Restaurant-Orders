@@ -25,6 +25,7 @@
       padding: 0 1.5rem;
       padding-right: 2rem;
       background-color: transparent;
+      border-radius: 0.5rem;
 
       &::placeholder {
         text-transform: capitalize;
@@ -148,5 +149,47 @@
   .item {
     background-color: $secondary-color;
     border: none;
+  }
+}
+
+.dicebear {
+  @include flex-center;
+  width: 5rem;
+  height: 5rem;
+  background-color: $secondary-color;
+  border-radius: 50%;
+  position: relative;
+
+  img {
+    width: 65%;
+    height: 65%;
+  }
+
+  .delete,
+  .random {
+    @include flex-center;
+    width: 25%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    position: absolute;
+    cursor: pointer;
+    background-color: $white;
+    border-radius: 50%;
+    padding: 0.3rem;
+    bottom: 1%;
+
+    img {
+      width: 70%;
+      height: 70%;
+      border: none;
+    }
+  }
+
+  .random {
+    left: 3%;
+  }
+
+  .delete {
+    right: 3%;
   }
 }

@@ -15,34 +15,32 @@ import { IncomeStats } from "@/components/Dashboard/CardsClient";
 export default async function DashboardPage() {
   const data = await getDashboardData();
   if (!data) return <p>Error</p>;
+
   const {
-    todayAnalytics: {
-      income,
-      waiter: {
-        best: { name },
-      },
-    },
     orders,
     listTasks,
     restaurantInfo: { currency, open },
     analytics,
-    analyticsSummary: { income: sumIncome },
+  } = data;
+
+  const {
+    todaySummary: { income: sumIncome, ...todaySummary },
+    weeklySummary: { income, ...weeklySummary },
   } = data;
 
   return (
     <div className={styles.dashboard}>
-      <Income income={income} symbol={currency.symbol} />
+      <Income income={sumIncome} symbol={currency.symbol} />
       <Open open={open} />
-      <BestWaiter name={name} />
+      <BestWaiter
+        waiter={todaySummary.waiter?.best || weeklySummary.waiter?.best}
+      />
       <Reservations />
       <LatestOrders orders={orders.slice(0, 4)} />
-      <IncomeStats
-        summary={sumIncome}
-        incomes={analytics.map((a) => a.income)}
-      />
+      <IncomeStats summary={income} incomes={analytics.map((a) => a.income)} />
       <TopIncome
-        today={income.total}
-        income={sumIncome.range.top}
+        today={sumIncome.total}
+        income={income.range.top}
         symbol={currency.symbol}
       />
       <ActiveOrders orders={orders} />

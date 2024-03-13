@@ -50,7 +50,7 @@ export function Open({ open }) {
   );
 }
 
-export function BestWaiter({ name }) {
+export function BestWaiter({ waiter }) {
   return (
     <div className={styles.waiter}>
       <Image
@@ -59,8 +59,8 @@ export function BestWaiter({ name }) {
         height={80}
         alt="Restify Best Waiter"
       />
-      <div className={styles.content}>
-        <h2>{name}</h2> <p>Today's waiter</p>
+      <div className={`${styles.content} ${!waiter?.name && styles.nowaiter}`}>
+        <h2>{waiter?.name || "No information"}</h2> <p>Today's waiter</p>
       </div>
     </div>
   );
@@ -112,7 +112,7 @@ export function TopIncome({ income, today, symbol }) {
     []
   );
   const compareToday = useMemo(() => {
-    //TODO: difference on zero
+    if (today == 0) return "";
     const diff = Math.round(((income.total - today) / today) * 100);
     if (diff < 0) return `${Math.abs(diff)}% lower than today!`;
     return `${diff}% higher than today!`;

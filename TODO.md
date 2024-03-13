@@ -21,6 +21,8 @@
 - [ ] Kitchen role - **#7**
 - [x] Open hour validate that start is less than end - **#8**
 - [ ] Add country options and add a timezone for it - **#9**
+- [ ] Add href to base task - **#10**
+- [ ] Add filter options under waiter meals - **#11**
 
 ### Issues 🐛
 
@@ -33,9 +35,12 @@
 - [x] Error handling for no analytics - **#8**
 - [x] Error handling on triggering analytics - **#9**
 - [x] Deprecated packages - **#10**
+- [ ] 400 status on fetching schema - **#11**
 
 ## Admin
 
 ### Issues 🐛
 
-- [ ] Handle if no analytics available - **#1**
+- [x] Handle if no analytics available - **#1**
+- [ ] Dates in analytics has error - **#2**
+- [ ] Sync API token with NextAuth **#3**

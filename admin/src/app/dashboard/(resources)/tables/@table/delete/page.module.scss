@@ -1,0 +1,28 @@
+.question {
+  @include h6;
+  width: 80%;
+  font-weight: 300;
+  text-align: center;
+
+  span {
+    @include h6;
+    font-weight: 300;
+    color: $accent-color;
+  }
+}
+
+.choose {
+  margin-top: auto;
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  margin-bottom: 10%;
+  p {
+    @include h6;
+    color: $accent-color;
+    cursor: pointer;
+  }
+  a {
+    @include h6;
+  }
+}
